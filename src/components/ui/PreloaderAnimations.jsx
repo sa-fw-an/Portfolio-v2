@@ -1,0 +1,107 @@
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+
+const PreloaderAnimations = () => {
+  const timelineRef = useRef();
+
+  useEffect(() => {
+    // Convert intro text to spans for animation
+    const convertToSpans = (element) => {
+      if (!element) return;
+      const text = element.textContent;
+      element.innerHTML = text
+        .split('')
+        .map(char => {
+          if (char === ' ') return '<span class="animatedis">&nbsp;</span>';
+          return `<span class="animatedis">${char}</span>`;
+        })
+        .join('');
+    };
+
+    // Convert text elements
+    const introText = document.querySelector('.intro-text span');
+    convertToSpans(introText);
+
+    // Create timeline for preloader animations
+    timelineRef.current = gsap.timeline({ delay: 2.5 });
+    
+    // Hide preloader
+    timelineRef.current.to('.preloader', {
+      opacity: 0,
+      delay: 1,
+      onComplete: () => {
+        const preloader = document.querySelector('.preloader');
+        if (preloader) {
+          preloader.classList.add('hidden');
+        }
+      }
+    });
+
+    // Animate intro text
+    timelineRef.current.to('.intro-text .animatedis', {
+      yPercent: 0,
+      stagger: 0.05,
+      ease: 'back.out(1.7)',
+    })
+    .to('.arrow-svg-wrapper', {
+      opacity: 1,
+    }, 'same')
+    .to('.toggle-bar', {
+      opacity: 1,
+    }, 'same');
+
+    // Add scroll event listener for second intro
+    const handleScroll = (e) => {
+      if (e.deltaY > 0) {
+        playSecondIntro();
+        window.removeEventListener('wheel', handleScroll);
+      }
+    };
+
+    const handleTouch = (e) => {
+      const initialY = e.touches[0].clientY;
+      
+      const handleTouchMove = (moveEvent) => {
+        const currentY = moveEvent.touches[0].clientY;
+        const difference = initialY - currentY;
+        if (difference > 0) {
+          playSecondIntro();
+          window.removeEventListener('touchstart', handleTouch);
+          window.removeEventListener('touchmove', handleTouchMove);
+        }
+      };
+
+      window.addEventListener('touchmove', handleTouchMove, { once: true });
+    };
+
+    const playSecondIntro = () => {
+      const secondTimeline = gsap.timeline();
+      
+      secondTimeline.to('.intro-text .animatedis', {
+        yPercent: -100,
+        stagger: 0.05,
+        ease: 'back.in(1.7)',
+      })
+      .to('.arrow-svg-wrapper', {
+        opacity: 0,
+      }, 'same');
+    };
+
+    setTimeout(() => {
+      window.addEventListener('wheel', handleScroll);
+      window.addEventListener('touchstart', handleTouch);
+    }, 4000);
+
+    return () => {
+      window.removeEventListener('wheel', handleScroll);
+      window.removeEventListener('touchstart', handleTouch);
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+    };
+  }, []);
+
+  return null;
+};
+
+export default PreloaderAnimations;

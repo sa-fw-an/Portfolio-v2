@@ -1,8 +1,9 @@
+import React, { forwardRef } from 'react';
 import * as THREE from 'three';
 
-const Floor = () => {
+const Floor = forwardRef((props, ref) => {
   return (
-    <group>
+    <group ref={ref} {...props}>
       {/* Main Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.3, 0]} receiveShadow>
         <planeGeometry args={[100, 100]} />
@@ -26,6 +27,8 @@ const Floor = () => {
       </mesh>
     </group>
   );
-};
+});
+
+Floor.displayName = 'Floor';
 
 export default Floor;

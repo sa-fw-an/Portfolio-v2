@@ -1,10 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, forwardRef } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const Room = () => {
-  const roomRef = useRef();
+const Room = forwardRef((props, ref) => {
+  const internalRef = useRef();
   const { scene } = useGLTF('/models/room.glb', true);
   
   // Mouse movement effect
@@ -24,7 +24,8 @@ const Room = () => {
   }, []);
 
   useFrame((state) => {
-    if (roomRef.current) {
+    const roomRef = ref?.current || internalRef.current;
+    if (roomRef) {
       // Smooth mouse following
       lerp.current.current = THREE.MathUtils.lerp(
         lerp.current.current,
@@ -32,10 +33,10 @@ const Room = () => {
         lerp.current.ease
       );
       
-      roomRef.current.rotation.y = lerp.current.current;
+      roomRef.rotation.y = lerp.current.current;
 
       // Gentle floating animation
-      roomRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
+      roomRef.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
     }
   });
 
@@ -71,11 +72,18 @@ const Room = () => {
   }, [scene]);
 
   return (
-    <group ref={roomRef} scale={[0.11, 0.11, 0.11]} position={[0, 0, 0]}>
+    <group 
+      ref={ref || internalRef} 
+      scale={[0.11, 0.11, 0.11]} 
+      position={[0, 0, 0]}
+      {...props}
+    >
       <primitive object={scene} />
     </group>
   );
-};
+});
+
+Room.displayName = 'Room';
 
 // Preload the model
 useGLTF.preload('/models/room.glb');

@@ -1,38 +1,28 @@
 import React, { useRef } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
 
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
   const container = useRef();
 
-  useGSAP(() => {
-    gsap.fromTo(container.current, { opacity: 0 }, { opacity: 1, duration: 1, delay: 3, ease: 'power2.out' });
-  }, { scope: container });
-
   return (
-    <div ref={container} className="fixed top-12 right-12 z-50 flex items-center opacity-0">
-      <div className="sun-wrapper flex items-center text-[var(--color-text)]">
+    <div ref={container} className="toggle-bar fixed flex opacity-0 flex-row justify-center items-center top-12 right-12 z-[99999999999999]">
+      <div className="sun-wrapper flex flex-row justify-center items-center text-[var(--color-text)]">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+          <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
         </svg>
       </div>
-      
-      <button
+
+      <button 
         onClick={toggleTheme}
-        className="cursor-pointer relative w-14 h-7 flex items-center justify-center rounded-full mx-4 border-none shadow-md hover:scale-95 transition-transform"
-        style={{ backgroundColor: 'var(--color-primary)' }}
+        className="toggle-button cursor-pointer relative w-14 h-7 flex justify-center items-center bg-[var(--color-pink)] rounded-full mx-4 border-none shadow-[0_8px_24px_rgba(149,157,165,0.2)]"
       >
-        <div 
-          className={`absolute w-5 h-5 rounded-full transition-all duration-200 ${theme === 'dark' ? 'left-8' : 'left-1.5'}`}
-          style={{ backgroundColor: 'var(--color-background)' }}
-        ></div>
+        <div className={`toggle-circle absolute left-1.5 rounded-full w-5 h-5 bg-[var(--color-background)] transition-all duration-200 ease-in-out ${theme === 'dark' ? 'slide' : ''}`}></div>
       </button>
-      
-      <div className="moon-wrapper flex items-center text-[var(--color-text)]">
+
+      <div className="moon-wrapper flex flex-row justify-center items-center text-[var(--color-text)]">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12.34 2.02C6.59 1.82 2 6.42 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.96z"/>
+          <path fillRule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clipRule="evenodd"/>
         </svg>
       </div>
     </div>
