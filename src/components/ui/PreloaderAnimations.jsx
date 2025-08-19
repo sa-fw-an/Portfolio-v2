@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { useThreeContext } from '../../contexts/ThreeContext';
 
 const PreloaderAnimations = () => {
   const timelineRef = useRef();
+
+  const { roomRef, childrenMap, setControlsEnabled } = useThreeContext();
 
   useEffect(() => {
     // Convert intro text to spans for animation
@@ -22,8 +25,8 @@ const PreloaderAnimations = () => {
     const introText = document.querySelector('.intro-text span');
     convertToSpans(introText);
 
-    // Create timeline for preloader animations
-    timelineRef.current = gsap.timeline({ delay: 2.5 });
+  // Create timeline for preloader animations
+  timelineRef.current = gsap.timeline({ delay: 2.5 });
     
     // Hide preloader
     timelineRef.current.to('.preloader', {
@@ -48,6 +51,16 @@ const PreloaderAnimations = () => {
     }, 'same')
     .to('.toggle-bar', {
       opacity: 1,
+    }, 'same');
+
+    // First intro also nudge cube/room if available
+    timelineRef.current.add(() => {
+      const room = roomRef.current;
+      const cube = childrenMap?.cube;
+      if (room && cube) {
+        gsap.to(cube.scale, { x: 1, y: 1, z: 1, duration: 0.7, ease: 'back.out(1.7)' });
+        gsap.to(room.position, { x: 0.2, y: 0.05, duration: 0.7, ease: 'power2.out' });
+      }
     }, 'same');
 
     // Add scroll event listener for second intro
@@ -85,12 +98,43 @@ const PreloaderAnimations = () => {
       .to('.arrow-svg-wrapper', {
         opacity: 0,
       }, 'same');
+
+      // 3D reveal sequence
+  const room = roomRef.current;
+  const parts = childrenMap || {};
+      if (room) {
+        // spin/stretch cube and move camera-like effect via room
+        if (parts.cube) {
+          secondTimeline
+            .to(parts.cube.rotation, { y: `+=${Math.PI * 2 + Math.PI / 4}`, duration: 1.2 }, 'same')
+            .to(parts.cube.scale, { z: 10, duration: 1.0 }, 'same')
+            .to(parts.cube.position, { z: 1.3243, duration: 1.0 }, 'same');
+        }
+
+        // reveal major parts in sequence
+        const show = (obj, label) => obj && secondTimeline.to(obj.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, label);
+        show(parts.aquarium, '>-0.5');
+        show(parts.clock, '>-0.4');
+        show(parts.shelves, '>-0.3');
+        show(parts.floor_items, '>-0.2');
+        show(parts.desks, '>-0.1');
+        show(parts.table_stuff, '>-0.1');
+        if (parts.computer) secondTimeline.to(parts.computer.scale, { x: 1, y: 1, z: 1, ease: 'back.out(2.2)', duration: 0.5 });
+        if (parts.mini_floor) secondTimeline.set(parts.mini_floor.scale, { x: 1, y: 1, z: 1 });
+        if (parts.chair) {
+          secondTimeline.to(parts.chair.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 'chair');
+          secondTimeline.to(parts.chair.rotation, { y: `+=${Math.PI / 2}`, duration: 1.0 }, 'chair');
+        }
+        if (parts.fish) secondTimeline.to(parts.fish.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 'chair');
+      }
+
+  secondTimeline.to('.arrow-svg-wrapper', { opacity: 1, onComplete: () => setControlsEnabled(true) });
     };
 
     setTimeout(() => {
       window.addEventListener('wheel', handleScroll);
       window.addEventListener('touchstart', handleTouch);
-    }, 4000);
+    }, 2200);
 
     return () => {
       window.removeEventListener('wheel', handleScroll);
@@ -99,7 +143,7 @@ const PreloaderAnimations = () => {
         timelineRef.current.kill();
       }
     };
-  }, []);
+  }, [roomRef, childrenMap, setControlsEnabled]);
 
   return null;
 };

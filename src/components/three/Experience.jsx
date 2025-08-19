@@ -1,18 +1,35 @@
-import { Environment } from '@react-three/drei';
-import { useRef } from 'react';
+import { Environment, OrthographicCamera } from '@react-three/drei';
+import { useRef, useEffect } from 'react';
 import Room from './Room';
 import Floor from './Floor';
 import Lights from './Lights';
 import Controls from './Controls';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useThreeContext } from '../../contexts/ThreeContext';
 
 const Experience = () => {
   const { theme } = useTheme();
   const roomRef = useRef();
   const floorRef = useRef();
+  const { roomRef: sharedRoomRef, floorRef: sharedFloorRef } = useThreeContext();
+
+  useEffect(() => {
+    sharedRoomRef.current = roomRef.current;
+    sharedFloorRef.current = floorRef.current;
+  }, [sharedRoomRef, sharedFloorRef]);
 
   return (
     <>
+      {/* Orthographic camera to mimic reference look */}
+      <OrthographicCamera
+        makeDefault
+        position={[0, 6.5, 10]}
+        rotation={[-Math.PI / 6, 0, 0]}
+        near={-100}
+        far={100}
+        // Frustum sized in Controls when resizing via aspect
+      />
+
       {/* Lighting */}
       <Lights theme={theme} />
       

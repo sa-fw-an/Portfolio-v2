@@ -12,12 +12,14 @@ import Preloader from './components/ui/Preloader';
 import PreloaderAnimations from './components/ui/PreloaderAnimations';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AnimationProvider } from './contexts/AnimationContext';
+import { ThreeProvider } from './contexts/ThreeContext';
 
 function App() {
   return (
-    <ThemeProvider>
-      <AnimationProvider>
-        <div className="App relative min-h-screen">
+    <ThreeProvider>
+      <ThemeProvider>
+        <AnimationProvider>
+          <div className="App relative min-h-screen">
           <Preloader />
           <PreloaderAnimations />
           
@@ -104,8 +106,9 @@ function App() {
             </div>
           </div>
         </div>
-      </AnimationProvider>
-    </ThemeProvider>
+        </AnimationProvider>
+      </ThemeProvider>
+    </ThreeProvider>
   );
 }
 
