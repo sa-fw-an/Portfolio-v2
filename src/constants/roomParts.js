@@ -13,4 +13,13 @@ export const ROOM_PARTS = {
   chair: ['Chair', 'chair'],
   fish: ['Fish', 'fish'],
   body: ['Body', 'body', 'Room', 'room'],
+  // Mini platform / pathway pieces (names vary by GLB version)
+  mailbox: ['Mailbox', 'mailbox'],
+  lamp: ['Lamp', 'lamp'],
+  floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
+  floor_second: ['FloorSecond', 'floorsecond', 'Floor_Second', 'floor_second'],
+  floor_third: ['FloorThird', 'floorthird', 'Floor_Third', 'floor_third'],
+  dirt: ['Dirt', 'dirt'],
+  flower1: ['Flower1', 'flower1', 'Flower_1'],
+  flower2: ['Flower2', 'flower2', 'Flower_2'],
 };

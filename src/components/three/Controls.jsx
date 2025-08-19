@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Controls = ({ roomRef, floorRef }) => {
   const { camera, size } = useThree();
-  const { controlsEnabled } = useThreeContext();
+  const { controlsEnabled, childrenMap } = useThreeContext();
   const lenisRef = useRef(null);
 
   useEffect(() => {
@@ -192,6 +192,23 @@ const Controls = ({ roomRef, floorRef }) => {
               gsap.to(section, { borderBottomRightRadius: 700, scrollTrigger: { trigger: section, start: 'bottom bottom', end: 'bottom top', scrub: 0.6 } });
             }
           });
+
+            // Mini-platform / pathway pieces reveal on second section center
+            if (childrenMap && Object.keys(childrenMap).length) {
+              const tl = gsap.timeline({
+                scrollTrigger: { trigger: '.second-move', start: 'center center' }
+              });
+              const parts = childrenMap;
+              const show = (obj, shift='>-0.15') => obj && tl.to(obj.scale, { x: 1, y: 1, z: 1, duration: 0.35 }, shift);
+              show(parts.mailbox, '+=0');
+              show(parts.lamp);
+              show(parts.floor_first);
+              show(parts.floor_second);
+              show(parts.floor_third);
+              show(parts.dirt);
+              show(parts.flower1);
+              show(parts.flower2);
+            }
         }
       });
 
@@ -223,7 +240,7 @@ const Controls = ({ roomRef, floorRef }) => {
         lenisRef.current = null;
       }
     };
-  }, [camera, roomRef, floorRef, size.width, size.height, controlsEnabled]);
+  }, [camera, roomRef, floorRef, size.width, size.height, controlsEnabled, childrenMap]);
 
   return null;
 };

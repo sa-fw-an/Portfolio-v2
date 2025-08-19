@@ -7,6 +7,8 @@ import { ROOM_PARTS } from '../../constants/roomParts';
 
 const Room = forwardRef((props, ref) => {
   const internalRef = useRef();
+  // Enable DRACO decoding if model is compressed
+  useGLTF.setDecoderPath('/draco/');
   const { scene, animations } = useGLTF('/models/room.glb');
   const mixerRef = useRef(null);
 
@@ -91,7 +93,11 @@ const Room = forwardRef((props, ref) => {
     }
 
     // Hide known parts initially (scale 0) for staged reveal; leave others visible
-    const hideKeys = ['aquarium','clock','shelves','floor_items','desks','table_stuff','computer','mini_floor','chair','fish'];
+    const hideKeys = [
+      'aquarium','clock','shelves','floor_items','desks','table_stuff','computer','mini_floor','chair','fish',
+      // mini-platform/pathway pieces
+      'mailbox','lamp','floor_first','floor_second','floor_third','dirt','flower1','flower2'
+    ];
     hideKeys.forEach((k) => {
       const obj = found[k];
       if (obj && obj.scale && obj.scale.set) obj.scale.set(0,0,0);
@@ -153,3 +159,6 @@ const Room = forwardRef((props, ref) => {
 Room.displayName = 'Room';
 
 export default Room;
+
+// Preload model to avoid jank on first reveal
+useGLTF.preload('/models/room.glb');
