@@ -1,0 +1,2786 @@
+import React from 'react';
+import { sectionsData } from '../../constants/sections';
+import { personalInfo } from '../../constants/personal';
+
+const About = () => {
+  return (
+    <React.Fragment>
+      <div className="section-intro-wrapper">
+        <div className="section-title">
+          <span className="section-title-text">
+            {sectionsData.about.title}
+          </span>
+          <span className="styleOne"></span>
+          <span className="styleTwo"></span>
+          <span className="styleThree"></span>
+        </div>
+        <div className="section-number">
+          {sectionsData.about.number}
+        </div>
+      </div>
+
+      <div className="section-detail-wrapper">
+        <h3 className="section-heading">
+          About Me
+        </h3>
+        <p className="section-text">
+          {sectionsData.about.content.main}
+        </p>
+
+        <h3 className="section-heading">
+          Tech Stack
+        </h3>
+        <p className="section-text">
+          {sectionsData.about.content.techStack}
+        </p>
+
+        <h3 className="section-heading">
+          I'm very flexible with time zone communications & locations
+        </h3>
+        <p className="section-text">
+          {sectionsData.about.content.location}
+        </p>
+
+        <h3 className="section-heading">
+          My Passion for Coding
+        </h3>
+        <p className="section-text">
+          {sectionsData.about.content.passion}
+          <br /><br />
+          In my free time, I engage in:<br />
+          ⦿ Working on personal projects to create impactful applications<br />
+          ⦿ Contributing to open-source projects, giving back to the community and collaborating with fellow developers<br />
+          ⦿ Competitive coding to sharpen my problem-solving abilities<br />
+          ⦿ Ethical hacking to understand security challenges better<br />
+          Coding is more than just a job for me - it's a way to learn, grow, and make a difference!
+        </p>
+
+        <h3 className="section-heading">
+          Contact me
+        </h3>
+        <p className="section-text">
+          📞 {personalInfo.phone}<br />
+          📧 {personalInfo.email}
+        </p>
+      </div>
+    </React.Fragment>
+  );
+};
+
+export default About;
+import React from 'react';
+import { sectionsData } from '../../constants/sections';
+
+const Contact = () => {
+  return (
+    <React.Fragment>
+      <div className="section-intro-wrapper">
+        <div className="section-title">
+          <span className="section-title-text">
+            {sectionsData.contact.title}
+          </span>
+          <span className="styleOne"></span>
+          <span className="styleTwo"></span>
+          <span className="styleThree"></span>
+        </div>
+        <div className="section-number">
+          {sectionsData.contact.number}
+        </div>
+      </div>
+
+      <div className="section-detail-wrapper">
+        <h3 className="section-heading">
+          {sectionsData.contact.subtitle}
+        </h3>
+        <p className="section-text">
+          {sectionsData.contact.description}
+        </p>
+      </div>
+    </React.Fragment>
+  );
+};
+
+export default Contact;
+import React from 'react';
+import { sectionsData } from '../../constants/sections';
+import { experienceData } from '../../constants/experience';
+
+const Experience = () => {
+  return (
+    <React.Fragment>
+      <div className="section-intro-wrapper green-text green-border">
+        <div className="section-title green-text">
+          <span className="section-title-text green-text">
+            {sectionsData.experience.title}
+          </span>
+          <span className="styleOne green-border"></span>
+          <span className="styleTwo green-border"></span>
+          <span className="styleThree green-background"></span>
+        </div>
+        <div className="section-number green-text">
+          {sectionsData.experience.number}
+        </div>
+      </div>
+
+      <div className="section-detail-wrapper">
+        <h3 className="section-heading">
+          Work Experience
+        </h3>
+        <p className="section-text">
+          My professional journey includes various projects and collaborations that have shaped my expertise in modern web technologies.
+        </p>
+
+        {experienceData.map((exp, index) => (
+          <div key={index} className="experience-item">
+            <h4 className="experience-title">{exp.position}</h4>
+            <h5 className="experience-company">{exp.company}</h5>
+            <p className="experience-duration">{exp.duration}</p>
+            <p className="experience-description">{exp.description}</p>
+            {exp.current && <span className="current-badge">Current</span>}
+          </div>
+        ))}
+      </div>
+    </React.Fragment>
+  );
+};
+
+export default Experience;
+import { useRef, useEffect } from 'react';
+import { personalInfo } from '../../constants/personal';
+
+const Hero = () => {
+  const container = useRef();
+  const mainTitleRef = useRef();
+  const mainDescRef = useRef();
+  const secondSubRef = useRef();
+
+  // Convert text to animated spans (exact original function)
+  const convertToSpans = (element) => {
+    if (!element) return;
+    const text = element.textContent;
+    element.innerHTML = text
+      .split('')
+      .map(char => {
+        if (char === ' ') return '<span class="animatedis">&nbsp;</span>';
+        return `<span class="animatedis">${char}</span>`;
+      })
+      .join('');
+  };
+
+  useEffect(() => {
+    convertToSpans(mainTitleRef.current);
+    convertToSpans(mainDescRef.current);
+    convertToSpans(secondSubRef.current);
+  }, []);
+
+  return (
+    <div ref={container} className="hero">
+      <div className="hero-wrapper">
+        {/* Main content - left side (exact original positioning) */}
+        <div className="hero-main">
+          <h1 
+            ref={mainTitleRef}
+            className="hero-main-title"
+          >
+            {personalInfo.name}
+          </h1>
+          <p 
+            ref={mainDescRef}
+            className="hero-main-description"
+          >
+            {personalInfo.title}
+          </p>
+        </div>
+
+        {/* Secondary content - right side (exact original structure) */}
+        <div className="hero-second">
+          <h2 className="hero-second-subheading">
+            <span className="first-sub">
+              <span className="animatedis">{personalInfo.title}</span>
+            </span>
+          </h2>
+          <p 
+            ref={secondSubRef}
+            className="second-sub"
+          >
+            {personalInfo.subtitle}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Hero;
+import React from 'react';
+import { sectionsData } from '../../constants/sections';
+import { projectsData } from '../../constants/projects';
+
+const Projects = () => {
+  const featuredProjects = projectsData.filter(p => p.featured);
+  const otherProjects = projectsData.filter(p => !p.featured);
+
+  return (
+    <React.Fragment>
+      <div className="section-intro-wrapper blue-text blue-border">
+        <div className="section-title blue-text">
+          <span className="section-title-text blue-text">
+            {sectionsData.projects.title}
+          </span>
+          <span className="styleOne blue-border"></span>
+          <span className="styleTwo blue-border"></span>
+          <span className="styleThree blue-background"></span>
+        </div>
+        <div className="section-number blue-text">
+          {sectionsData.projects.number}
+        </div>
+      </div>
+
+      <div className="section-detail-wrapper">
+        <h3 className="section-heading">
+          Featured Projects
+        </h3>
+        <p className="section-text">
+          Here are some of my recent projects that showcase my skills in web development, blockchain, and mobile applications.
+        </p>
+        
+        {featuredProjects.map((project, index) => (
+          <div key={index} className="project-item">
+            <h4 className="project-title">{project.title}</h4>
+            <p className="project-description">{project.description}</p>
+            <div className="project-tech">
+              {project.technologies.map((tech, idx) => (
+                <span key={idx} className="tech-tag">{tech}</span>
+              ))}
+            </div>
+            <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+              Check Out →
+            </a>
+          </div>
+        ))}
+
+        {otherProjects.length > 0 && (
+          <>
+            <h3 className="section-heading">
+              Other Projects
+            </h3>
+            {otherProjects.map((project, index) => (
+              <div key={index} className="project-item">
+                <h4 className="project-title">{project.title}</h4>
+                <p className="project-description">{project.description}</p>
+                <div className="project-tech">
+                  {project.technologies.map((tech, idx) => (
+                    <span key={idx} className="tech-tag">{tech}</span>
+                  ))}
+                </div>
+                <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                  Check Out →
+                </a>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </React.Fragment>
+  );
+};
+
+export default Projects;
+import { EventEmitter } from 'events';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+export default class Resources extends EventEmitter {
+  constructor(sources) {
+    super();
+    this.sources = sources;
+    this.items = {};
+    this.toLoad = sources.length;
+    this.loaded = 0;
+
+    this.setLoaders();
+    this.startLoading();
+  }
+
+  setLoaders() {
+    this.loaders = {
+      gltfLoader: new GLTFLoader(),
+      textureLoader: new THREE.TextureLoader()
+    };
+  }
+
+  startLoading() {
+    this.sources.forEach((source) => {
+      if (source.type === 'glbModel') {
+        this.loaders.gltfLoader.load(source.path, (file) => this.sourceLoaded(source, file));
+      } else if (source.type === 'videoTexture') {
+        const video = document.createElement('video');
+        video.src = source.path;
+        video.muted = true;
+        video.loop = true;
+        video.autoplay = true;
+        video.play();
+        const texture = new THREE.VideoTexture(video);
+        this.sourceLoaded(source, texture);
+      }
+    });
+  }
+
+  sourceLoaded(source, file) {
+    this.items[source.name] = file;
+    this.loaded++;
+    if (this.loaded === this.toLoad) this.emit('ready');
+  }
+}
+export default class Sizes {
+  constructor() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.pixelRatio = Math.min(window.devicePixelRatio, 2);
+  }
+
+  resize() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.pixelRatio = Math.min(window.devicePixelRatio, 2);
+  }
+}
+export default class Time {
+  constructor() {
+    this.start = Date.now();
+    this.current = this.start;
+    this.elapsed = 0;
+    this.delta = 16;
+  }
+
+  tick() {
+    const currentTime = Date.now();
+    this.delta = currentTime - this.current;
+    this.current = currentTime;
+    this.elapsed = this.current - this.start;
+  }
+}
+import * as THREE from 'three';
+import { useThree } from '@react-three/fiber';
+import { useEffect } from 'react';
+
+export default function Controls() {
+  const { camera } = useThree();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+      camera.position.y = -progress * 2;
+      camera.position.x = Math.sin(progress * Math.PI * 2) * 2;
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [camera]);
+
+  return null;
+}
+import * as THREE from 'three';
+import { useThree } from '@react-three/fiber';
+import { useEffect } from 'react';
+import { useTheme } from '../../../../contexts/ThemeContext';
+
+export default function Environment() {
+  const { scene } = useThree();
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    const sunLight = new THREE.DirectionalLight('#ffffff', 3);
+    sunLight.position.set(-1.5, 7, 3);
+    scene.add(sunLight);
+
+    const ambientLight = new THREE.AmbientLight('#ffffff', 1);
+    scene.add(ambientLight);
+
+    const switchTheme = (newTheme) => {
+      const color = newTheme === 'dark' ? 0x8395CD : 0xffffff;
+      sunLight.color.set(color);
+      ambientLight.color.set(color);
+    };
+    switchTheme(theme);
+
+    return () => {
+      scene.remove(sunLight, ambientLight);
+    };
+  }, [scene, theme]);
+
+  return null;
+}
+import * as THREE from 'three';
+import { useThree } from '@react-three/fiber';
+
+export default function Room() {
+  const { scene } = useThree();
+  // Load and add room model here using useEffect or loaders
+  return null; // Placeholder
+}
+import * as THREE from 'three';
+import { EventEmitter } from 'events';
+import Room from './Room.js';
+import Environment from './Environment.js';
+
+export default class World extends EventEmitter {
+  constructor() {
+    super();
+    // Use useThree() if needed for scene access
+    this.room = new Room();
+    this.environment = new Environment();
+    this.emit('worldready');
+  }
+
+  update() {
+    this.room.update();
+  }
+}
+import * as THREE from 'three';
+import Experience from './Experience.jsx';
+
+export default class Camera {
+  constructor() {
+    this.experience = new Experience();
+    this.sizes = this.experience.sizes;
+    this.scene = this.experience.scene;
+    this.canvas = this.experience.canvas;
+
+    this.createPerspectiveCamera();
+  }
+
+  createPerspectiveCamera() {
+    this.perspectiveCamera = new THREE.PerspectiveCamera(
+      35,
+      this.sizes.width / this.sizes.height,
+      0.1,
+      1000
+    );
+    this.scene.add(this.perspectiveCamera);
+    this.perspectiveCamera.position.z = 5;
+  }
+
+  resize() {
+    this.perspectiveCamera.aspect = this.sizes.width / this.sizes.height;
+    this.perspectiveCamera.updateProjectionMatrix();
+  }
+
+  update() {
+    // Camera animations can be added here
+  }
+}
+import * as THREE from 'three';
+import Sizes from './Utils/Sizes.js';
+import Time from './Utils/Time.js';
+import Resources from './Utils/Resources.js';
+import { assetsData } from '../../../constants/assets.js';
+import Camera from './Camera.js';
+import Renderer from './Renderer.js';
+import World from './World/World.js';
+import Controls from './World/Controls.js';
+import Preloader from './Preloader.js';
+
+export default class Experience {
+  static instance;
+  
+  constructor(canvas) {
+    if (Experience.instance) {
+      return Experience.instance;
+    }
+    
+    Experience.instance = this;
+    this.canvas = canvas;
+    this.scene = new THREE.Scene();
+    this.time = new Time();
+    this.sizes = new Sizes();
+    this.camera = new Camera();
+    this.renderer = new Renderer();
+    this.resources = new Resources(assetsData);
+    this.world = new World();
+    this.preloader = new Preloader();
+
+    this.preloader.on('enablecontrols', () => {
+      this.controls = new Controls();
+    });
+
+    this.sizes.on('resize', () => {
+      this.resize();
+    });
+
+    this.time.on('update', () => {
+      this.update();
+    });
+  }
+
+  resize() {
+    this.camera.resize();
+    this.world.resize();
+    this.renderer.resize();
+  }
+
+  update() {
+    this.preloader.update();
+    this.camera.update();
+    this.world.update();
+    this.renderer.update();
+    if (this.controls) {
+      this.controls.update();
+    }
+  }
+}
+import { EventEmitter } from 'events';
+import Experience from './Experience.jsx';
+
+export default class Preloader extends EventEmitter {
+  constructor() {
+    super();
+    this.experience = new Experience();
+    this.scene = this.experience.scene;
+    this.sizes = this.experience.sizes;
+    this.resources = this.experience.resources;
+    this.camera = this.experience.camera;
+    this.world = this.experience.world;
+
+    this.world.on('worldready', () => {
+      this.playIntroAnimation();
+    });
+  }
+
+  playIntroAnimation() {
+    setTimeout(() => {
+      this.emit('enablecontrols');
+    }, 1000);
+  }
+
+  update() {
+    // Add preloader updates if needed
+  }
+}
+import * as THREE from 'three';
+import Experience from './Experience.jsx';
+
+export default class Renderer {
+  constructor() {
+    this.experience = new Experience();
+    this.sizes = this.experience.sizes;
+    this.scene = this.experience.scene;
+    this.canvas = this.experience.canvas;
+    this.camera = this.experience.camera;
+
+    this.setRenderer();
+  }
+
+  setRenderer() {
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+      antialias: true,
+    });
+
+    this.renderer.physicallyCorrectLights = true;
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
+    this.renderer.toneMapping = THREE.CineonToneMapping;
+    this.renderer.toneMappingExposure = 1.75;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.setSize(this.sizes.width, this.sizes.height);
+    this.renderer.setPixelRatio(this.sizes.pixelRatio);
+  }
+
+  resize() {
+    this.renderer.setSize(this.sizes.width, this.sizes.height);
+    this.renderer.setPixelRatio(this.sizes.pixelRatio);
+  }
+
+  update() {
+    this.renderer.render(this.scene, this.camera.perspectiveCamera);
+  }
+}
+import { useEffect, useRef } from 'react';
+import { useThree } from '@react-three/fiber';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
+import { useThreeContext } from '../../contexts/ThreeContext';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const Controls = ({ roomRef, floorRef }) => {
+  const { camera, size } = useThree();
+  const { controlsEnabled, childrenMap } = useThreeContext();
+  const lenisRef = useRef(null);
+
+  useEffect(() => {
+    if (!controlsEnabled) {
+      // If controls aren't enabled yet, ensure no active triggers/lenis remain
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      if (lenisRef.current) {
+        lenisRef.current.destroy();
+        lenisRef.current = null;
+      }
+      return;
+    }
+
+    const setupScrollTriggers = () => {
+      if (!roomRef.current || !floorRef.current) return;
+
+      // Initialize camera frustum if orthographic
+      const setOrthoFrustum = () => {
+        if (camera.isOrthographicCamera) {
+          const aspect = size.width / size.height;
+          const frustum = 5;
+          camera.left = (-aspect * frustum) / 2;
+          camera.right = (aspect * frustum) / 2;
+          camera.top = frustum / 2;
+          camera.bottom = -frustum / 2;
+          camera.updateProjectionMatrix();
+        }
+      };
+      setOrthoFrustum();
+
+      // Set initial camera and room positions
+      if (camera && roomRef.current) {
+        camera.position.set(0, 6.5, 10);
+        if (camera.isOrthographicCamera) camera.rotation.x = -Math.PI / 6;
+        if (camera.isOrthographicCamera) {
+          camera.zoom = 1;
+          camera.updateProjectionMatrix();
+        }
+        roomRef.current.scale.set(0.11, 0.11, 0.11);
+        roomRef.current.position.set(0, 0, 0);
+      }
+
+      // Set page overflow to visible for scroll triggers
+      const pageElement = document.querySelector('.page');
+      if (pageElement) {
+        pageElement.style.overflow = 'visible';
+      }
+
+      // Smooth scroll via Lenis and proxy to ScrollTrigger
+      if (!lenisRef.current) {
+        const lenis = new Lenis({
+          smoothWheel: true,
+          lerp: 0.1,
+        });
+        lenisRef.current = lenis;
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+        const scroller = document.documentElement;
+        ScrollTrigger.scrollerProxy(scroller, {
+          scrollTop(value) {
+            if (arguments.length) {
+              lenis.scrollTo(value, { immediate: true });
+            }
+            // Lenis v1 stores scroll in lenis.scroll; fallback to window scrollY
+            return lenis.scroll || window.scrollY || 0;
+          },
+          getBoundingClientRect() {
+            return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+          },
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        ScrollTrigger.defaults({ scroller });
+      }
+
+          // Helper: create a zoom tween step within timelines (reversible)
+          const zoomStep = (tl, value, label = '<', duration = 0.6) => {
+            if (!camera.isOrthographicCamera) return tl;
+            return tl.to(
+              camera,
+              {
+                zoom: value,
+                duration,
+                overwrite: 'auto',
+                onUpdate: () => camera.updateProjectionMatrix(),
+              },
+              label
+            );
+          };
+
+      // MatchMedia to split Desktop/Mobile
+      ScrollTrigger.matchMedia({
+        '(min-width: 969px)': () => {
+          // Desktop initial
+          roomRef.current.scale.set(0.11, 0.11, 0.11);
+          camera.position.set(0, 6.5, 10);
+
+          // 1) First section (content left => move room to right)
+          let tl1 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.first-move',
+              start: 'top 70%',
+              end: 'top 15%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: 1.8, y: 0, z: 0 })
+            .to(camera.position, { y: 6.2, x: 0.25 }, '<');
+          zoomStep(tl1, 1.3, '<', 0.6);
+
+          // 2) Second section (content right => move room to left)
+          let tl2 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.second-move',
+              start: 'top 85%',
+              end: 'top 25%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.scale, { x: 0.13, y: 0.13, z: 0.13 }, 'same')
+            .to(roomRef.current.position, { x: -0.9, y: 0.2 }, 'same')
+            .to(camera.position, { x: 0.2, y: 5.9 }, 'same');
+          zoomStep(tl2, 1.25, 'same', 0.8);
+
+          // 3) Third section (content left => move room to right and push in, but keep framed)
+          let tl3 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.third-move',
+              start: 'top 95%',
+              end: 'top 35%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: 0.5, z: -2.2 })
+            .to(camera.position, { x: 0.1, y: 5.6 }, '<')
+            .to(camera.rotation, { x: -Math.PI / 6.1 }, '<');
+          zoomStep(tl3, 1.28, '<', 0.8);
+
+          // 4) Fourth section (content right => move room to left again)
+          let tl4 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.fourth-move',
+              start: 'top 95%',
+              end: 'top 35%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: -0.8, z: -3.2 })
+            .to(camera.position, { x: 0.2, y: 5.4 }, '<');
+          zoomStep(tl4, 1.32, '<', 0.8);
+        },
+
+        '(max-width: 968px)': () => {
+          // Mobile initial
+          roomRef.current.scale.set(0.07, 0.07, 0.07);
+          camera.position.set(0, 6.5, 10);
+
+          // 1) First section (content left => move room to right)
+          let mtl1 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.first-move',
+              start: 'top 75%',
+              end: 'top 25%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.scale, { x: 1.7, y: 0.1, z: 0.1 })
+            .to(roomRef.current.position, { x: 0.4 }, '<');
+          zoomStep(mtl1, 2, '<', 0.6);
+
+          // 2) Second section (content right => move room to left)
+          let mtl2 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.second-move',
+              start: 'top 85%',
+              end: 'top 35%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: -0.6, y: 0.3 }, 'same')
+            .to(roomRef.current.scale, { x: 0.12, y: 0.12, z: 0.12 }, 'same');
+          zoomStep(mtl2, 1.22, 'same', 0.6);
+
+          // 3) Third section (content left => move room to right and push in)
+          let mtl3 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.third-move',
+              start: 'top 95%',
+              end: 'top 45%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: 0.4, z: -3.8 });
+          zoomStep(mtl3, 1.25, '<', 0.6);
+
+          // 4) Fourth section (content right => move room to left again)
+          let mtl4 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.fourth-move',
+              start: 'top 95%',
+              end: 'top 45%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: -0.5, z: -4.2 });
+          zoomStep(mtl4, 1.28, '<', 0.6);
+        },
+
+        'all': () => {
+          // Reset zoom to original when scrolling back to hero (reversible and strong)
+          if (camera.isOrthographicCamera) {
+            const resetTl = gsap.timeline({
+              scrollTrigger: {
+                trigger: '.hero',
+                start: 'top 80%',
+                end: 'bottom 20%',
+                scrub: 0.3,
+                onUpdate: (self) => {
+                  // Ensure camera resets properly when scrolling back up
+                  if (self.direction === -1) {
+                    camera.zoom = 1;
+                    camera.updateProjectionMatrix();
+                  }
+                }
+              }
+            });
+            resetTl.to(camera, {
+              zoom: 1,
+              duration: 0.4,
+              ease: 'power2.out',
+              overwrite: 'auto',
+              onUpdate: () => camera.updateProjectionMatrix(),
+            });
+            
+            // Additional reset for room position when back in hero
+            const roomResetTl = gsap.timeline({
+              scrollTrigger: {
+                trigger: '.hero',
+                start: 'top 80%',
+                end: 'bottom 20%',
+                scrub: 0.3,
+              }
+            });
+            roomResetTl.to(roomRef.current.position, {
+              x: 0,
+              y: 0,
+              z: 0,
+              duration: 0.4,
+              ease: 'power2.out',
+            });
+          }
+          // Floor circles with proper indexing
+          if (floorRef.current) {
+            const circles = [];
+            floorRef.current.traverse((child) => {
+              if (child.geometry?.type === 'CircleGeometry') {
+                circles.push(child);
+              }
+            });
+            
+            if (circles.length >= 3) {
+              const [first, second, third] = circles;
+              if (first) gsap.timeline({ scrollTrigger: { trigger: '.first-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(first.scale, { x: 3, y: 3, z: 3 });
+              if (second) gsap.timeline({ scrollTrigger: { trigger: '.second-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(second.scale, { x: 3, y: 3, z: 3 });
+              if (third) gsap.timeline({ scrollTrigger: { trigger: '.third-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(third.scale, { x: 3, y: 3, z: 3 });
+            }
+          }
+
+          // Sections progress bars & radii
+          const sections = document.querySelectorAll('.section');
+          sections.forEach((section) => {
+            const progressBar = section.querySelector('.progress-bar');
+            const progressWrapper = section.querySelector('.progress-wrapper');
+            if (progressBar) {
+              gsap.fromTo(progressBar, { scaleY: 0 }, { scaleY: 1, scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.4, pin: progressWrapper, pinSpacing: false } });
+            }
+            if (section.classList.contains('right')) {
+              gsap.to(section, { borderTopLeftRadius: 10, scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top', scrub: 0.6 } });
+              gsap.to(section, { borderBottomLeftRadius: 700, scrollTrigger: { trigger: section, start: 'bottom bottom', end: 'bottom top', scrub: 0.6 } });
+            } else {
+              gsap.to(section, { borderTopRightRadius: 10, scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top', scrub: 0.6 } });
+              gsap.to(section, { borderBottomRightRadius: 700, scrollTrigger: { trigger: section, start: 'bottom bottom', end: 'bottom top', scrub: 0.6 } });
+            }
+          });
+
+            // Mini-platform / pathway pieces reveal on second section center
+            if (childrenMap && Object.keys(childrenMap).length) {
+              const tl = gsap.timeline({
+                scrollTrigger: { trigger: '.second-move', start: 'center center' }
+              });
+              const parts = childrenMap;
+              const show = (obj, shift='>-0.15') => obj && tl.to(obj.scale, { x: 1, y: 1, z: 1, duration: 0.35 }, shift);
+              show(parts.mailbox, '+=0');
+              show(parts.lamp);
+              show(parts.floor_first);
+              show(parts.floor_second);
+              show(parts.floor_third);
+              show(parts.dirt);
+              show(parts.flower1);
+              show(parts.flower2);
+            }
+        }
+      });
+
+    };
+
+    // Setup scroll triggers
+    setupScrollTriggers();
+
+    // Update ortho frustum on resize
+    const onResize = () => {
+      if (camera.isOrthographicCamera) {
+        const aspect = size.width / size.height;
+        const frustum = 5;
+        camera.left = (-aspect * frustum) / 2;
+        camera.right = (aspect * frustum) / 2;
+        camera.top = frustum / 2;
+        camera.bottom = -frustum / 2;
+        camera.updateProjectionMatrix();
+      }
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      if (lenisRef.current) {
+        lenisRef.current.destroy();
+        lenisRef.current = null;
+      }
+    };
+  }, [camera, roomRef, floorRef, size.width, size.height, controlsEnabled, childrenMap]);
+
+  return null;
+};
+
+export default Controls;
+import { Environment, OrthographicCamera } from '@react-three/drei';
+import { useRef, useEffect } from 'react';
+import Room from './Room';
+import Floor from './Floor';
+import Lights from './Lights';
+import Controls from './Controls';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useThreeContext } from '../../contexts/ThreeContext';
+
+const Experience = () => {
+  const { theme } = useTheme();
+  const roomRef = useRef();
+  const floorRef = useRef();
+  const { roomRef: sharedRoomRef, floorRef: sharedFloorRef, setCamera } = useThreeContext();
+
+  useEffect(() => {
+    sharedRoomRef.current = roomRef.current;
+    sharedFloorRef.current = floorRef.current;
+  }, [sharedRoomRef, sharedFloorRef]);
+
+  return (
+    <>
+      {/* Orthographic camera matching original setup */}
+      <OrthographicCamera
+        makeDefault
+        position={[0, 6.5, 10]}
+        rotation={[-Math.PI / 6, 0, 0]}
+        near={-50}
+        far={50}
+        left={-5}
+        right={5}
+        top={5}
+        bottom={-5}
+        zoom={1}
+        onUpdate={(camera) => setCamera?.(camera)}
+      />
+
+      {/* Lighting */}
+      <Lights theme={theme} />
+      
+      {/* Environment preset maintained as requested */}
+      <Environment preset="night" />
+      
+      {/* 3D Objects */}
+      <Floor ref={floorRef} />
+      <Room ref={roomRef} />
+      
+      {/* Controls for scroll animations */}
+      <Controls roomRef={roomRef} floorRef={floorRef} />
+    </>
+  );
+};
+
+export default Experience;
+import React, { forwardRef } from 'react';
+import * as THREE from 'three';
+
+const Floor = forwardRef((props, ref) => {
+  return (
+    <group ref={ref} {...props}>
+      {/* Main Floor */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -0.3, 0]} receiveShadow>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial color="#ffe6a2" side={THREE.FrontSide} />
+      </mesh>
+      
+      {/* Colored Circles */}
+  <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.29, 0]} scale={[0,0,0]} receiveShadow>
+        <circleGeometry args={[5, 64]} />
+        <meshStandardMaterial color="#e5a1aa" />
+      </mesh>
+      
+  <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2, -0.28, 0]} scale={[0,0,0]} receiveShadow>
+        <circleGeometry args={[5, 64]} />
+        <meshStandardMaterial color="#8395cd" />
+      </mesh>
+      
+  <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.27, 0]} scale={[0,0,0]} receiveShadow>
+        <circleGeometry args={[5, 64]} />
+        <meshStandardMaterial color="#7ad0ac" />
+      </mesh>
+    </group>
+  );
+});
+
+Floor.displayName = 'Floor';
+
+export default Floor;
+import { useFrame } from '@react-three/fiber';
+import { useEffect, useMemo, useRef } from 'react';
+import * as THREE from 'three';
+import gsap from 'gsap';
+
+const Lights = ({ theme }) => {
+  const lightRef = useRef();
+  
+  useFrame((state) => {
+    if (lightRef.current) {
+      // Subtle light movement
+      lightRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.3) * 2;
+      lightRef.current.position.z = Math.cos(state.clock.elapsedTime * 0.3) * 2;
+    }
+  });
+
+  // Theme-based lighting with GSAP tween
+  const lightColor = useMemo(() => new THREE.Color(theme === 'dark' ? '#2c3baf' : '#ffffff'), [theme]);
+  const lightIntensity = theme === 'dark' ? 0.78 : 3;
+  const ambientIntensity = theme === 'dark' ? 0.78 : 1;
+
+  useEffect(() => {
+    if (!lightRef.current) return;
+    const dir = lightRef.current;
+    gsap.to(dir.color, { r: lightColor.r, g: lightColor.g, b: lightColor.b, duration: 0.5 });
+    gsap.to(dir, { intensity: lightIntensity, duration: 0.5 });
+    // ambient is separate below (we have no ref, so we handle via key change on element)
+  }, [lightColor.r, lightColor.g, lightColor.b, lightIntensity]);
+
+  return (
+    <>
+      {/* Directional Light */}
+      <directionalLight
+        ref={lightRef}
+        color={lightColor}
+        intensity={lightIntensity}
+        position={[-1.5, 7, 3]}
+        castShadow
+        shadow-camera-far={20}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-normalBias={0.05}
+      />
+      
+      {/* Ambient Light */}
+  <ambientLight key={theme} color={lightColor} intensity={ambientIntensity} />
+      
+      {/* Rect Area Light for screen glow */}
+      <rectAreaLight
+        color="#ffffff"
+        intensity={1}
+        width={0.5}
+        height={0.7}
+        position={[7.68244, 7, 0.5]}
+        rotation={[-Math.PI / 2, 0, Math.PI / 4]}
+      />
+    </>
+  );
+};
+
+export default Lights;
+import React, { useRef, useEffect, forwardRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
+import { useThreeContext } from '../../contexts/ThreeContext';
+import { ROOM_PARTS } from '../../constants/roomParts';
+
+const Room = forwardRef((props, ref) => {
+  const internalRef = useRef();
+  // Enable DRACO decoding if model is compressed
+  useGLTF.setDecoderPath('/draco/');
+  const { scene, animations } = useGLTF('/models/room.glb');
+  const mixerRef = useRef(null);
+
+  const { setChildrenMap, roomRef: sharedRoomRef, rectLightRef } = useThreeContext();
+
+  // Mouse movement effect
+  const mouse = useRef({ x: 0, y: 0 });
+  const lerp = useRef({ current: 0, target: 0, ease: 0.1 });
+
+  const handleMouseMove = (event) => {
+    mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+    lerp.current.target = mouse.current.x * 0.05;
+  };
+
+  useEffect(() => {
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    if (!scene) return;
+    // Build children map from ROOM_PARTS
+    const found = {};
+    const indexByName = (name) => name?.toLowerCase?.() || '';
+
+  const names = [];
+    scene.traverse((child) => {
+      if (child.isMesh || child.isGroup) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+      const lc = indexByName(child.name);
+      if (child.name) names.push(child.name);
+      Object.entries(ROOM_PARTS).forEach(([key, candidates]) => {
+        if (found[key]) return;
+        if (candidates.some((n) => indexByName(n) === lc)) {
+          found[key] = child;
+        }
+      });
+    });
+  // One-time list to help mapping while integrating names
+    if (!window.__ROOM_NODE_LOGGED__) {
+      window.__ROOM_NODE_LOGGED__ = true;
+  console.log('[Room] GLB nodes:', names);
+    }
+
+    // Aquarium glass material
+    if (found.aquarium) {
+      const mat = new THREE.MeshPhysicalMaterial({
+        color: 0x549dd2,
+        roughness: 0,
+        transmission: 1,
+        ior: 1.5,
+        transparent: true,
+        opacity: 1,
+        depthWrite: false,
+      });
+      if (found.aquarium.isGroup && found.aquarium.children[0]?.material) {
+        found.aquarium.children[0].material = mat;
+      } else if (found.aquarium.material) {
+        found.aquarium.material = mat;
+      }
+    }
+
+    // Video texture on screen
+    if (found.computer || found.screen) {
+      const video = document.createElement('video');
+      video.src = '/textures/coding.mp4';
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.autoplay = true;
+      video.play();
+      const tex = new THREE.VideoTexture(video);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      const mat = new THREE.MeshBasicMaterial({ map: tex });
+      const target = found.screen || (found.computer?.children?.[1]);
+      if (target && target.material) target.material = mat;
+    }
+
+    // Position tweak for mini floor
+    if (found.mini_floor) {
+      found.mini_floor.position.x = -0.289521;
+      found.mini_floor.position.z = 8.83572;
+    }
+
+    // Hide known parts initially (scale 0) for staged reveal; leave others visible
+    const hideKeys = [
+      'aquarium','clock','shelves','floor_items','desks','table_stuff','computer','mini_floor','chair','fish',
+      // mini-platform/pathway pieces
+      'mailbox','lamp','floor_first','floor_second','floor_third','dirt','flower1','flower2'
+    ];
+    hideKeys.forEach((k) => {
+      const obj = found[k];
+      if (obj && obj.scale && obj.scale.set) obj.scale.set(0,0,0);
+    });
+    let cube = found.cube;
+    if (!cube) {
+      // Fallback cube if model doesn't provide one
+      const geo = new THREE.BoxGeometry(1, 1, 1);
+      const mat = new THREE.MeshStandardMaterial({ color: 0xe5a1aa, metalness: 0.2, roughness: 0.6 });
+      cube = new THREE.Mesh(geo, mat);
+      cube.name = 'cube_fallback';
+      scene.add(cube);
+      found.cube = cube;
+    }
+    if (cube) {
+      cube.position.set(0, -1, 0);
+      cube.rotation.y = Math.PI / 4;
+      // Ensure cube visible to animate in
+      if (cube.scale && cube.scale.set) cube.scale.set(1,1,1);
+    }
+
+    // Mixer for animations
+    if (animations.length) {
+      mixerRef.current = new THREE.AnimationMixer(scene);
+      const action = mixerRef.current.clipAction(animations[0]);
+      action.play();
+    }
+
+    // Add RectAreaLight (exact original setup)
+    const rectLight = new THREE.RectAreaLight(0xffffff, 1, 0.5, 0.7);
+    rectLight.position.set(7.68244, 7, 0.5);
+    rectLight.rotation.x = -Math.PI / 2;
+    rectLight.rotation.z = Math.PI / 4;
+    scene.add(rectLight);
+    found.rectLight = rectLight;
+
+    // Store rectLight ref for external access
+    if (rectLightRef) {
+      rectLightRef.current = rectLight;
+    }
+
+    // Share map
+    setChildrenMap(found);
+  }, [scene, animations, setChildrenMap, rectLightRef]);
+
+  useFrame((state) => {
+    const roomRef = ref?.current || internalRef.current;
+    if (roomRef) {
+      lerp.current.current = THREE.MathUtils.lerp(
+        lerp.current.current,
+        lerp.current.target,
+        lerp.current.ease
+      );
+      roomRef.rotation.y = lerp.current.current;
+      roomRef.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
+    }
+    if (mixerRef.current) {
+      mixerRef.current.update(state.clock.getDelta() * 0.9);
+    }
+  });
+
+  return (
+    <group
+      ref={(node) => {
+        if (ref) {
+          if (typeof ref === 'function') ref(node);
+          else ref.current = node;
+        }
+        internalRef.current = node;
+        sharedRoomRef.current = node;
+      }}
+      scale={[0.11, 0.11, 0.11]}
+      position={[0, 0, 0]}
+      {...props}
+    >
+  {scene && <primitive object={scene} />}
+    </group>
+  );
+});
+
+Room.displayName = 'Room';
+
+export default Room;
+
+// Preload model to avoid jank on first reveal
+useGLTF.preload('/models/room.glb');
+import { Canvas } from '@react-three/fiber';
+import { Suspense, useCallback } from 'react';
+import * as THREE from 'three';
+import Experience from './Experience.jsx';
+import { useThreeContext } from '../../contexts/ThreeContext';
+
+const SceneInner = () => {
+  const { setCamera } = useThreeContext();
+  const onCreated = useCallback((state) => {
+    const { gl, camera } = state;
+    gl.useLegacyLights = false; // three >= 0.153
+    gl.outputColorSpace = THREE.SRGBColorSpace;
+    gl.toneMapping = THREE.CineonToneMapping;
+    gl.toneMappingExposure = 1.75;
+    gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    setCamera(camera);
+  }, [setCamera]);
+
+  return (
+    <Canvas
+      orthographic
+      camera={{ zoom: 1, position: [0, 6.5, 10], near: 0.1, far: 1000 }}
+      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      dpr={Math.min(window.devicePixelRatio, 2)}
+      onCreated={onCreated}
+    >
+      <Suspense fallback={null}>
+        <Experience />
+      </Suspense>
+    </Canvas>
+  );
+};
+
+const ThreeJSExperience = () => {
+  return (
+    <div className="experience-canvas">
+      <SceneInner />
+    </div>
+  );
+};
+
+export default ThreeJSExperience;
+import React, { useEffect, useState, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+
+const Preloader = () => {
+  const [loading, setLoading] = useState(true);
+  const container = useRef();
+
+  useGSAP(() => {
+    if (!loading) {
+      gsap.to(container.current, { 
+        opacity: 0, 
+        duration: 0.5, 
+        onComplete: () => {
+          if (container.current) {
+            container.current.classList.add('hidden');
+          }
+        }
+      });
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!loading) return null;
+
+  return (
+    <div ref={container} className="preloader">
+      <div className="preloader-wrapper">
+        <div className="loading">
+          <div className="circle"></div>
+          <div className="circle"></div>
+          <div className="circle"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Preloader;
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { useThreeContext } from '../../contexts/ThreeContext';
+
+const PreloaderAnimations = () => {
+  const timelineRef = useRef();
+
+  const { roomRef, childrenMap, setControlsEnabled } = useThreeContext();
+
+  useEffect(() => {
+    // Convert intro text to spans for animation
+    const convertToSpans = (element) => {
+      if (!element) return;
+      const text = element.textContent;
+      element.innerHTML = text
+        .split('')
+        .map(char => {
+          if (char === ' ') return '<span class="animatedis">&nbsp;</span>';
+          return `<span class="animatedis">${char}</span>`;
+        })
+        .join('');
+    };
+
+    // Convert text elements - target the correct intro text
+    const introText = document.querySelector('.intro-text');
+    convertToSpans(introText);
+
+  // Create timeline for preloader animations
+  timelineRef.current = gsap.timeline({ delay: 2.5 });
+    
+    // Hide preloader
+    timelineRef.current.to('.preloader', {
+      opacity: 0,
+      delay: 1,
+      onComplete: () => {
+        const preloader = document.querySelector('.preloader');
+        if (preloader) {
+          preloader.classList.add('hidden');
+        }
+      }
+    });
+
+    // Initialize intro text visibility
+    timelineRef.current.set('.intro-text', { opacity: 1 });
+
+    // Animate intro text
+    timelineRef.current.to('.intro-text .animatedis', {
+      yPercent: 0,
+      stagger: 0.05,
+      ease: 'back.out(1.7)',
+    })
+    .to('.arrow-svg-wrapper', {
+      opacity: 1,
+    }, 'same')
+    .to('.toggle-bar', {
+      opacity: 1,
+    }, 'same');
+
+    // First intro also nudge cube/room if available
+    timelineRef.current.add(() => {
+      const room = roomRef.current;
+      const cube = childrenMap?.cube;
+      if (room && cube) {
+        gsap.to(cube.scale, { x: 1, y: 1, z: 1, duration: 0.7, ease: 'back.out(1.7)' });
+        gsap.to(room.position, { x: 0.2, y: 0.05, duration: 0.7, ease: 'power2.out' });
+      }
+    }, 'same');
+
+    // Add scroll event listener for second intro
+  const handleScroll = (e) => {
+      if (e.deltaY > 0) {
+        playSecondIntro();
+        window.removeEventListener('wheel', handleScroll);
+      }
+    };
+
+    const handleTouch = (e) => {
+      const initialY = e.touches[0].clientY;
+      
+      const handleTouchMove = (moveEvent) => {
+        const currentY = moveEvent.touches[0].clientY;
+        const difference = initialY - currentY;
+        if (difference > 0) {
+          playSecondIntro();
+          window.removeEventListener('touchstart', handleTouch);
+          window.removeEventListener('touchmove', handleTouchMove);
+        }
+      };
+
+      window.addEventListener('touchmove', handleTouchMove, { once: true });
+    };
+
+  const playSecondIntro = () => {
+      const secondTimeline = gsap.timeline();
+      
+      secondTimeline.to('.intro-text .animatedis', {
+        yPercent: -100,
+        stagger: 0.05,
+        ease: 'back.in(1.7)',
+      })
+      .to('.arrow-svg-wrapper', {
+        opacity: 0,
+      }, 'same');
+
+      // 3D reveal sequence
+  const room = roomRef.current;
+  const parts = childrenMap || {};
+      if (room) {
+        // spin/stretch cube and move camera-like effect via room
+        if (parts.cube) {
+          secondTimeline
+            .to(parts.cube.rotation, { y: `+=${Math.PI * 2 + Math.PI / 4}`, duration: 1.2, ease: 'power3.out' }, 'same')
+            .to(parts.cube.scale, { x: 1.1, y: 1.1, z: 10, duration: 0.9, ease: 'power2.out' }, 'same')
+            .to(parts.cube.position, { z: 1.35, duration: 0.9, ease: 'power2.out' }, 'same')
+            .to(parts.cube.scale, { x: 1, y: 1, z: 1, duration: 0.35, ease: 'back.out(2)' });
+        }
+
+        // reveal major parts in sequence
+        const show = (obj, label) => obj && secondTimeline.to(obj.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, label);
+        show(parts.aquarium, '>-0.5');
+        show(parts.clock, '>-0.4');
+        show(parts.shelves, '>-0.3');
+        show(parts.floor_items, '>-0.2');
+        show(parts.desks, '>-0.1');
+        show(parts.table_stuff, '>-0.1');
+        if (parts.computer) secondTimeline.to(parts.computer.scale, { x: 1, y: 1, z: 1, ease: 'back.out(2.2)', duration: 0.5 });
+  if (parts.mini_floor) secondTimeline.set(parts.mini_floor.scale, { x: 1, y: 1, z: 1 });
+        if (parts.chair) {
+          secondTimeline.to(parts.chair.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 'chair');
+          secondTimeline.to(parts.chair.rotation, { y: `+=${Math.PI / 2}`, duration: 1.0 }, 'chair');
+        }
+        if (parts.fish) secondTimeline.to(parts.fish.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 'chair');
+      }
+
+  secondTimeline.to('.arrow-svg-wrapper', { opacity: 1, onComplete: () => setControlsEnabled(true) });
+    };
+
+    setTimeout(() => {
+      window.addEventListener('wheel', handleScroll);
+      window.addEventListener('touchstart', handleTouch);
+    }, 2200);
+
+    // Hide arrow once hero leaves view and hide intro text properly
+    const onWindowScroll = () => {
+      const hero = document.querySelector('.hero');
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      const heroBelowTop = rect.bottom <= 0 || rect.top <= -rect.height * 0.3;
+      if (heroBelowTop) {
+        gsap.to('.arrow-svg-wrapper', { opacity: 0, duration: 0.3, overwrite: true });
+        gsap.to('.intro-text', { opacity: 0, duration: 0.3, overwrite: true });
+        window.removeEventListener('scroll', onWindowScroll);
+      } else {
+        // Ensure intro text is visible when in hero
+        gsap.to('.intro-text', { opacity: 1, duration: 0.3, overwrite: true });
+      }
+    };
+    window.addEventListener('scroll', onWindowScroll);
+
+    return () => {
+      window.removeEventListener('wheel', handleScroll);
+      window.removeEventListener('touchstart', handleTouch);
+  if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+  window.removeEventListener('scroll', onWindowScroll);
+    };
+  }, [roomRef, childrenMap, setControlsEnabled]);
+
+  return null;
+};
+
+export default PreloaderAnimations;
+import React, { useRef } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
+
+const ThemeToggle = () => {
+  const { theme, toggleTheme } = useTheme();
+  const container = useRef();
+
+  return (
+    <div ref={container} className="toggle-bar fixed flex opacity-0 flex-row justify-center items-center top-12 right-12 z-[99999999999999]">
+      <div className="sun-wrapper flex flex-row justify-center items-center text-[var(--color-text)]">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+        </svg>
+      </div>
+
+      <button 
+        onClick={toggleTheme}
+        className="toggle-button cursor-pointer relative w-14 h-7 flex justify-center items-center bg-[var(--color-pink)] rounded-full mx-4 border-none shadow-[0_8px_24px_rgba(149,157,165,0.2)]"
+      >
+        <div className={`toggle-circle absolute left-1.5 rounded-full w-5 h-5 bg-[var(--color-background)] transition-all duration-200 ease-in-out ${theme === 'dark' ? 'slide' : ''}`}></div>
+      </button>
+
+      <div className="moon-wrapper flex flex-row justify-center items-center text-[var(--color-text)]">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path fillRule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clipRule="evenodd"/>
+        </svg>
+      </div>
+    </div>
+  );
+};
+
+export default ThemeToggle;
+export const assetsData = [
+  {
+    name: "room",
+    type: "glbModel",
+    path: "/models/room.glb"
+  },
+  {
+    name: "screen",
+    type: "videoTexture",
+    path: "/textures/coding.mp4"
+  }
+];
+export const experienceData = [
+  {
+    company: "Google Summer of Code 2025",
+    position: "Contributor",
+    duration: "May 2025 - Present",
+    description: "As a GSoC contributor, I am building core execution engine for a block-based musical coding platform—creating a custom interpreter, AST, and real-time scheduler—and honing my systems design and algorithm optimization skills.",
+    current: true
+  },
+  {
+    company: "Sugar Labs",
+    position: "Open Source (Maintainer/Technical Lead)",
+    duration: "Feb 2025 - Present",
+    description: "Maintainer and Member of the Sugar Labs organization, I contribute to the development and maintenance of Sugar Labs Web Dev project",
+    current: true
+  },
+  {
+    company: "Firevera",
+    position: "Software Web Developer",
+    duration: "Oct 2024 - Nov 2024",
+    description: "Developed a full-stack web application using Django and Next.js, featuring user authentication, environmental impact calculator, and database management from scratch.",
+    current: false
+  }
+];
+export const personalInfo = {
+  name: "Safwan Sayeed",
+  title: "Undergraduate Student",
+  subtitle: "Building dreams with code.",
+  description: "I am an Undergraduate Student pursuing a B.E in Computer Science and Engineering. I am passionate about Coding, specializing in Web, Blockchain development, Game and Android applications. I enjoy exploring innovative solutions and creating engaging experiences through technology.",
+  location: "India, Bangalore",
+  email: "isafwansayeed@gmail.com",
+  phone: "7654321098",
+  tagline: "Hi, I am Safwan Sayeed 👋",
+  github: "https://github.com/sa-fw-an",
+  linkedin: "https://linkedin.com/in/safwansayeed",
+  twitter: "https://twitter.com/safwansayeed",
+  resume: "/resume.pdf"
+};
+export const projectsData = [
+  {
+    title: "Android RAT Tool",
+    description: "Developed a tool for generating, patching, and managing Android Meterpreter payloads with compatibility for modern Android versions, including Android 15.",
+    fullDescription: "This educational tool streamlines the creation and deployment of Android Meterpreter payloads. It features a command-line interface to build, patch, sign, and manage APKs, and to launch Metasploit handlers. The patching functionality adds a visible UI to payloads, ensuring compatibility and functionality on the latest Android versions. The project demonstrates skills in Python scripting, security tool development, and understanding of Android application structure.",
+    link: "https://github.com/sa-fw-an/Android-RAT",
+    technologies: ["Python", "Metasploit", "Debian"],
+    featured: true
+  },
+  {
+    title: "Blockchain Voting System",
+    description: "A decentralized voting system leveraging blockchain technology to ensure secure, transparent, and anonymous electoral processes.",
+    fullDescription: "This project implements a blockchain-based voting platform using Ethereum smart contracts and web3.js. It provides a decentralized solution for voter registration, ballot creation, and automated vote tallying. By leveraging the inherent immutability and transparency of blockchain, the system effectively prevents electoral fraud and manipulation, establishing a trustworthy environment for conducting fair and reliable elections.",
+    link: "https://github.com/IlluminatorBlock/Blockchain",
+    technologies: ["React.js", "Django", "Solidity", "TailwindCSS", "Ethereum", "JavaScript", "Tensorflow", "Python", "Html", "Postman", "Vite", "Node.js", "Npm"],
+    featured: true
+  },
+  {
+    title: "RAG-ChatBot",
+    description: "Developed a Retrieval-Augmented Generation (RAG) chatbot using Streamlit, ChromaDB, and large language models for dynamic, context-aware Q&A.",
+    fullDescription: "Engineered a sophisticated RAG chatbot capable of ingesting and processing various document formats (PDF, TXT, DOCX) and web URLs to build a persistent knowledge base in ChromaDB. The application integrates configurable LLMs via the Groq API and uses Sentence-Transformers for embeddings to deliver accurate, context-aware responses. It features automatic fact extraction, conversation history management with SQLite, and optional web search augmentation for time-sensitive queries.",
+    link: "https://github.com/sa-fw-an/RAG-ChatBot",
+    technologies: ["Streamlit", "Python", "SQLite", "HTML", "CSS"],
+    featured: true
+  },
+  {
+    title: "Jump Ball - Android Game",
+    description: "Designed and developed an endless runner Android game featuring smooth 60 FPS rendering, progressive difficulty, and persistent high score tracking.",
+    fullDescription: "Built with Android Studio, Kotlin, and Jetpack Compose, Jump Ball offers a visually engaging, one-tap control experience. The game features realistic ball physics, beautiful gradient visuals, and accurate collision detection. Progressive gameplay increases speed and challenge over time, while high scores are stored persistently for replay value. Demonstrates expertise in mobile development, UI design, and game logic.",
+    link: "https://github.com/sa-fw-an/JumpBall-Android",
+    technologies: ["Kotlin", "Android Studio"],
+    featured: true
+  },
+  {
+    title: "AI Chat Application",
+    description: "Engineered a feature-rich, ChatGPT-like application with advanced file processing, multi-model support, and robust user management using Next.js 15 and React 19.",
+    fullDescription: "This AI-powered chat application provides a comprehensive ChatGPT experience with enhanced functionalities. It supports multi-format file processing (PDFs, images, documents), intelligent document analysis with GPT-4 Vision, and an advanced memory system using vector embeddings. The application features real-time streaming responses, a mobile-responsive design with ARIA accessibility, context-aware conversations, and seamless integration with OpenAI's latest models, all built upon a scalable and modern tech stack.",
+    link: "https://github.com/sa-fw-an/ChatGpt-Clone",
+    technologies: ["Next.js", "React", "TypeScript", "TailwindCSS", "MongoDB", "Clerk", "Cloudinary", "Node.js", "Vercel", "OpenAI"],
+    featured: true
+  },
+  {
+    title: "Markdown Parser",
+    description: "Developed a powerful Markdown parser with modern web technologies, enabling live editing, real-time previewing, and file download capabilities.",
+    fullDescription: "This Markdown parser provides a seamless editing experience with a feature-rich, dual-panel interface for writing and previewing Markdown content in real time. Built with React and TypeScript, it supports full GitHub Flavored Markdown (GFM), syntax highlighting, custom alerts, and YouTube embeds. The application is designed for high performance and responsiveness, making it an ideal tool for developers and content creators.",
+    link: "https://sa-fw-an.github.io/markdown-parser",
+    technologies: ["React.js", "TailwindCSS", "JavaScript", "Html", "Vite", "Framer Motion"],
+    featured: false
+  },
+  {
+    title: "MERN Chat App",
+    description: "Built a full-stack, real-time chat application using the MERN stack, featuring secure user authentication and private messaging.",
+    fullDescription: "This chat application enables users to register, log in securely, and engage in real-time conversations. The backend, built with Node.js, Express, and MongoDB, manages user data and messaging, while the React frontend provides a clean and intuitive user interface. Real-time functionality is powered by Socket.io, ensuring instant message delivery and a seamless communication experience.",
+    link: "https://github.com/sa-fw-an/ChatApp",
+    technologies: ["React.js", "TailwindCSS", "JavaScript", "Html", "Vite", "Node.js", "Express", "MongoDB", "Socket.io"],
+    featured: false
+  },
+  {
+    title: "Weather Forecast - Android App",
+    description: "Modern Android app providing real-time weather data and location-based forecasts with an intuitive UI.",
+    fullDescription: "Developed using Android Studio, Kotlin, and Jetpack Compose. Features include dynamic weather icons, smooth animations, and API-powered updates for accurate local and global weather information.",
+    link: "https://github.com/sa-fw-an/Weather-Android",
+    technologies: ["Android Studio", "Kotlin"],
+    featured: false
+  },
+  {
+    title: "3D Models Website",
+    description: "Designed and developed a visually stunning portfolio website to showcase intricate 3D models, with a focus on responsive design and user interaction.",
+    fullDescription: "This portfolio project features a collection of interactive 3D models, rendered using Three.js. The website is built with modern frontend technologies including React, Vite, and Tailwind CSS, ensuring a seamless and engaging user experience across all devices. It highlights technical skills in 3D modeling, web development, and creating dynamic user interfaces.",
+    link: "https://sa-fw-an.github.io/Portfolio/",
+    technologies: ["React.js", "TailwindCSS", "JavaScript", "Html", "Vite", "Framer Motion"],
+    featured: false
+  },
+  {
+    title: "Flask Blog Website",
+    description: "Developed a dynamic, full-featured blog website using the Flask framework, with comprehensive CRUD functionality and user authentication.",
+    fullDescription: "This blog application allows users to register, log in, and manage their own posts through a clean and responsive user interface. The backend is powered by Flask and uses Flask-SQLAlchemy for database operations with a SQLite database. The project demonstrates proficiency in backend development, database management, and building secure, user-centric web applications.",
+    link: "https://github.com/sa-fw-an/Blog",
+    technologies: ["Python", "Html", "CSS", "Flask", "SQL"],
+    featured: false
+  },
+  {
+    title: "GitHub Profile Readme",
+    description: "Curated a personal and interactive GitHub profile README to effectively showcase skills, projects, and contributions in a visually engaging format.",
+    fullDescription: "This project involved designing and implementing a dynamic GitHub profile README using Markdown and GitHub Actions. It features embedded statistics, technology icons, and a custom snake animation to visualize contribution activity. The goal was to create an engaging and informative overview of my technical expertise and development activities, providing visitors with a clear and compelling summary of my skills.",
+    link: "https://github.com/sa-fw-an/sa-fw-an",
+    technologies: ["Markdown", "Html", "Css"],
+    featured: false
+  },
+  {
+    title: "Snake Game",
+    description: "Developed a modern version of the classic Snake game using Python and the Pygame library, featuring scoring and a complete game loop.",
+    fullDescription: "This project is an implementation of the classic Snake game, built from scratch using Python and Pygame. It features responsive controls, a scoring system, and a game-over screen with options to restart or quit. The game showcases skills in object-oriented programming, game logic development, and handling user input and graphics rendering within a game loop.",
+    link: "https://github.com/sa-fw-an/SnakeGame",
+    technologies: ["Python"],
+    featured: false
+  },
+  {
+    title: "Birthday Wish Website",
+    description: "Created a vibrant and interactive web application for sending personalized birthday wishes, featuring music and captivating animations.",
+    fullDescription: "This project is a creative frontend application designed to deliver memorable birthday greetings. Built using HTML, CSS, and JavaScript, it combines engaging animations and background music to create a fun and personalized experience. The site is fully responsive and demonstrates skills in frontend development, animation, and creating user-centric interactive experiences.",
+    link: "https://sa-fw-an.github.io/BirthdayWish/",
+    technologies: ["Html", "CSS", "JavaScript"],
+    featured: false
+  },
+  {
+    title: "Generate Fake GitHub Contributions",
+    description: "Developed a Python script to programmatically generate Git commits, simulating consistent activity on a GitHub profile.",
+    fullDescription: "This script automates the process of creating and pushing commits with randomized dates and times over a specified period. It is designed to visually enhance a GitHub contribution graph by simulating a more active development history. The project demonstrates proficiency in scripting with Python, interacting with the command line, and automating Git workflows for profile enhancement purposes.",
+    link: "https://github.com/sa-fw-an/GitFakeContribution",
+    technologies: ["Python"],
+    featured: false
+  },
+  {
+    title: "Watch TryOn AR App",
+    description: "Developed an innovative AR mobile application allowing users to virtually try on watches, enhancing the online shopping experience.",
+    fullDescription: "This augmented reality application, built with Unity and C#, enables users to visualize watches on their wrist in real time. The app features a wide collection of virtual watches and provides a user-friendly interface for browsing and trying on different models. This project showcases skills in augmented reality development, mobile application design, and creating immersive, interactive user experiences with Unity.",
+    link: "https://github.com/sa-fw-an/ARTryOn",
+    technologies: ["C#", "Unity"],
+    featured: false
+  }
+];
+// Canonical keys => possible GLB node names
+export const ROOM_PARTS = {
+  cube: ['Cube', 'cube'],
+  aquarium: ['Aquarium', 'aquarium', 'FishTank', 'fish_tank'],
+  computer: ['Computer', 'computer', 'PC', 'pc'] ,
+  screen: ['Screen', 'screen', 'Monitor_Screen'],
+  clock: ['Clock', 'clock'],
+  shelves: ['Shelves', 'shelves', 'Shelf', 'shelf'],
+  floor_items: ['Floor_Items', 'floor_items', 'FloorItems'],
+  desks: ['Desks', 'desks', 'Desk', 'desk', 'Table', 'table'],
+  table_stuff: ['Table_Stuff', 'table_stuff', 'TableStuff'],
+  mini_floor: ['Mini_Floor', 'mini_floor'],
+  chair: ['Chair', 'chair'],
+  fish: ['Fish', 'fish'],
+  body: ['Body', 'body', 'Room', 'room'],
+  // Mini platform / pathway pieces (names vary by GLB version)
+  mailbox: ['Mailbox', 'mailbox'],
+  lamp: ['Lamp', 'lamp'],
+  floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
+  floor_second: ['FloorSecond', 'floorsecond', 'Floor_Second', 'floor_second'],
+  floor_third: ['FloorThird', 'floorthird', 'Floor_Third', 'floor_third'],
+  dirt: ['Dirt', 'dirt'],
+  flower1: ['Flower1', 'flower1', 'Flower_1'],
+  flower2: ['Flower2', 'flower2', 'Flower_2'],
+};
+export const sectionsData = {
+  hero: {
+    id: "hero",
+    title: "Welcome to my portfolio!",
+    subtitle: "Building dreams with code."
+  },
+  about: {
+    id: "about", 
+    title: "About Me",
+    number: "01",
+    content: {
+      main: "I am an Undergraduate Student pursuing a B.E in Computer Science and Engineering. I am passionate about Coding, specializing in Web, Blockchain development, Game and Android applications. I enjoy exploring innovative solutions and creating engaging experiences through technology.",
+      techStack: "I specialize in a diverse range of languages, frameworks, and tools to build robust and scalable applications. My focus is on creating dynamic user experiences, beautiful front-end applications, powerful backend logic, and efficient data management while utilizing modern development tools like cloud services for seamless deployment.",
+      location: "I'm based in India, Bangalore, but my work knows no borders. I'm open to remote work opportunities worldwide and excited to collaborate with teams from diverse backgrounds. Feel free to reach out if you're looking for a dedicated and passionate team member!!",
+      passion: "I love solving problems and building innovative solutions through code. Programming is not just my profession; it's my passion. I enjoy exploring new technologies and continuously enhancing my skills."
+    }
+  },
+  projects: {
+    id: "projects",
+    title: "My Projects", 
+    number: "02"
+  },
+  experience: {
+    id: "experience",
+    title: "Work Experience",
+    number: "03"
+  },
+  contact: {
+    id: "contact",
+    title: "CONTACT",
+    number: "04",
+    subtitle: "Let's talk",
+    description: "Looking to create a dynamic web platform 🌐, build immersive games 🎮, or launch a cutting-edge Android app 📱? I'm here to bring your ideas to life!"
+  }
+};
+export const themeConfig = {
+  colors: {
+    light: {
+      text: "#333332",
+      background: "#FAF4E5",
+      pink: "#e5a1aa",
+      green: "#7AD0AC",
+      blue: "#8395CD"
+    },
+    dark: {
+      text: "#FAF4E5",
+      background: "#8395CD",
+      pink: "#FAF4E5",
+      green: "#FAF4E5",
+      blue: "#FAF4E5"
+    }
+  }
+};
+import React, { createContext, useContext, useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const AnimationContext = createContext();
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAnimation = () => {
+  const context = useContext(AnimationContext);
+  if (!context) {
+    throw new Error('useAnimation must be used within an AnimationProvider');
+  }
+  return context;
+};
+
+export const AnimationProvider = ({ children }) => {
+  const timelineRef = useRef(null);
+
+  useEffect(() => {
+    timelineRef.current = gsap.timeline();
+    
+    return () => {
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+
+  const animateSection = (element, options = {}) => {
+    return gsap.fromTo(element, 
+      { opacity: 0, y: 50 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        duration: 1,
+        ease: "power2.out",
+        ...options,
+        scrollTrigger: {
+          trigger: element,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+          ...options.scrollTrigger
+        }
+      }
+    );
+  };
+
+  const animateText = (element, options = {}) => {
+    return gsap.fromTo(element,
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+        stagger: 0.1,
+        ...options
+      }
+    );
+  };
+
+  const fadeIn = (element, options = {}) => {
+    return gsap.fromTo(element,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: 1,
+        ease: "power2.out",
+        ...options
+      }
+    );
+  };
+
+  return (
+    <AnimationContext.Provider value={{
+      timeline: timelineRef.current,
+      animateSection,
+      animateText,
+      fadeIn
+    }}>
+      {children}
+    </AnimationContext.Provider>
+  );
+};
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const ThemeContext = createContext();
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useTheme = () => useContext(ThemeContext);
+
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) setTheme(savedTheme);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+    document.body.className = `${theme}-theme`;
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+import React, { createContext, useContext, useMemo, useRef, useState } from 'react';
+
+const ThreeContext = createContext(null);
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useThreeContext = () => {
+  const ctx = useContext(ThreeContext);
+  if (!ctx) throw new Error('useThreeContext must be used within ThreeProvider');
+  return ctx;
+};
+
+export const ThreeProvider = ({ children }) => {
+  const roomRef = useRef(null);
+  const floorRef = useRef(null);
+  const rectLightRef = useRef(null);
+  const [camera, setCamera] = useState(null);
+  const [childrenMap, setChildrenMap] = useState({});
+  const [controlsEnabled, setControlsEnabled] = useState(false);
+  const [preloaderComplete, setPreloaderComplete] = useState(false);
+
+  const value = useMemo(() => ({
+    // refs
+    roomRef,
+    floorRef,
+    rectLightRef,
+    // camera
+    camera,
+    setCamera,
+    // mesh parts
+    childrenMap,
+    setChildrenMap,
+    // flow state
+    controlsEnabled,
+    setControlsEnabled,
+    preloaderComplete,
+    setPreloaderComplete,
+  }), [camera, childrenMap, controlsEnabled, preloaderComplete]);
+
+  return (
+    <ThreeContext.Provider value={value}>{children}</ThreeContext.Provider>
+  );
+};
+import React from 'react';
+import Hero from './components/sections/Hero';
+import About from './components/sections/About';
+import Projects from './components/sections/Projects';
+import Experience from './components/sections/Experience';
+import Contact from './components/sections/Contact';
+import ThreeJSExperience from './components/three/ThreeJSExperience';
+import ThemeToggle from './components/ui/ThemeToggle';
+import Preloader from './components/ui/Preloader';
+import PreloaderAnimations from './components/ui/PreloaderAnimations';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { AnimationProvider } from './contexts/AnimationContext';
+import { ThreeProvider } from './contexts/ThreeContext';
+
+function App() {
+  return (
+    <ThreeProvider>
+      <ThemeProvider>
+        <AnimationProvider>
+          <div className="App relative min-h-screen">
+            <Preloader />
+            <PreloaderAnimations />
+            
+            {/* Fixed Three.js Experience */}
+            <div className="experience fixed w-full h-full">
+              <ThreeJSExperience />
+            </div>
+            
+            {/* Theme Toggle */}
+            <div className="toggle-bar">
+              <ThemeToggle />
+            </div>
+            
+            {/* Page Content */}
+            <div className="page">
+              <div className="page-wrapper">
+                
+                {/* Hero Section */}
+                <section className="hero">
+                  <Hero />
+                </section>
+                
+                {/* Intro Text */}
+                <div className="intro-text">
+                  Click on the cube and scroll to get started!
+                </div>
+                
+                {/* Arrow indicator */}
+                <div className="arrow-svg-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 14.95q-.2 0-.375-.063-.175-.062-.325-.212L6.675 10.05q-.275-.275-.262-.688.012-.412.287-.687.275-.275.7-.275.425 0 .7.275l3.9 3.9 3.925-3.925q.275-.275.688-.263.412.013.687.288.275.275.275.7 0 .425-.275.7l-4.6 4.6q-.15.15-.325.212-.175.063-.375.063Z"/>
+                  </svg>
+                </div>
+                
+                {/* First Move Section Margin */}
+                <div className="first-move section-margin"></div>
+                
+                {/* About Section */}
+                <section className="section first-section left">
+                  <div className="progress-wrapper progress-bar-wrapper-left">
+                    <div className="progress-bar"></div>
+                  </div>
+                  <About />
+                </section>
+                
+                {/* Second Move Section Margin */}
+                <div className="second-move section-margin"></div>
+                
+                {/* Projects Section */}
+                <section className="section second-section right">
+                  <div className="progress-wrapper progress-bar-wrapper-right">
+                    <div className="progress-bar blue-background"></div>
+                  </div>
+                  <Projects />
+                </section>
+                
+                {/* Third Move Section Margin */}
+                <div className="third-move section-margin"></div>
+                
+                {/* Experience Section */}
+                <section className="section third-section left">
+                  <div className="progress-wrapper progress-bar-wrapper-left">
+                    <div className="progress-bar green-background"></div>
+                  </div>
+                  <Experience />
+                </section>
+                
+                {/* Fourth Move Section Margin */}
+                <div className="fourth-move section-margin"></div>
+                
+                {/* Contact Section */}
+                <section className="section fourth-section right">
+                  <div className="progress-wrapper progress-bar-wrapper-right">
+                    <div className="progress-bar"></div>
+                  </div>
+                  <Contact />
+                </section>
+                
+                {/* Footer */}
+                <footer className="footer">
+                  <span className="footer__copyright">
+                    Copyright &copy; 2025 - Safwan Sayeed
+                  </span>
+                </footer>
+                
+              </div>
+            </div>
+          </div>
+        </AnimationProvider>
+      </ThemeProvider>
+    </ThreeProvider>
+  );
+}
+
+export default App;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import 'tailwindcss';
+
+/* CSS Variables for Theme */
+:root {
+  /* Light Theme Variables */
+  --color-text-light: #333332;
+  --color-background-light: #FAF4E5;
+  --color-pink-light: #e5a1aa;
+  --color-green-light: #7AD0AC;
+  --color-blue-light: #8395CD;
+
+  /* Dark Theme Variables */
+  --color-text-dark: #FAF4E5;
+  --color-background-dark: #8395CD;
+}
+
+.light-theme {
+  --color-text: var(--color-text-light);
+  --color-background: var(--color-background-light);
+  --color-pink: var(--color-pink-light);
+  --color-green: var(--color-green-light);
+  --color-blue: var(--color-blue-light);
+}
+
+.dark-theme {
+  --color-text: var(--color-text-dark);
+  --color-background: var(--color-background-dark);
+  --color-pink: var(--color-text-dark);
+  --color-green: var(--color-text-dark);
+  --color-blue: var(--color-text-dark);
+}
+
+/* Base Styles - Force Montserrat everywhere */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+html, body {
+  font-family: 'Montserrat', sans-serif !important;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-weight: 400;
+}
+
+/* Force Montserrat on all text elements */
+h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+h1, section, p, span, svg {
+  transition: background-color 0.5s, color 0.5s;
+}
+
+h1, section, p, span, svg {
+  transition: background-color 0.5s, color 0.5s;
+}
+
+/* Experience Canvas */
+.experience {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+.experience-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Preloader */
+.preloader {
+  background-color: var(--color-background-light);
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  opacity: 1;
+  z-index: 99999999999999999;
+}
+
+.preloader-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 6px;
+  background-color: var(--color-pink-light);
+  animation: load 1s ease-in-out infinite;
+}
+
+.circle:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.circle:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes load {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-12px);
+  }
+  40% {
+    transform: translateY(0);
+  }
+}
+
+/* Page Structure */
+.page {
+  z-index: 99999;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.page-wrapper {
+  position: relative;
+}
+
+/* Preloader Text Animation */
+.animatedis {
+  display: inline-block;
+  transform: translateY(100%);
+}
+
+.intro-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--color-text);
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.arrow-svg-wrapper {
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  opacity: 0;
+  color: var(--color-text);
+  transform: translate(-50%, -50%);
+  animation: bounce 0.5s ease-in alternate infinite;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(8px);
+  }
+}
+
+/* Toggle Bar */
+.toggle-bar {
+  position: fixed;
+  display: flex;
+  opacity: 0;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  top: 48px;
+  right: 48px;
+  z-index: 99999999999999;
+}
+
+.sun-wrapper, 
+.moon-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text);
+}
+
+.toggle-button {
+  cursor: pointer;
+  position: relative;
+  width: 56px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-pink);
+  border-radius: 999px;
+  margin: 0px 16px;
+  border: none;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.toggle-circle {
+  position: absolute;
+  left: 6px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-background);
+  transition: all 0.2s ease-in-out;
+}
+
+.toggle-button:hover .toggle-circle {
+  transform: scale(0.9);
+}
+
+.slide {
+  left: 31px;
+}
+
+/* Section Formatting */
+.section-margin {
+  height: 3000px;
+  width: 100%;
+}
+
+.section {
+  position: relative;
+  width: 50%;
+  padding: 1000px 4%;
+  margin: 0;
+  background-color: var(--color-background);
+  overflow: hidden;
+}
+
+.left {
+  margin-right: auto;
+  border-top-right-radius: 700px 700px;
+  border-bottom-right-radius: 0px 0px;
+}
+
+.right {
+  margin-left: auto;
+  border-top-left-radius: 700px 700px;
+  border-bottom-left-radius: 0px 0px;
+}
+
+/* Footer */
+.footer {
+  padding: 32px;
+  text-align: center;
+  background-color: var(--color-background);
+}
+
+.footer__copyright {
+  color: var(--color-text);
+  font-size: 16px;
+}
+
+/* Progress bars */
+.progress-wrapper {
+  height: 0;
+  width: 12px;
+  z-index: 9999;
+}
+
+.progress-bar-wrapper-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress-bar-wrapper-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.progress-bar {
+  height: 100vh;
+  width: 100%;
+  background-color: var(--color-pink);
+  transform-origin: top center;
+  transform: scaleY(1);
+}
+
+/* Section Content */
+.section-intro-wrapper {
+  position: relative;
+  padding: 20% 5%;
+  border-bottom: 2px solid var(--color-pink);
+  padding-bottom: 400px;
+}
+
+.section-intro-wrapper:nth-child(3) {
+  border-bottom: 2px solid var(--color-green);
+}
+
+.section-detail-wrapper {
+  position: relative;
+  padding: 20% 5%;
+}
+
+.section-heading {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.8;
+  margin-top: 64px;
+  color: var(--color-text);
+}
+
+.section-text {
+  line-height: 2;
+  margin-top: 18px;
+  font-size: 16px;
+  color: var(--color-text);
+}
+
+/* Fancy Decoration Part of Section */
+.section-title {
+  position: relative;
+  color: var(--color-pink);
+}
+
+.section-title-text {
+  display: block;
+  font-size: 40px;
+  font-weight: 500;
+  transform-origin: left;
+  transform: skewY(25deg);
+  z-index: 5;
+  text-transform: uppercase;
+  color: var(--color-pink);
+}
+
+.styleOne,
+.styleTwo,
+.styleThree {
+  position: absolute;
+  display: block;
+  width: 100%;
+  max-width: 278px;
+  height: 60px;
+  border: 1px solid var(--color-pink);
+  transform-origin: left;
+  transform: skewY(-25deg);
+}
+
+.styleOne {
+  top: 0px;
+}
+
+.styleTwo {
+  top: 80px;
+}
+
+.styleThree {
+  top: 80px;
+  transform: skewY(25deg);
+  background-color: var(--color-pink);
+}
+
+.section-number {
+  position: absolute;
+  bottom: 15px;
+  right: 0;
+  color: var(--color-pink);
+  font-size: 24px;
+}
+
+/* Hero Section */
+.hero {
+  width: 100vw;
+  height: 100vh;
+}
+
+.hero-wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 1100px;
+}
+
+.hero-main {
+  position: absolute;
+  bottom: 168px;
+  left: 0;
+  color: var(--color-text);
+}
+
+.hero-second {
+  position: absolute;
+  top: calc(50% - 120px);
+  right: 0;
+  color: var(--color-text);
+}
+
+.hero-main-title {
+  font-size: 64px;
+  color: var(--color-text);
+}
+
+.hero-main-description {
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.hero-second-subheading {
+  font-size: 32px;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+/* Color Overrides */
+.blue-text {
+  color: var(--color-blue);
+}
+
+.blue-border {
+  border-color: var(--color-blue);
+}
+
+.blue-background {
+  background-color: var(--color-blue);
+}
+
+.green-text {
+  color: var(--color-green);
+}
+
+.green-border {
+  border-color: var(--color-green);
+}
+
+.green-background {
+  background-color: var(--color-green);
+}
+
+/* Mobile Responsive */
+@media (max-width: 968px) {
+  .section {
+    width: 100%;
+  }
+  .progress-bar-wrapper-left {
+    right: 0;
+    left: auto;
+  }
+  .hero-main {
+    bottom: 120px;
+  }
+  .hero-second {
+    top: 160px;
+  }
+  .hero-wrapper {
+    width: calc(100% - 60px);
+  }
+  .hero-main-title {
+    font-size: 32px;
+  }
+  .hero-main-description {
+    font-size: 18px;
+  }
+  .hero-second-subheading {
+    font-size: 18px;
+  }
+}
+
+/* Additional styles for exact original matching */
+.intro-text .animatedis {
+  display: inline-block;
+  transform: translateY(100%);
+}
+
+.first-sub {
+  display: block;
+}
+
+.second-sub {
+  display: block;
+  margin-top: 8px;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Canvas styles */
+canvas {
+  outline: none;
+}
+
+/* Project Items */
+.project-item {
+  margin: 32px 0;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-text);
+  opacity: 0.7;
+}
+
+.project-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.project-description {
+  font-size: 16px;
+  color: var(--color-text);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tech-tag {
+  padding: 4px 12px;
+  background-color: var(--color-blue);
+  color: var(--color-background);
+  font-size: 12px;
+  border-radius: 16px;
+}
+
+.project-link {
+  color: var(--color-blue);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.project-link:hover {
+  opacity: 0.8;
+}
+
+/* Experience Items */
+.experience-item {
+  margin: 32px 0;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-text);
+  opacity: 0.7;
+  position: relative;
+}
+
+.experience-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.experience-company {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-green);
+  margin-bottom: 8px;
+}
+
+.experience-duration {
+  font-size: 14px;
+  color: var(--color-text);
+  opacity: 0.8;
+  margin-bottom: 12px;
+}
+
+.experience-description {
+  font-size: 16px;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.current-badge {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  padding: 4px 12px;
+  background-color: var(--color-green);
+  color: var(--color-background);
+  font-size: 12px;
+  border-radius: 16px;
+  font-weight: 500;
+}
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Safwan Sayeed - Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/index.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+structure of the src folder 
+src/
+├─ components/
+│  ├─ sections/
+│  │  ├─ About.jsx
+│  │  ├─ Contact.jsx
+│  │  ├─ Experience.jsx
+│  │  ├─ Hero.jsx
+│  │  └─ Projects.jsx
+│  ├─ three/
+│  │  ├─ Experience/
+│  │  │  ├─ Utils/
+│  │  │  │  ├─ Resources.js
+│  │  │  │  ├─ Sizes.js
+│  │  │  │  └─ Time.js
+│  │  │  ├─ World/
+│  │  │  │  ├─ Controls.js
+│  │  │  │  ├─ Environment.js
+│  │  │  │  ├─ Room.js
+│  │  │  │  └─ World.js
+│  │  │  ├─ Camera.js
+│  │  │  ├─ Experience.jsx
+│  │  │  ├─ Preloader.js
+│  │  │  └─ Renderer.js
+│  │  ├─ Controls.jsx
+│  │  ├─ Experience.jsx
+│  │  ├─ Floor.jsx
+│  │  ├─ Lights.jsx
+│  │  ├─ Room.jsx
+│  │  └─ ThreeJSExperience.jsx
+│  └─ ui/
+│     ├─ Preloader.jsx
+│     ├─ PreloaderAnimations.jsx
+│     └─ ThemeToggle.jsx
+├─ constants/
+│  ├─ assets.js
+│  ├─ experience.js
+│  ├─ personal.js
+│  ├─ projects.js
+│  ├─ roomParts.js
+│  ├─ sections.js
+│  └─ theme.js
+├─ contexts/
+│  ├─ AnimationContext.jsx
+│  ├─ ThemeContext.jsx
+│  └─ ThreeContext.jsx
+├─ App.jsx
+├─ index.css
+└─ main.jsx

@@ -178,9 +178,9 @@ const Controls = ({ roomRef, floorRef }) => {
               scrub: 0.6,
             }
           })
-            .to(roomRef.current.scale, { x: 0.1, y: 0.1, z: 0.1 })
+            .to(roomRef.current.scale, { x: 1.7, y: 0.1, z: 0.1 })
             .to(roomRef.current.position, { x: 0.4 }, '<');
-          zoomStep(mtl1, 1.15, '<', 0.6);
+          zoomStep(mtl1, 2, '<', 0.6);
 
           // 2) Second section (content right => move room to left)
           let mtl2 = gsap.timeline({
