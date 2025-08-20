@@ -10,7 +10,12 @@ const Room = forwardRef((props, ref) => {
   
   // Enable DRACO decoding if model is compressed
   useGLTF.setDecoderPath('/draco/');
-  const { scene, animations } = useGLTF('/models/room.glb');
+  
+  // Try to load the room model - fallback to creating basic objects if not found
+  let scene, animations;
+  const gltf = useGLTF('/models/room.glb', true);
+  scene = gltf.scene;
+  animations = gltf.animations || [];
 
   const { setChildrenMap, roomRef: sharedRoomRef, rectLightRef } = useThreeContext();
 
@@ -26,122 +31,199 @@ const Room = forwardRef((props, ref) => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useEffect(() => {
-    if (!scene) return;
-
-    // Build children map with exact original naming
-    const found = {};
-    const roomPartMap = {
-      cube: ['Cube', 'cube'],
-      aquarium: ['Aquarium', 'aquarium', 'FishTank', 'fish_tank'],
-      computer: ['Computer', 'computer', 'PC', 'pc'],
-      screen: ['Screen', 'screen', 'Monitor_Screen'],
-      clock: ['Clock', 'clock'],
-      shelves: ['Shelves', 'shelves', 'Shelf', 'shelf'],
-      floor_items: ['Floor_Items', 'floor_items', 'FloorItems'],
-      desks: ['Desks', 'desks', 'Desk', 'desk', 'Table', 'table'],
-      table_stuff: ['Table_Stuff', 'table_stuff', 'TableStuff'],
-      mini_floor: ['Mini_Floor', 'mini_floor'],
-      chair: ['Chair', 'chair'],
-      fish: ['Fish', 'fish'],
-      body: ['Body', 'body', 'Room', 'room'],
-      // Mini platform pieces
-      mailbox: ['Mailbox', 'mailbox'],
-      lamp: ['Lamp', 'lamp'],
-      floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
-      floor_second: ['FloorSecond', 'floorsecond', 'Floor_Second', 'floor_second'],
-      floor_third: ['FloorThird', 'floorthird', 'Floor_Third', 'floor_third'],
-      dirt: ['Dirt', 'dirt'],
-      flower1: ['Flower1', 'flower1', 'Flower_1'],
-      flower2: ['Flower2', 'flower2', 'Flower_2'],
-    };
-
-    const indexByName = (name) => name?.toLowerCase?.() || '';
-
-    scene.traverse((child) => {
-      if (child.isMesh || child.isGroup) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-
-      const lc = indexByName(child.name);
-      Object.entries(roomPartMap).forEach(([key, candidates]) => {
-        if (found[key]) return;
-        if (candidates.some((n) => indexByName(n) === lc)) {
-          found[key] = child;
-        }
-      });
+  // Create fallback objects if model doesn't exist
+  const createFallbackObjects = () => {
+    const group = new THREE.Group();
+    
+    // Create basic room objects
+    const objects = {};
+    
+    // Cube (most important for animations)
+    const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const cubeMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0xe5a1aa, 
+      metalness: 0.2, 
+      roughness: 0.6 
     });
+    objects.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    objects.cube.position.set(0, -1, 0);
+    objects.cube.rotation.y = Math.PI / 4;
+    objects.cube.scale.set(0, 0, 0);
+    objects.cube.name = 'Cube';
+    objects.cube.castShadow = true;
+    objects.cube.receiveShadow = true;
+    group.add(objects.cube);
+    
+    // Body/Room container
+    objects.body = new THREE.Group();
+    objects.body.name = 'Body';
+    objects.body.scale.set(0, 0, 0);
+    group.add(objects.body);
+    
+    // Create other basic objects
+    const createBasicObject = (name, color, position, scale = [0, 0, 0]) => {
+      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+      const material = new THREE.MeshStandardMaterial({ color });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.fromArray(position);
+      mesh.scale.fromArray(scale);
+      mesh.name = name;
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      objects.body.add(mesh);
+      return mesh;
+    };
+    
+    objects.aquarium = createBasicObject('Aquarium', 0x549dd2, [2, 0, 0]);
+    objects.computer = createBasicObject('Computer', 0x666666, [-2, 0, 0]);
+    objects.clock = createBasicObject('Clock', 0xffffff, [0, 2, 0]);
+    objects.shelves = createBasicObject('Shelves', 0x8b4513, [-1, 1, -1]);
+    objects.floor_items = createBasicObject('Floor_Items', 0x654321, [1, -0.5, 1]);
+    objects.desks = createBasicObject('Desks', 0x8b4513, [0, 0, -2]);
+    objects.table_stuff = createBasicObject('Table_Stuff', 0x999999, [0.5, 0.5, -1.5]);
+    objects.chair = createBasicObject('Chair', 0x654321, [0, 0, 2]);
+    objects.fish = createBasicObject('Fish', 0xff6600, [2.2, 0, 0.2]);
+    
+    // Mini platform objects
+    objects.mini_floor = createBasicObject('Mini_Floor', 0xffe6a2, [-0.289521, -1, 8.83572], [1, 1, 1]);
+    objects.mailbox = createBasicObject('Mailbox', 0x666666, [-5, 0, 13]);
+    objects.lamp = createBasicObject('Lamp', 0xffff00, [-4.5, 1, 13]);
+    objects.floor_first = createBasicObject('FloorFirst', 0xffe6a2, [-5.5, -0.5, 12.5]);
+    objects.floor_second = createBasicObject('FloorSecond', 0xffe6a2, [-4.5, -0.5, 13.5]);
+    objects.floor_third = createBasicObject('FloorThird', 0xffe6a2, [-5, -0.5, 14]);
+    objects.dirt = createBasicObject('Dirt', 0x8b4513, [-5.2, -0.3, 13.2]);
+    objects.flower1 = createBasicObject('Flower1', 0xff69b4, [-5.1, 0.2, 13.1]);
+    objects.flower2 = createBasicObject('Flower2', 0xff1493, [-4.9, 0.2, 13.3]);
+    
+    return { group, objects };
+  };
 
-    // Aquarium glass material (exact original)
-    if (found.aquarium) {
-      const glassMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0x549dd2,
-        roughness: 0,
-        transmission: 1,
-        ior: 3,
-        opacity: 1,
-        depthWrite: false,
-        depthTest: false,
+  useEffect(() => {
+    let roomGroup;
+    let found = {};
+
+    if (scene) {
+      // Use loaded model
+      roomGroup = scene;
+      
+      // Build children map with exact original naming
+      const roomPartMap = {
+        cube: ['Cube', 'cube'],
+        aquarium: ['Aquarium', 'aquarium', 'FishTank', 'fish_tank'],
+        computer: ['Computer', 'computer', 'PC', 'pc'],
+        screen: ['Screen', 'screen', 'Monitor_Screen'],
+        clock: ['Clock', 'clock'],
+        shelves: ['Shelves', 'shelves', 'Shelf', 'shelf'],
+        floor_items: ['Floor_Items', 'floor_items', 'FloorItems'],
+        desks: ['Desks', 'desks', 'Desk', 'desk', 'Table', 'table'],
+        table_stuff: ['Table_Stuff', 'table_stuff', 'TableStuff'],
+        mini_floor: ['Mini_Floor', 'mini_floor'],
+        chair: ['Chair', 'chair'],
+        fish: ['Fish', 'fish'],
+        body: ['Body', 'body', 'Room', 'room'],
+        // Mini platform pieces
+        mailbox: ['Mailbox', 'mailbox'],
+        lamp: ['Lamp', 'lamp'],
+        floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
+        floor_second: ['FloorSecond', 'floorsecond', 'Floor_Second', 'floor_second'],
+        floor_third: ['FloorThird', 'floorthird', 'Floor_Third', 'floor_third'],
+        dirt: ['Dirt', 'dirt'],
+        flower1: ['Flower1', 'flower1', 'Flower_1'],
+        flower2: ['Flower2', 'flower2', 'Flower_2'],
+      };
+
+      const indexByName = (name) => name?.toLowerCase?.() || '';
+
+      scene.traverse((child) => {
+        if (child.isMesh || child.isGroup) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+
+        const lc = indexByName(child.name);
+        Object.entries(roomPartMap).forEach(([key, candidates]) => {
+          if (found[key]) return;
+          if (candidates.some((n) => indexByName(n) === lc)) {
+            found[key] = child;
+          }
+        });
       });
-      
-      if (found.aquarium.children?.[0]?.material) {
-        found.aquarium.children[0].material = glassMaterial;
-      } else if (found.aquarium.material) {
-        found.aquarium.material = glassMaterial;
-      }
-    }
 
-    // Computer screen video texture (exact original)
-    if (found.computer || found.screen) {
-      const video = document.createElement('video');
-      video.src = '/textures/coding.mp4'; // Make sure this video exists
-      video.muted = true;
-      video.loop = true;
-      video.playsInline = true;
-      video.autoplay = true;
-      video.play();
-      
-      const videoTexture = new THREE.VideoTexture(video);
-      videoTexture.minFilter = THREE.NearestFilter;
-      videoTexture.magFilter = THREE.NearestFilter;
-      videoTexture.generateMipmaps = false;
-      videoTexture.colorSpace = THREE.SRGBColorSpace;
-      
-      const screenMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-      
-      const target = found.screen || found.computer?.children?.[1];
-      if (target?.material) {
-        target.material = screenMaterial;
+      // Aquarium glass material (exact original)
+      if (found.aquarium) {
+        const glassMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0x549dd2,
+          roughness: 0,
+          transmission: 1,
+          ior: 3,
+          opacity: 1,
+          depthWrite: false,
+          depthTest: false,
+        });
+        
+        if (found.aquarium.children?.[0]?.material) {
+          found.aquarium.children[0].material = glassMaterial;
+        } else if (found.aquarium.material) {
+          found.aquarium.material = glassMaterial;
+        }
       }
-    }
 
-    // Mini floor positioning (exact original)
-    if (found.mini_floor) {
-      found.mini_floor.position.x = -0.289521;
-      found.mini_floor.position.z = 8.83572;
+      // Computer screen video texture (exact original)
+      if (found.computer || found.screen) {
+        const video = document.createElement('video');
+        video.src = '/textures/coding.mp4';
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        
+        video.play().catch(console.warn);
+        
+        const videoTexture = new THREE.VideoTexture(video);
+        videoTexture.minFilter = THREE.NearestFilter;
+        videoTexture.magFilter = THREE.NearestFilter;
+        videoTexture.generateMipmaps = false;
+        videoTexture.colorSpace = THREE.SRGBColorSpace;
+        
+        const screenMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+        
+        const target = found.screen || found.computer?.children?.[1];
+        if (target?.material) {
+          target.material = screenMaterial;
+        }
+      }
+
+      // Mini floor positioning (exact original)
+      if (found.mini_floor) {
+        found.mini_floor.position.x = -0.289521;
+        found.mini_floor.position.z = 8.83572;
+      }
+
+    } else {
+      // Use fallback objects
+      const fallback = createFallbackObjects();
+      roomGroup = fallback.group;
+      found = fallback.objects;
     }
 
     // Create cube if not found (fallback)
-    let cube = found.cube;
-    if (!cube) {
+    if (!found.cube) {
       const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
       const cubeMaterial = new THREE.MeshStandardMaterial({ 
         color: 0xe5a1aa, 
         metalness: 0.2, 
         roughness: 0.6 
       });
-      cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-      cube.name = 'cube_fallback';
-      scene.add(cube);
-      found.cube = cube;
+      found.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      found.cube.name = 'cube_fallback';
+      roomGroup.add(found.cube);
     }
 
     // Cube positioning (exact original)
-    if (cube) {
-      cube.position.set(0, -1, 0);
-      cube.rotation.y = Math.PI / 4;
-      cube.scale.set(0, 0, 0); // Start hidden
+    if (found.cube) {
+      found.cube.position.set(0, -1, 0);
+      found.cube.rotation.y = Math.PI / 4;
+      found.cube.scale.set(0, 0, 0); // Start hidden
     }
 
     // Hide all objects initially for staged reveal (exact original behavior)
@@ -162,7 +244,7 @@ const Room = forwardRef((props, ref) => {
 
     // Animation mixer setup (exact original)
     if (animations.length) {
-      mixerRef.current = new THREE.AnimationMixer(scene);
+      mixerRef.current = new THREE.AnimationMixer(roomGroup);
       const action = mixerRef.current.clipAction(animations[0]);
       action.play();
     }
@@ -172,7 +254,7 @@ const Room = forwardRef((props, ref) => {
     rectLight.position.set(7.68244, 7, 0.5);
     rectLight.rotation.x = -Math.PI / 2;
     rectLight.rotation.z = Math.PI / 4;
-    scene.add(rectLight);
+    roomGroup.add(rectLight);
     found.rectLight = rectLight;
 
     // Store rectLight ref for external access
@@ -220,6 +302,12 @@ const Room = forwardRef((props, ref) => {
       {...props}
     >
       {scene && <primitive object={scene} />}
+      {!scene && (
+        // Render fallback objects if model doesn't load
+        <group>
+          {/* Fallback objects will be added in useEffect */}
+        </group>
+      )}
     </group>
   );
 });

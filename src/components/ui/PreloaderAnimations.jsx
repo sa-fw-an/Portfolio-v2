@@ -26,24 +26,52 @@ const PreloaderAnimations = () => {
   const device = sizes.width < 968 ? 'mobile' : 'desktop';
 
   useGSAP(() => {
-    // Convert text elements to spans for animation
-    const convertTextElements = () => {
-      convertToSpans(document.querySelector('.intro-text'));
-      convertToSpans(document.querySelector('.hero-main-title'));
-      convertToSpans(document.querySelector('.hero-main-description'));
-      convertToSpans(document.querySelector('.hero-second-subheading'));
-      convertToSpans(document.querySelector('.second-sub'));
+    // Wait for assets to be ready before starting animations
+    const checkAssetsReady = () => {
+      return roomRef.current && childrenMap && Object.keys(childrenMap).length > 0;
     };
 
-    // First intro animation
+    const waitForAssets = () => {
+      return new Promise((resolve) => {
+        const check = () => {
+          if (checkAssetsReady()) {
+            resolve();
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        check();
+      });
+    };
+
+    // Convert text elements to spans for animation
+    const convertTextElements = () => {
+      // Wait for elements to exist in DOM
+      const elements = [
+        '.intro-text',
+        '.hero-main-title', 
+        '.hero-main-description',
+        '.hero-second-subheading',
+        '.second-sub'
+      ];
+      
+      elements.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+          convertToSpans(element);
+        }
+      });
+    };
+
+    // First intro animation (exact original sequence)
     const firstIntro = () => {
       return new Promise((resolve) => {
         const timeline = gsap.timeline();
         
-        // Set initial states
+        // Set initial states (exact original)
         timeline.set('.animatedis', { y: 0, yPercent: 100 });
         
-        // Hide preloader
+        // Hide preloader first (exact original timing)
         timeline.to('.preloader', {
           opacity: 0,
           delay: 1,
@@ -55,47 +83,48 @@ const PreloaderAnimations = () => {
           },
         });
 
-        // Animate cube and room (exact original behavior)
+        // Get references to room and cube
         const room = roomRef.current;
         const cube = childrenMap?.cube;
         
+        if (!room || !cube) {
+          console.warn('Room or cube not found, skipping first intro');
+          resolve();
+          return;
+        }
+
+        // Device-specific cube and room animations (exact original)
         if (device === 'desktop') {
-          if (cube) {
-            timeline.to(cube.scale, {
+          timeline
+            .to(cube.scale, {
               x: 1.4,
-              y: 1.4,
+              y: 1.4, 
               z: 1.4,
               ease: 'back.out(2.5)',
               duration: 0.7,
-            });
-          }
-          if (room) {
-            timeline.to(room.position, {
+            })
+            .to(room.position, {
               x: -1,
               ease: 'power1.out',
               duration: 0.7,
-            }, '<');
-          }
+            }, '<'); // Start at same time as cube animation
         } else {
-          if (cube) {
-            timeline.to(cube.scale, {
+          timeline
+            .to(cube.scale, {
               x: 1.4,
               y: 1.4,
               z: 1.4,
               ease: 'back.out(2.5)',
               duration: 0.7,
-            });
-          }
-          if (room) {
-            timeline.to(room.position, {
+            })
+            .to(room.position, {
               z: -1,
               ease: 'power1.out',
               duration: 0.7,
-            }, '<');
-          }
+            }, '<'); // Start at same time as cube animation
         }
 
-        // Animate intro text
+        // Animate intro text and UI elements (exact original)
         timeline
           .to('.intro-text .animatedis', {
             yPercent: 0,
@@ -117,7 +146,7 @@ const PreloaderAnimations = () => {
       return new Promise((resolve) => {
         const secondTimeline = gsap.timeline();
 
-        // Fade out intro elements
+        // Fade out intro elements (exact original)
         secondTimeline
           .to('.intro-text .animatedis', {
             yPercent: 100,
@@ -154,7 +183,7 @@ const PreloaderAnimations = () => {
               z: 1.3243,
             }, 'same');
 
-          // Set body visible and hide cube
+          // Set body/room visible and hide cube (exact original)
           if (parts.body) {
             secondTimeline.set(parts.body.scale, {
               x: 1,
@@ -171,7 +200,7 @@ const PreloaderAnimations = () => {
           }, 'introtext');
         }
 
-        // Animate hero text
+        // Animate hero text (exact original)
         secondTimeline
           .to('.hero-main-title .animatedis', {
             yPercent: 0,
@@ -194,9 +223,9 @@ const PreloaderAnimations = () => {
             ease: 'back.out(1.7)',
           }, 'introtext');
 
-        // Sequential room object reveals (exact original sequence)
+        // Sequential room object reveals (exact original sequence and timing)
         const showObject = (obj, delay = '>-0.5') => {
-          if (obj) {
+          if (obj && obj.scale) {
             secondTimeline.to(obj.scale, {
               x: 1,
               y: 1,
@@ -207,6 +236,7 @@ const PreloaderAnimations = () => {
           }
         };
 
+        // Reveal objects in exact original order
         showObject(parts.aquarium, '>-0.5');
         showObject(parts.clock, '>-0.4');
         showObject(parts.shelves, '>-0.3');
@@ -215,7 +245,7 @@ const PreloaderAnimations = () => {
         showObject(parts.table_stuff, '>-0.1');
         showObject(parts.computer);
 
-        // Mini floor and chair
+        // Mini floor and chair special handling (exact original)
         if (parts.mini_floor) {
           secondTimeline.set(parts.mini_floor.scale, {
             x: 1,
@@ -242,6 +272,7 @@ const PreloaderAnimations = () => {
 
         showObject(parts.fish, 'chair');
 
+        // Final arrow reveal (exact original)
         secondTimeline.to('.arrow-svg-wrapper', {
           opacity: 1,
           onComplete: resolve,
@@ -251,10 +282,16 @@ const PreloaderAnimations = () => {
 
     // Main animation sequence
     const playIntro = async () => {
+      // Wait for all assets to be ready
+      await waitForAssets();
+      
+      // Convert text elements
       convertTextElements();
+      
+      // Play first intro
       await firstIntro();
       
-      // Set up scroll listeners for second intro
+      // Set up scroll listeners for second intro (exact original)
       const handleScroll = (e) => {
         if (e.deltaY > 0) {
           playSecondIntro();
@@ -295,10 +332,10 @@ const PreloaderAnimations = () => {
       };
     };
 
-    // Start the intro sequence after a short delay
+    // Start the intro sequence
     const timer = setTimeout(() => {
       playIntro();
-    }, 2500);
+    }, 100); // Small delay to ensure DOM is ready
 
     return () => {
       clearTimeout(timer);

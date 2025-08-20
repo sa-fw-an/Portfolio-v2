@@ -2,10 +2,11 @@ import { useRef, useEffect } from 'react';
 import { personalInfo } from '../../constants/personal';
 
 const Hero = () => {
-  const container = useRef();
+  const containerRef = useRef();
   const mainTitleRef = useRef();
   const mainDescRef = useRef();
   const secondSubRef = useRef();
+  const firstSubRef = useRef();
 
   // Convert text to animated spans (exact original function)
   const convertToSpans = (element) => {
@@ -21,13 +22,15 @@ const Hero = () => {
   };
 
   useEffect(() => {
+    // Convert all text elements to spans for GSAP animation
     convertToSpans(mainTitleRef.current);
     convertToSpans(mainDescRef.current);
     convertToSpans(secondSubRef.current);
+    convertToSpans(firstSubRef.current);
   }, []);
 
   return (
-    <div ref={container} className="hero">
+    <div ref={containerRef} className="hero">
       <div className="hero-wrapper">
         {/* Main content - left side (exact original positioning) */}
         <div className="hero-main">
@@ -47,14 +50,15 @@ const Hero = () => {
 
         {/* Secondary content - right side (exact original structure) */}
         <div className="hero-second">
-          <h2 className="hero-second-subheading">
-            <span className="first-sub">
-              <span className="animatedis">{personalInfo.title}</span>
-            </span>
-          </h2>
+          <p 
+            ref={firstSubRef}
+            className="hero-second-subheading first-sub"
+          >
+            {personalInfo.name}
+          </p>
           <p 
             ref={secondSubRef}
-            className="second-sub"
+            className="hero-second-subheading second-sub"
           >
             {personalInfo.subtitle}
           </p>

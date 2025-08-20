@@ -2,6 +2,7 @@ import React, { createContext, useContext, useMemo, useRef, useState } from 'rea
 
 const ThreeContext = createContext(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useThreeContext = () => {
   const ctx = useContext(ThreeContext);
   if (!ctx) throw new Error('useThreeContext must be used within ThreeProvider');
