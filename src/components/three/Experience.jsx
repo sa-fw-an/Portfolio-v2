@@ -27,10 +27,11 @@ const Experience = () => {
         rotation={[-Math.PI / 6, 0, 0]}
         near={-50}
         far={50}
-        left={-5}
-        right={5}
-        top={5}
-        bottom={-5}
+        // Adjusted frustum for better proportions
+        left={-6}
+        right={6}
+        top={6}
+        bottom={-6}
         zoom={1}
         onUpdate={(camera) => setCamera?.(camera)}
       />

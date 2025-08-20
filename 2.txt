@@ -149,10 +149,11 @@ import { useRef, useEffect } from 'react';
 import { personalInfo } from '../../constants/personal';
 
 const Hero = () => {
-  const container = useRef();
+  const containerRef = useRef();
   const mainTitleRef = useRef();
   const mainDescRef = useRef();
   const secondSubRef = useRef();
+  const firstSubRef = useRef();
 
   // Convert text to animated spans (exact original function)
   const convertToSpans = (element) => {
@@ -168,13 +169,15 @@ const Hero = () => {
   };
 
   useEffect(() => {
+    // Convert all text elements to spans for GSAP animation
     convertToSpans(mainTitleRef.current);
     convertToSpans(mainDescRef.current);
     convertToSpans(secondSubRef.current);
+    convertToSpans(firstSubRef.current);
   }, []);
 
   return (
-    <div ref={container} className="hero">
+    <div ref={containerRef} className="hero">
       <div className="hero-wrapper">
         {/* Main content - left side (exact original positioning) */}
         <div className="hero-main">
@@ -189,21 +192,6 @@ const Hero = () => {
             className="hero-main-description"
           >
             {personalInfo.title}
-          </p>
-        </div>
-
-        {/* Secondary content - right side (exact original structure) */}
-        <div className="hero-second">
-          <h2 className="hero-second-subheading">
-            <span className="first-sub">
-              <span className="animatedis">{personalInfo.title}</span>
-            </span>
-          </h2>
-          <p 
-            ref={secondSubRef}
-            className="second-sub"
-          >
-            {personalInfo.subtitle}
           </p>
         </div>
       </div>
@@ -735,10 +723,11 @@ const Experience = () => {
         rotation={[-Math.PI / 6, 0, 0]}
         near={-50}
         far={50}
-        left={-5}
-        right={5}
-        top={5}
-        bottom={-5}
+        // Adjusted frustum for better proportions
+        left={-6}
+        right={6}
+        top={6}
+        bottom={-6}
         zoom={1}
         onUpdate={(camera) => setCamera?.(camera)}
       />
@@ -979,14 +968,17 @@ const Room = forwardRef((props, ref) => {
       found.mini_floor.position.z = 8.83572;
     }
 
-    // Create cube if not found (fallback)
+    // Create cube if not found (fallback) - FIXED VERSION
     let cube = found.cube;
     if (!cube) {
-      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+      // Create a more proportional cube geometry
+      const cubeGeometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
       const cubeMaterial = new THREE.MeshStandardMaterial({ 
         color: 0xe5a1aa, 
-        metalness: 0.2, 
-        roughness: 0.6 
+        metalness: 0.1, 
+        roughness: 0.7,
+        // Add some emissive to make it more visible
+        emissive: 0x111111,
       });
       cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
       cube.name = 'cube_fallback';
@@ -994,10 +986,13 @@ const Room = forwardRef((props, ref) => {
       found.cube = cube;
     }
 
-    // Cube positioning (exact original)
+    // FIXED Cube positioning - adjusted for better appearance with orthographic camera
     if (cube) {
-      cube.position.set(0, -1, 0);
-      cube.rotation.y = Math.PI / 4;
+      // Position the cube more towards the camera view center
+      // The camera is at [0, 6.5, 10] looking down at -30 degrees
+      // So we need to position the cube higher to account for the viewing angle
+      cube.position.set(0, 0.5, 0); // Raised from -1 to 0.5
+      cube.rotation.y = Math.PI / 4; // Keep the rotation
       cube.scale.set(0, 0, 0); // Start hidden
     }
 
@@ -2360,11 +2355,13 @@ h1, section, p, span, svg {
 
 .hero-main-title {
   font-size: 64px;
+  font-family: 'Open Sans', 'Helvetica Neue';
   color: var(--color-text);
 }
 
 .hero-main-description {
   font-size: 18px;
+  font-family: 'Open Sans', 'Helvetica Neue';
   color: var(--color-text);
 }
 
@@ -2567,7 +2564,7 @@ createRoot(document.getElementById('root')).render(
     <title>Safwan Sayeed - Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/index.css" />
   </head>
   <body>

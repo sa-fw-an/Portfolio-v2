@@ -47,22 +47,6 @@ const Hero = () => {
             {personalInfo.title}
           </p>
         </div>
-
-        {/* Secondary content - right side (exact original structure) */}
-        <div className="hero-second">
-          <p 
-            ref={firstSubRef}
-            className="hero-second-subheading first-sub"
-          >
-            {personalInfo.name}
-          </p>
-          <p 
-            ref={secondSubRef}
-            className="hero-second-subheading second-sub"
-          >
-            {personalInfo.subtitle}
-          </p>
-        </div>
       </div>
     </div>
   );
