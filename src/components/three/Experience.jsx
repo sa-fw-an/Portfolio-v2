@@ -40,7 +40,7 @@ const Experience = () => {
       
       {/* Environment preset maintained as requested */}
       <Environment preset="night" />
-      
+
       {/* 3D Objects */}
       <Floor ref={floorRef} />
       <Room ref={roomRef} />

@@ -2,7 +2,6 @@ import React, { createContext, useContext, useMemo, useRef, useState } from 'rea
 
 const ThreeContext = createContext(null);
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useThreeContext = () => {
   const ctx = useContext(ThreeContext);
   if (!ctx) throw new Error('useThreeContext must be used within ThreeProvider');
@@ -13,30 +12,33 @@ export const ThreeProvider = ({ children }) => {
   const roomRef = useRef(null);
   const floorRef = useRef(null);
   const rectLightRef = useRef(null);
+  
   const [camera, setCamera] = useState(null);
   const [childrenMap, setChildrenMap] = useState({});
   const [controlsEnabled, setControlsEnabled] = useState(false);
-  const [preloaderComplete, setPreloaderComplete] = useState(false);
 
   const value = useMemo(() => ({
-    // refs
+    // Three.js refs
     roomRef,
     floorRef,
     rectLightRef,
-    // camera
+    
+    // Camera
     camera,
     setCamera,
-    // mesh parts
+    
+    // Room object parts
     childrenMap,
     setChildrenMap,
-    // flow state
+    
+    // Animation flow control
     controlsEnabled,
     setControlsEnabled,
-    preloaderComplete,
-    setPreloaderComplete,
-  }), [camera, childrenMap, controlsEnabled, preloaderComplete]);
+  }), [camera, childrenMap, controlsEnabled]);
 
   return (
-    <ThreeContext.Provider value={value}>{children}</ThreeContext.Provider>
+    <ThreeContext.Provider value={value}>
+      {children}
+    </ThreeContext.Provider>
   );
 };

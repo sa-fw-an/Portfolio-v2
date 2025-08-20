@@ -1,5 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import 'tailwindcss';
+@import "tailwindcss";
+
+/* Import Montserrat Font */
+/* Configure Tailwind v4 Theme */
+@theme {
+  /* Font Configuration */
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  
+  /* Color Variables - matching original */
+  --color-text-light: #333332;
+  --color-background-light: #FAF4E5;
+  --color-pink-light: #e5a1aa;
+  --color-green-light: #7AD0AC;
+  --color-blue-light: #8395CD;
+  
+  --color-text-dark: #FAF4E5;
+  --color-background-dark: #8395CD;
+}
 
 /* CSS Variables for Theme */
 :root {
@@ -49,10 +66,6 @@ html, body {
 /* Force Montserrat on all text elements */
 h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select {
   font-family: 'Montserrat', sans-serif !important;
-}
-
-h1, section, p, span, svg {
-  transition: background-color 0.5s, color 0.5s;
 }
 
 h1, section, p, span, svg {

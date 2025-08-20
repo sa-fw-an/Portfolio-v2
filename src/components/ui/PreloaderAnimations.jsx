@@ -1,171 +1,312 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useThreeContext } from '../../contexts/ThreeContext';
 
+// Text to span conversion utility (exact original function)
+const convertToSpans = (element) => {
+  if (!element) return;
+  element.style.overflow = "hidden";
+  element.innerHTML = element.innerText
+    .split("")
+    .map((char) => {
+      if (char === " ") {
+        return `<span>&nbsp;</span>`;
+      }
+      return `<span class="animatedis">${char}</span>`;
+    })
+    .join("");
+  return element;
+};
+
 const PreloaderAnimations = () => {
   const timelineRef = useRef();
-
   const { roomRef, childrenMap, setControlsEnabled } = useThreeContext();
+  const sizes = { width: window.innerWidth, height: window.innerHeight };
+  const device = sizes.width < 968 ? 'mobile' : 'desktop';
 
-  useEffect(() => {
-    // Convert intro text to spans for animation
-    const convertToSpans = (element) => {
-      if (!element) return;
-      const text = element.textContent;
-      element.innerHTML = text
-        .split('')
-        .map(char => {
-          if (char === ' ') return '<span class="animatedis">&nbsp;</span>';
-          return `<span class="animatedis">${char}</span>`;
-        })
-        .join('');
+  useGSAP(() => {
+    // Convert text elements to spans for animation
+    const convertTextElements = () => {
+      convertToSpans(document.querySelector('.intro-text'));
+      convertToSpans(document.querySelector('.hero-main-title'));
+      convertToSpans(document.querySelector('.hero-main-description'));
+      convertToSpans(document.querySelector('.hero-second-subheading'));
+      convertToSpans(document.querySelector('.second-sub'));
     };
 
-    // Convert text elements - target the correct intro text
-    const introText = document.querySelector('.intro-text');
-    convertToSpans(introText);
+    // First intro animation
+    const firstIntro = () => {
+      return new Promise((resolve) => {
+        const timeline = gsap.timeline();
+        
+        // Set initial states
+        timeline.set('.animatedis', { y: 0, yPercent: 100 });
+        
+        // Hide preloader
+        timeline.to('.preloader', {
+          opacity: 0,
+          delay: 1,
+          onComplete: () => {
+            const preloader = document.querySelector('.preloader');
+            if (preloader) {
+              preloader.classList.add('hidden');
+            }
+          },
+        });
 
-  // Create timeline for preloader animations
-  timelineRef.current = gsap.timeline({ delay: 2.5 });
-    
-    // Hide preloader
-    timelineRef.current.to('.preloader', {
-      opacity: 0,
-      delay: 1,
-      onComplete: () => {
-        const preloader = document.querySelector('.preloader');
-        if (preloader) {
-          preloader.classList.add('hidden');
+        // Animate cube and room (exact original behavior)
+        const room = roomRef.current;
+        const cube = childrenMap?.cube;
+        
+        if (device === 'desktop') {
+          if (cube) {
+            timeline.to(cube.scale, {
+              x: 1.4,
+              y: 1.4,
+              z: 1.4,
+              ease: 'back.out(2.5)',
+              duration: 0.7,
+            });
+          }
+          if (room) {
+            timeline.to(room.position, {
+              x: -1,
+              ease: 'power1.out',
+              duration: 0.7,
+            }, '<');
+          }
+        } else {
+          if (cube) {
+            timeline.to(cube.scale, {
+              x: 1.4,
+              y: 1.4,
+              z: 1.4,
+              ease: 'back.out(2.5)',
+              duration: 0.7,
+            });
+          }
+          if (room) {
+            timeline.to(room.position, {
+              z: -1,
+              ease: 'power1.out',
+              duration: 0.7,
+            }, '<');
+          }
         }
-      }
-    });
 
-    // Initialize intro text visibility
-    timelineRef.current.set('.intro-text', { opacity: 1 });
-
-    // Animate intro text
-    timelineRef.current.to('.intro-text .animatedis', {
-      yPercent: 0,
-      stagger: 0.05,
-      ease: 'back.out(1.7)',
-    })
-    .to('.arrow-svg-wrapper', {
-      opacity: 1,
-    }, 'same')
-    .to('.toggle-bar', {
-      opacity: 1,
-    }, 'same');
-
-    // First intro also nudge cube/room if available
-    timelineRef.current.add(() => {
-      const room = roomRef.current;
-      const cube = childrenMap?.cube;
-      if (room && cube) {
-        gsap.to(cube.scale, { x: 1, y: 1, z: 1, duration: 0.7, ease: 'back.out(1.7)' });
-        gsap.to(room.position, { x: 0.2, y: 0.05, duration: 0.7, ease: 'power2.out' });
-      }
-    }, 'same');
-
-    // Add scroll event listener for second intro
-  const handleScroll = (e) => {
-      if (e.deltaY > 0) {
-        playSecondIntro();
-        window.removeEventListener('wheel', handleScroll);
-      }
+        // Animate intro text
+        timeline
+          .to('.intro-text .animatedis', {
+            yPercent: 0,
+            stagger: 0.05,
+            ease: 'back.out(1.7)',
+          })
+          .to('.arrow-svg-wrapper', {
+            opacity: 1,
+          }, 'same')
+          .to('.toggle-bar', {
+            opacity: 1,
+            onComplete: resolve,
+          }, 'same');
+      });
     };
 
-    const handleTouch = (e) => {
-      const initialY = e.touches[0].clientY;
+    // Second intro animation (exact original sequence)
+    const secondIntro = () => {
+      return new Promise((resolve) => {
+        const secondTimeline = gsap.timeline();
+
+        // Fade out intro elements
+        secondTimeline
+          .to('.intro-text .animatedis', {
+            yPercent: 100,
+            stagger: 0.05,
+            ease: 'back.in(1.7)',
+          }, 'fadeout')
+          .to('.arrow-svg-wrapper', {
+            opacity: 0,
+          }, 'fadeout');
+
+        // Room and cube transformations (exact original)
+        const room = roomRef.current;
+        const parts = childrenMap || {};
+
+        if (room && parts.cube) {
+          secondTimeline
+            .to(room.position, {
+              x: 0,
+              y: 0,
+              z: 0,
+              ease: 'power1.out',
+            }, 'same')
+            .to(parts.cube.rotation, {
+              y: 2 * Math.PI + Math.PI / 4,
+            }, 'same')
+            .to(parts.cube.scale, {
+              x: 10,
+              y: 10,
+              z: 10,
+            }, 'same')
+            .to(parts.cube.position, {
+              x: 0.638711,
+              y: 8.5618,
+              z: 1.3243,
+            }, 'same');
+
+          // Set body visible and hide cube
+          if (parts.body) {
+            secondTimeline.set(parts.body.scale, {
+              x: 1,
+              y: 1,
+              z: 1,
+            });
+          }
+
+          secondTimeline.to(parts.cube.scale, {
+            x: 0,
+            y: 0,
+            z: 0,
+            duration: 1,
+          }, 'introtext');
+        }
+
+        // Animate hero text
+        secondTimeline
+          .to('.hero-main-title .animatedis', {
+            yPercent: 0,
+            stagger: 0.07,
+            ease: 'back.out(1.7)',
+          }, 'introtext')
+          .to('.hero-main-description .animatedis', {
+            yPercent: 0,
+            stagger: 0.07,
+            ease: 'back.out(1.7)',
+          }, 'introtext')
+          .to('.first-sub .animatedis', {
+            yPercent: 0,
+            stagger: 0.07,
+            ease: 'back.out(1.7)',
+          }, 'introtext')
+          .to('.second-sub .animatedis', {
+            yPercent: 0,
+            stagger: 0.07,
+            ease: 'back.out(1.7)',
+          }, 'introtext');
+
+        // Sequential room object reveals (exact original sequence)
+        const showObject = (obj, delay = '>-0.5') => {
+          if (obj) {
+            secondTimeline.to(obj.scale, {
+              x: 1,
+              y: 1,
+              z: 1,
+              ease: 'back.out(2.2)',
+              duration: 0.5,
+            }, delay);
+          }
+        };
+
+        showObject(parts.aquarium, '>-0.5');
+        showObject(parts.clock, '>-0.4');
+        showObject(parts.shelves, '>-0.3');
+        showObject(parts.floor_items, '>-0.2');
+        showObject(parts.desks, '>-0.1');
+        showObject(parts.table_stuff, '>-0.1');
+        showObject(parts.computer);
+
+        // Mini floor and chair
+        if (parts.mini_floor) {
+          secondTimeline.set(parts.mini_floor.scale, {
+            x: 1,
+            y: 1,
+            z: 1,
+          });
+        }
+
+        if (parts.chair) {
+          secondTimeline
+            .to(parts.chair.scale, {
+              x: 1,
+              y: 1,
+              z: 1,
+              ease: 'back.out(2.2)',
+              duration: 0.5,
+            }, 'chair')
+            .to(parts.chair.rotation, {
+              y: 4 * Math.PI + Math.PI / 4,
+              ease: 'power2.out',
+              duration: 1,
+            }, 'chair');
+        }
+
+        showObject(parts.fish, 'chair');
+
+        secondTimeline.to('.arrow-svg-wrapper', {
+          opacity: 1,
+          onComplete: resolve,
+        });
+      });
+    };
+
+    // Main animation sequence
+    const playIntro = async () => {
+      convertTextElements();
+      await firstIntro();
       
-      const handleTouchMove = (moveEvent) => {
-        const currentY = moveEvent.touches[0].clientY;
-        const difference = initialY - currentY;
-        if (difference > 0) {
+      // Set up scroll listeners for second intro
+      const handleScroll = (e) => {
+        if (e.deltaY > 0) {
           playSecondIntro();
-          window.removeEventListener('touchstart', handleTouch);
-          window.removeEventListener('touchmove', handleTouchMove);
+          removeEventListeners();
         }
       };
 
-      window.addEventListener('touchmove', handleTouchMove, { once: true });
-    };
+      const handleTouch = (e) => {
+        const initialY = e.touches[0].clientY;
+        
+        const handleTouchMove = (moveEvent) => {
+          const currentY = moveEvent.touches[0].clientY;
+          const difference = initialY - currentY;
+          if (difference > 0) {
+            playSecondIntro();
+            removeEventListeners();
+          }
+        };
 
-  const playSecondIntro = () => {
-      const secondTimeline = gsap.timeline();
-      
-      secondTimeline.to('.intro-text .animatedis', {
-        yPercent: -100,
-        stagger: 0.05,
-        ease: 'back.in(1.7)',
-      })
-      .to('.arrow-svg-wrapper', {
-        opacity: 0,
-      }, 'same');
+        window.addEventListener('touchmove', handleTouchMove, { once: true });
+      };
 
-      // 3D reveal sequence
-  const room = roomRef.current;
-  const parts = childrenMap || {};
-      if (room) {
-        // spin/stretch cube and move camera-like effect via room
-        if (parts.cube) {
-          secondTimeline
-            .to(parts.cube.rotation, { y: `+=${Math.PI * 2 + Math.PI / 4}`, duration: 1.2, ease: 'power3.out' }, 'same')
-            .to(parts.cube.scale, { x: 1.1, y: 1.1, z: 10, duration: 0.9, ease: 'power2.out' }, 'same')
-            .to(parts.cube.position, { z: 1.35, duration: 0.9, ease: 'power2.out' }, 'same')
-            .to(parts.cube.scale, { x: 1, y: 1, z: 1, duration: 0.35, ease: 'back.out(2)' });
-        }
+      const removeEventListeners = () => {
+        window.removeEventListener('wheel', handleScroll);
+        window.removeEventListener('touchstart', handleTouch);
+      };
 
-        // reveal major parts in sequence
-        const show = (obj, label) => obj && secondTimeline.to(obj.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, label);
-        show(parts.aquarium, '>-0.5');
-        show(parts.clock, '>-0.4');
-        show(parts.shelves, '>-0.3');
-        show(parts.floor_items, '>-0.2');
-        show(parts.desks, '>-0.1');
-        show(parts.table_stuff, '>-0.1');
-        if (parts.computer) secondTimeline.to(parts.computer.scale, { x: 1, y: 1, z: 1, ease: 'back.out(2.2)', duration: 0.5 });
-  if (parts.mini_floor) secondTimeline.set(parts.mini_floor.scale, { x: 1, y: 1, z: 1 });
-        if (parts.chair) {
-          secondTimeline.to(parts.chair.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 'chair');
-          secondTimeline.to(parts.chair.rotation, { y: `+=${Math.PI / 2}`, duration: 1.0 }, 'chair');
-        }
-        if (parts.fish) secondTimeline.to(parts.fish.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 'chair');
-      }
+      const playSecondIntro = async () => {
+        await secondIntro();
+        setControlsEnabled(true);
+      };
 
-  secondTimeline.to('.arrow-svg-wrapper', { opacity: 1, onComplete: () => setControlsEnabled(true) });
-    };
-
-    setTimeout(() => {
       window.addEventListener('wheel', handleScroll);
       window.addEventListener('touchstart', handleTouch);
-    }, 2200);
 
-    // Hide arrow once hero leaves view and hide intro text properly
-    const onWindowScroll = () => {
-      const hero = document.querySelector('.hero');
-      if (!hero) return;
-      const rect = hero.getBoundingClientRect();
-      const heroBelowTop = rect.bottom <= 0 || rect.top <= -rect.height * 0.3;
-      if (heroBelowTop) {
-        gsap.to('.arrow-svg-wrapper', { opacity: 0, duration: 0.3, overwrite: true });
-        gsap.to('.intro-text', { opacity: 0, duration: 0.3, overwrite: true });
-        window.removeEventListener('scroll', onWindowScroll);
-      } else {
-        // Ensure intro text is visible when in hero
-        gsap.to('.intro-text', { opacity: 1, duration: 0.3, overwrite: true });
-      }
+      return () => {
+        removeEventListeners();
+      };
     };
-    window.addEventListener('scroll', onWindowScroll);
+
+    // Start the intro sequence after a short delay
+    const timer = setTimeout(() => {
+      playIntro();
+    }, 2500);
 
     return () => {
-      window.removeEventListener('wheel', handleScroll);
-      window.removeEventListener('touchstart', handleTouch);
-  if (timelineRef.current) {
+      clearTimeout(timer);
+      if (timelineRef.current) {
         timelineRef.current.kill();
       }
-  window.removeEventListener('scroll', onWindowScroll);
     };
-  }, [roomRef, childrenMap, setControlsEnabled]);
+  }, [roomRef, childrenMap, setControlsEnabled, device]);
 
   return null;
 };

@@ -286,317 +286,9 @@ const Projects = () => {
 };
 
 export default Projects;
-import { EventEmitter } from 'events';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-export default class Resources extends EventEmitter {
-  constructor(sources) {
-    super();
-    this.sources = sources;
-    this.items = {};
-    this.toLoad = sources.length;
-    this.loaded = 0;
-
-    this.setLoaders();
-    this.startLoading();
-  }
-
-  setLoaders() {
-    this.loaders = {
-      gltfLoader: new GLTFLoader(),
-      textureLoader: new THREE.TextureLoader()
-    };
-  }
-
-  startLoading() {
-    this.sources.forEach((source) => {
-      if (source.type === 'glbModel') {
-        this.loaders.gltfLoader.load(source.path, (file) => this.sourceLoaded(source, file));
-      } else if (source.type === 'videoTexture') {
-        const video = document.createElement('video');
-        video.src = source.path;
-        video.muted = true;
-        video.loop = true;
-        video.autoplay = true;
-        video.play();
-        const texture = new THREE.VideoTexture(video);
-        this.sourceLoaded(source, texture);
-      }
-    });
-  }
-
-  sourceLoaded(source, file) {
-    this.items[source.name] = file;
-    this.loaded++;
-    if (this.loaded === this.toLoad) this.emit('ready');
-  }
-}
-export default class Sizes {
-  constructor() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.pixelRatio = Math.min(window.devicePixelRatio, 2);
-  }
-
-  resize() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.pixelRatio = Math.min(window.devicePixelRatio, 2);
-  }
-}
-export default class Time {
-  constructor() {
-    this.start = Date.now();
-    this.current = this.start;
-    this.elapsed = 0;
-    this.delta = 16;
-  }
-
-  tick() {
-    const currentTime = Date.now();
-    this.delta = currentTime - this.current;
-    this.current = currentTime;
-    this.elapsed = this.current - this.start;
-  }
-}
-import * as THREE from 'three';
-import { useThree } from '@react-three/fiber';
-import { useEffect } from 'react';
-
-export default function Controls() {
-  const { camera } = useThree();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-      camera.position.y = -progress * 2;
-      camera.position.x = Math.sin(progress * Math.PI * 2) * 2;
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [camera]);
-
-  return null;
-}
-import * as THREE from 'three';
-import { useThree } from '@react-three/fiber';
-import { useEffect } from 'react';
-import { useTheme } from '../../../../contexts/ThemeContext';
-
-export default function Environment() {
-  const { scene } = useThree();
-  const { theme } = useTheme();
-
-  useEffect(() => {
-    const sunLight = new THREE.DirectionalLight('#ffffff', 3);
-    sunLight.position.set(-1.5, 7, 3);
-    scene.add(sunLight);
-
-    const ambientLight = new THREE.AmbientLight('#ffffff', 1);
-    scene.add(ambientLight);
-
-    const switchTheme = (newTheme) => {
-      const color = newTheme === 'dark' ? 0x8395CD : 0xffffff;
-      sunLight.color.set(color);
-      ambientLight.color.set(color);
-    };
-    switchTheme(theme);
-
-    return () => {
-      scene.remove(sunLight, ambientLight);
-    };
-  }, [scene, theme]);
-
-  return null;
-}
-import * as THREE from 'three';
-import { useThree } from '@react-three/fiber';
-
-export default function Room() {
-  const { scene } = useThree();
-  // Load and add room model here using useEffect or loaders
-  return null; // Placeholder
-}
-import * as THREE from 'three';
-import { EventEmitter } from 'events';
-import Room from './Room.js';
-import Environment from './Environment.js';
-
-export default class World extends EventEmitter {
-  constructor() {
-    super();
-    // Use useThree() if needed for scene access
-    this.room = new Room();
-    this.environment = new Environment();
-    this.emit('worldready');
-  }
-
-  update() {
-    this.room.update();
-  }
-}
-import * as THREE from 'three';
-import Experience from './Experience.jsx';
-
-export default class Camera {
-  constructor() {
-    this.experience = new Experience();
-    this.sizes = this.experience.sizes;
-    this.scene = this.experience.scene;
-    this.canvas = this.experience.canvas;
-
-    this.createPerspectiveCamera();
-  }
-
-  createPerspectiveCamera() {
-    this.perspectiveCamera = new THREE.PerspectiveCamera(
-      35,
-      this.sizes.width / this.sizes.height,
-      0.1,
-      1000
-    );
-    this.scene.add(this.perspectiveCamera);
-    this.perspectiveCamera.position.z = 5;
-  }
-
-  resize() {
-    this.perspectiveCamera.aspect = this.sizes.width / this.sizes.height;
-    this.perspectiveCamera.updateProjectionMatrix();
-  }
-
-  update() {
-    // Camera animations can be added here
-  }
-}
-import * as THREE from 'three';
-import Sizes from './Utils/Sizes.js';
-import Time from './Utils/Time.js';
-import Resources from './Utils/Resources.js';
-import { assetsData } from '../../../constants/assets.js';
-import Camera from './Camera.js';
-import Renderer from './Renderer.js';
-import World from './World/World.js';
-import Controls from './World/Controls.js';
-import Preloader from './Preloader.js';
-
-export default class Experience {
-  static instance;
-  
-  constructor(canvas) {
-    if (Experience.instance) {
-      return Experience.instance;
-    }
-    
-    Experience.instance = this;
-    this.canvas = canvas;
-    this.scene = new THREE.Scene();
-    this.time = new Time();
-    this.sizes = new Sizes();
-    this.camera = new Camera();
-    this.renderer = new Renderer();
-    this.resources = new Resources(assetsData);
-    this.world = new World();
-    this.preloader = new Preloader();
-
-    this.preloader.on('enablecontrols', () => {
-      this.controls = new Controls();
-    });
-
-    this.sizes.on('resize', () => {
-      this.resize();
-    });
-
-    this.time.on('update', () => {
-      this.update();
-    });
-  }
-
-  resize() {
-    this.camera.resize();
-    this.world.resize();
-    this.renderer.resize();
-  }
-
-  update() {
-    this.preloader.update();
-    this.camera.update();
-    this.world.update();
-    this.renderer.update();
-    if (this.controls) {
-      this.controls.update();
-    }
-  }
-}
-import { EventEmitter } from 'events';
-import Experience from './Experience.jsx';
-
-export default class Preloader extends EventEmitter {
-  constructor() {
-    super();
-    this.experience = new Experience();
-    this.scene = this.experience.scene;
-    this.sizes = this.experience.sizes;
-    this.resources = this.experience.resources;
-    this.camera = this.experience.camera;
-    this.world = this.experience.world;
-
-    this.world.on('worldready', () => {
-      this.playIntroAnimation();
-    });
-  }
-
-  playIntroAnimation() {
-    setTimeout(() => {
-      this.emit('enablecontrols');
-    }, 1000);
-  }
-
-  update() {
-    // Add preloader updates if needed
-  }
-}
-import * as THREE from 'three';
-import Experience from './Experience.jsx';
-
-export default class Renderer {
-  constructor() {
-    this.experience = new Experience();
-    this.sizes = this.experience.sizes;
-    this.scene = this.experience.scene;
-    this.canvas = this.experience.canvas;
-    this.camera = this.experience.camera;
-
-    this.setRenderer();
-  }
-
-  setRenderer() {
-    this.renderer = new THREE.WebGLRenderer({
-      canvas: this.canvas,
-      antialias: true,
-    });
-
-    this.renderer.physicallyCorrectLights = true;
-    this.renderer.outputEncoding = THREE.sRGBEncoding;
-    this.renderer.toneMapping = THREE.CineonToneMapping;
-    this.renderer.toneMappingExposure = 1.75;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.setSize(this.sizes.width, this.sizes.height);
-    this.renderer.setPixelRatio(this.sizes.pixelRatio);
-  }
-
-  resize() {
-    this.renderer.setSize(this.sizes.width, this.sizes.height);
-    this.renderer.setPixelRatio(this.sizes.pixelRatio);
-  }
-
-  update() {
-    this.renderer.render(this.scene, this.camera.perspectiveCamera);
-  }
-}
 import { useEffect, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
@@ -609,9 +301,8 @@ const Controls = ({ roomRef, floorRef }) => {
   const { controlsEnabled, childrenMap } = useThreeContext();
   const lenisRef = useRef(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (!controlsEnabled) {
-      // If controls aren't enabled yet, ensure no active triggers/lenis remain
       ScrollTrigger.getAll().forEach((t) => t.kill());
       if (lenisRef.current) {
         lenisRef.current.destroy();
@@ -623,9 +314,11 @@ const Controls = ({ roomRef, floorRef }) => {
     const setupScrollTriggers = () => {
       if (!roomRef.current || !floorRef.current) return;
 
-      // Initialize camera frustum if orthographic
-      const setOrthoFrustum = () => {
+      // Set initial camera and room positions (exact original)
+      if (camera && roomRef.current) {
+        camera.position.set(0, 6.5, 10);
         if (camera.isOrthographicCamera) {
+          camera.rotation.x = -Math.PI / 6;
           const aspect = size.width / size.height;
           const frustum = 5;
           camera.left = (-aspect * frustum) / 2;
@@ -634,233 +327,253 @@ const Controls = ({ roomRef, floorRef }) => {
           camera.bottom = -frustum / 2;
           camera.updateProjectionMatrix();
         }
-      };
-      setOrthoFrustum();
-
-      // Set initial camera and room positions
-      if (camera && roomRef.current) {
-        camera.position.set(0, 6.5, 10);
-        if (camera.isOrthographicCamera) camera.rotation.x = -Math.PI / 6;
-        if (camera.isOrthographicCamera) {
-          camera.zoom = 1;
-          camera.updateProjectionMatrix();
-        }
         roomRef.current.scale.set(0.11, 0.11, 0.11);
         roomRef.current.position.set(0, 0, 0);
       }
 
-      // Set page overflow to visible for scroll triggers
+      // Set page overflow for scroll triggers
       const pageElement = document.querySelector('.page');
       if (pageElement) {
         pageElement.style.overflow = 'visible';
       }
 
-      // Smooth scroll via Lenis and proxy to ScrollTrigger
+      // Smooth scroll with Lenis (exact original setup)
       if (!lenisRef.current) {
         const lenis = new Lenis({
           smoothWheel: true,
           lerp: 0.1,
         });
         lenisRef.current = lenis;
+        
         function raf(time) {
           lenis.raf(time);
           requestAnimationFrame(raf);
         }
         requestAnimationFrame(raf);
-        const scroller = document.documentElement;
-        ScrollTrigger.scrollerProxy(scroller, {
+
+        // ScrollTrigger proxy setup
+        ScrollTrigger.scrollerProxy(document.documentElement, {
           scrollTop(value) {
             if (arguments.length) {
               lenis.scrollTo(value, { immediate: true });
             }
-            // Lenis v1 stores scroll in lenis.scroll; fallback to window scrollY
             return lenis.scroll || window.scrollY || 0;
           },
           getBoundingClientRect() {
-            return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+            return { 
+              top: 0, 
+              left: 0, 
+              width: window.innerWidth, 
+              height: window.innerHeight 
+            };
           },
         });
+        
         lenis.on('scroll', ScrollTrigger.update);
-        ScrollTrigger.defaults({ scroller });
+        ScrollTrigger.defaults({ scroller: document.documentElement });
       }
 
-          // Helper: create a zoom tween step within timelines (reversible)
-          const zoomStep = (tl, value, label = '<', duration = 0.6) => {
-            if (!camera.isOrthographicCamera) return tl;
-            return tl.to(
-              camera,
-              {
-                zoom: value,
-                duration,
-                overwrite: 'auto',
-                onUpdate: () => camera.updateProjectionMatrix(),
-              },
-              label
-            );
-          };
-
-      // MatchMedia to split Desktop/Mobile
+      // Desktop/Mobile responsive animations (exact original)
       ScrollTrigger.matchMedia({
+        // Desktop
         '(min-width: 969px)': () => {
-          // Desktop initial
+          // Reset positions
           roomRef.current.scale.set(0.11, 0.11, 0.11);
           camera.position.set(0, 6.5, 10);
 
-          // 1) First section (content left => move room to right)
-          let tl1 = gsap.timeline({
+          // First section (exact original)
+          const firstMoveTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: '.first-move',
-              start: 'top 70%',
-              end: 'top 15%',
+              start: 'top top',
+              end: 'bottom bottom',
               scrub: 0.6,
+              invalidateOnRefresh: true,
+            },
+          });
+          firstMoveTimeline.fromTo(
+            roomRef.current.position,
+            { x: 0, y: 0, z: 0 },
+            {
+              x: () => {
+                return size.width * 0.0014;
+              },
             }
-          })
-            .to(roomRef.current.position, { x: 1.8, y: 0, z: 0 })
-            .to(camera.position, { y: 6.2, x: 0.25 }, '<');
-          zoomStep(tl1, 1.3, '<', 0.6);
+          );
 
-          // 2) Second section (content right => move room to left)
-          let tl2 = gsap.timeline({
+          // Second section (exact original)
+          const secondMoveTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: '.second-move',
-              start: 'top 85%',
-              end: 'top 25%',
+              start: 'top top',
+              end: 'bottom bottom',
               scrub: 0.6,
-            }
+              invalidateOnRefresh: true,
+            },
           })
-            .to(roomRef.current.scale, { x: 0.13, y: 0.13, z: 0.13 }, 'same')
-            .to(roomRef.current.position, { x: -0.9, y: 0.2 }, 'same')
-            .to(camera.position, { x: 0.2, y: 5.9 }, 'same');
-          zoomStep(tl2, 1.25, 'same', 0.8);
+          .to(
+            roomRef.current.position,
+            {
+              x: () => 1,
+              z: () => size.height * 0.0032,
+            },
+            'same'
+          )
+          .to(
+            roomRef.current.scale,
+            {
+              x: 0.4,
+              y: 0.4,
+              z: 0.4,
+            },
+            'same'
+          );
 
-          // 3) Third section (content left => move room to right and push in, but keep framed)
-          let tl3 = gsap.timeline({
+          // Third section (exact original)
+          const thirdMoveTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: '.third-move',
-              start: 'top 95%',
-              end: 'top 35%',
+              start: 'top top',
+              end: 'bottom bottom',
               scrub: 0.6,
-            }
-          })
-            .to(roomRef.current.position, { x: 0.5, z: -2.2 })
-            .to(camera.position, { x: 0.1, y: 5.6 }, '<')
-            .to(camera.rotation, { x: -Math.PI / 6.1 }, '<');
-          zoomStep(tl3, 1.28, '<', 0.8);
-
-          // 4) Fourth section (content right => move room to left again)
-          let tl4 = gsap.timeline({
-            scrollTrigger: {
-              trigger: '.fourth-move',
-              start: 'top 95%',
-              end: 'top 35%',
-              scrub: 0.6,
-            }
-          })
-            .to(roomRef.current.position, { x: -0.8, z: -3.2 })
-            .to(camera.position, { x: 0.2, y: 5.4 }, '<');
-          zoomStep(tl4, 1.32, '<', 0.8);
+              invalidateOnRefresh: true,
+            },
+          }).to(camera.position, {
+            y: 1.5,
+            x: -4.1,
+          });
         },
 
+        // Mobile
         '(max-width: 968px)': () => {
-          // Mobile initial
+          // Reset positions
           roomRef.current.scale.set(0.07, 0.07, 0.07);
+          roomRef.current.position.set(0, 0, 0);
           camera.position.set(0, 6.5, 10);
 
-          // 1) First section (content left => move room to right)
-          let mtl1 = gsap.timeline({
+          // First section
+          const firstMoveTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: '.first-move',
-              start: 'top 75%',
-              end: 'top 25%',
+              start: 'top top',
+              end: 'bottom bottom',
               scrub: 0.6,
-            }
-          })
-            .to(roomRef.current.scale, { x: 1.7, y: 0.1, z: 0.1 })
-            .to(roomRef.current.position, { x: 0.4 }, '<');
-          zoomStep(mtl1, 2, '<', 0.6);
+            },
+          }).to(roomRef.current.scale, {
+            x: 0.1,
+            y: 0.1,
+            z: 0.1,
+          });
 
-          // 2) Second section (content right => move room to left)
-          let mtl2 = gsap.timeline({
+          // Second section
+          const secondMoveTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: '.second-move',
-              start: 'top 85%',
-              end: 'top 35%',
+              start: 'top top',
+              end: 'bottom bottom',
               scrub: 0.6,
-            }
+              invalidateOnRefresh: true,
+            },
           })
-            .to(roomRef.current.position, { x: -0.6, y: 0.3 }, 'same')
-            .to(roomRef.current.scale, { x: 0.12, y: 0.12, z: 0.12 }, 'same');
-          zoomStep(mtl2, 1.22, 'same', 0.6);
+          .to(
+            roomRef.current.scale,
+            {
+              x: 0.25,
+              y: 0.25,
+              z: 0.25,
+            },
+            'same'
+          )
+          .to(
+            roomRef.current.position,
+            {
+              x: 1.5,
+            },
+            'same'
+          );
 
-          // 3) Third section (content left => move room to right and push in)
-          let mtl3 = gsap.timeline({
+          // Third section
+          const thirdMoveTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: '.third-move',
-              start: 'top 95%',
-              end: 'top 45%',
+              start: 'top top',
+              end: 'bottom bottom',
               scrub: 0.6,
-            }
-          })
-            .to(roomRef.current.position, { x: 0.4, z: -3.8 });
-          zoomStep(mtl3, 1.25, '<', 0.6);
-
-          // 4) Fourth section (content right => move room to left again)
-          let mtl4 = gsap.timeline({
-            scrollTrigger: {
-              trigger: '.fourth-move',
-              start: 'top 95%',
-              end: 'top 45%',
-              scrub: 0.6,
-            }
-          })
-            .to(roomRef.current.position, { x: -0.5, z: -4.2 });
-          zoomStep(mtl4, 1.28, '<', 0.6);
+              invalidateOnRefresh: true,
+            },
+          }).to(roomRef.current.position, {
+            z: -4.5,
+          });
         },
 
-        'all': () => {
-          // Reset zoom to original when scrolling back to hero (reversible and strong)
-          if (camera.isOrthographicCamera) {
-            const resetTl = gsap.timeline({
-              scrollTrigger: {
-                trigger: '.hero',
-                start: 'top 80%',
-                end: 'bottom 20%',
-                scrub: 0.3,
-                onUpdate: (self) => {
-                  // Ensure camera resets properly when scrolling back up
-                  if (self.direction === -1) {
-                    camera.zoom = 1;
-                    camera.updateProjectionMatrix();
-                  }
+        // All devices
+        all: () => {
+          // Section borders and progress bars (exact original)
+          const sections = document.querySelectorAll('.section');
+          sections.forEach((section) => {
+            const progressWrapper = section.querySelector('.progress-wrapper');
+            const progressBar = section.querySelector('.progress-bar');
+
+            if (section.classList.contains('right')) {
+              gsap.to(section, {
+                borderTopLeftRadius: 10,
+                scrollTrigger: {
+                  trigger: section,
+                  start: 'top bottom',
+                  end: 'top top',
+                  scrub: 0.6,
+                },
+              });
+              gsap.to(section, {
+                borderBottomLeftRadius: 700,
+                scrollTrigger: {
+                  trigger: section,
+                  start: 'bottom bottom',
+                  end: 'bottom top',
+                  scrub: 0.6,
+                },
+              });
+            } else {
+              gsap.to(section, {
+                borderTopRightRadius: 10,
+                scrollTrigger: {
+                  trigger: section,
+                  start: 'top bottom',
+                  end: 'top top',
+                  scrub: 0.6,
+                },
+              });
+              gsap.to(section, {
+                borderBottomRightRadius: 700,
+                scrollTrigger: {
+                  trigger: section,
+                  start: 'bottom bottom',
+                  end: 'bottom top',
+                  scrub: 0.6,
+                },
+              });
+            }
+
+            if (progressBar) {
+              gsap.fromTo(
+                progressBar,
+                { scaleY: 0 },
+                {
+                  scaleY: 1,
+                  scrollTrigger: {
+                    trigger: section,
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 0.4,
+                    pin: progressWrapper,
+                    pinSpacing: false,
+                  },
                 }
-              }
-            });
-            resetTl.to(camera, {
-              zoom: 1,
-              duration: 0.4,
-              ease: 'power2.out',
-              overwrite: 'auto',
-              onUpdate: () => camera.updateProjectionMatrix(),
-            });
-            
-            // Additional reset for room position when back in hero
-            const roomResetTl = gsap.timeline({
-              scrollTrigger: {
-                trigger: '.hero',
-                start: 'top 80%',
-                end: 'bottom 20%',
-                scrub: 0.3,
-              }
-            });
-            roomResetTl.to(roomRef.current.position, {
-              x: 0,
-              y: 0,
-              z: 0,
-              duration: 0.4,
-              ease: 'power2.out',
-            });
-          }
-          // Floor circles with proper indexing
+              );
+            }
+          });
+
+          // Floor circles animation (exact original)
           if (floorRef.current) {
             const circles = [];
             floorRef.current.traverse((child) => {
@@ -868,57 +581,102 @@ const Controls = ({ roomRef, floorRef }) => {
                 circles.push(child);
               }
             });
-            
+
             if (circles.length >= 3) {
               const [first, second, third] = circles;
-              if (first) gsap.timeline({ scrollTrigger: { trigger: '.first-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(first.scale, { x: 3, y: 3, z: 3 });
-              if (second) gsap.timeline({ scrollTrigger: { trigger: '.second-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(second.scale, { x: 3, y: 3, z: 3 });
-              if (third) gsap.timeline({ scrollTrigger: { trigger: '.third-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(third.scale, { x: 3, y: 3, z: 3 });
+              
+              // First circle
+              gsap.timeline({
+                scrollTrigger: {
+                  trigger: '.first-move',
+                  start: 'top top',
+                  end: 'bottom bottom',
+                  scrub: 0.6,
+                },
+              }).to(first.scale, {
+                x: 3,
+                y: 3,
+                z: 3,
+              });
+
+              // Second circle
+              gsap.timeline({
+                scrollTrigger: {
+                  trigger: '.second-move',
+                  start: 'top top',
+                  end: 'bottom bottom',
+                  scrub: 0.6,
+                },
+              }).to(second.scale, {
+                x: 3,
+                y: 3,
+                z: 3,
+              });
+
+              // Third circle
+              gsap.timeline({
+                scrollTrigger: {
+                  trigger: '.third-move',
+                  start: 'top top',
+                  end: 'bottom bottom',
+                  scrub: 0.6,
+                },
+              }).to(third.scale, {
+                x: 3,
+                y: 3,
+                z: 3,
+              });
             }
           }
 
-          // Sections progress bars & radii
-          const sections = document.querySelectorAll('.section');
-          sections.forEach((section) => {
-            const progressBar = section.querySelector('.progress-bar');
-            const progressWrapper = section.querySelector('.progress-wrapper');
-            if (progressBar) {
-              gsap.fromTo(progressBar, { scaleY: 0 }, { scaleY: 1, scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.4, pin: progressWrapper, pinSpacing: false } });
-            }
-            if (section.classList.contains('right')) {
-              gsap.to(section, { borderTopLeftRadius: 10, scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top', scrub: 0.6 } });
-              gsap.to(section, { borderBottomLeftRadius: 700, scrollTrigger: { trigger: section, start: 'bottom bottom', end: 'bottom top', scrub: 0.6 } });
-            } else {
-              gsap.to(section, { borderTopRightRadius: 10, scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top', scrub: 0.6 } });
-              gsap.to(section, { borderBottomRightRadius: 700, scrollTrigger: { trigger: section, start: 'bottom bottom', end: 'bottom top', scrub: 0.6 } });
-            }
-          });
+          // Mini-platform animations (exact original)
+          if (childrenMap && Object.keys(childrenMap).length) {
+            const secondPartTimeline = gsap.timeline({
+              scrollTrigger: {
+                trigger: '.third-move',
+                start: 'center center',
+              },
+            });
 
-            // Mini-platform / pathway pieces reveal on second section center
-            if (childrenMap && Object.keys(childrenMap).length) {
-              const tl = gsap.timeline({
-                scrollTrigger: { trigger: '.second-move', start: 'center center' }
+            const parts = childrenMap;
+            
+            // Sequential mini platform reveals (exact original timing)
+            if (parts.mini_floor) {
+              secondPartTimeline.to(parts.mini_floor.position, {
+                x: -5.44055,
+                z: 13.6135,
+                duration: 0.3,
               });
-              const parts = childrenMap;
-              const show = (obj, shift='>-0.15') => obj && tl.to(obj.scale, { x: 1, y: 1, z: 1, duration: 0.35 }, shift);
-              show(parts.mailbox, '+=0');
-              show(parts.lamp);
-              show(parts.floor_first);
-              show(parts.floor_second);
-              show(parts.floor_third);
-              show(parts.dirt);
-              show(parts.flower1);
-              show(parts.flower2);
             }
-        }
-      });
 
+            const animateObject = (obj, delay = '+=0') => {
+              if (obj) {
+                secondPartTimeline.to(obj.scale, {
+                  x: 1,
+                  y: 1,
+                  z: 1,
+                  duration: 0.3,
+                  ease: 'back.out(2)',
+                }, delay);
+              }
+            };
+
+            animateObject(parts.mailbox, '+=0');
+            animateObject(parts.lamp, '+=0');
+            animateObject(parts.floor_first, '-=0.2');
+            animateObject(parts.floor_second, '-=0.2');
+            animateObject(parts.floor_third, '-=0.2');
+            animateObject(parts.dirt, '-=0.2');
+            animateObject(parts.flower1, '+=0');
+            animateObject(parts.flower2, '-=0.1');
+          }
+        },
+      });
     };
 
-    // Setup scroll triggers
     setupScrollTriggers();
 
-    // Update ortho frustum on resize
+    // Update on resize
     const onResize = () => {
       if (camera.isOrthographicCamera) {
         const aspect = size.width / size.height;
@@ -931,6 +689,7 @@ const Controls = ({ roomRef, floorRef }) => {
       }
       ScrollTrigger.refresh();
     };
+    
     window.addEventListener('resize', onResize);
 
     return () => {
@@ -989,7 +748,7 @@ const Experience = () => {
       
       {/* Environment preset maintained as requested */}
       <Environment preset="night" />
-      
+
       {/* 3D Objects */}
       <Floor ref={floorRef} />
       <Room ref={roomRef} />
@@ -1096,29 +855,27 @@ const Lights = ({ theme }) => {
 };
 
 export default Lights;
-import React, { useRef, useEffect, forwardRef } from 'react';
+import { useRef, useEffect, forwardRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { useThreeContext } from '../../contexts/ThreeContext';
-import { ROOM_PARTS } from '../../constants/roomParts';
 
 const Room = forwardRef((props, ref) => {
   const internalRef = useRef();
+  const mixerRef = useRef(null);
+  
   // Enable DRACO decoding if model is compressed
   useGLTF.setDecoderPath('/draco/');
   const { scene, animations } = useGLTF('/models/room.glb');
-  const mixerRef = useRef(null);
 
   const { setChildrenMap, roomRef: sharedRoomRef, rectLightRef } = useThreeContext();
 
-  // Mouse movement effect
-  const mouse = useRef({ x: 0, y: 0 });
   const lerp = useRef({ current: 0, target: 0, ease: 0.1 });
 
   const handleMouseMove = (event) => {
-    mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
-    lerp.current.target = mouse.current.x * 0.05;
+    const rotation = ((event.clientX - window.innerWidth / 2) * 2) / window.innerWidth;
+    lerp.current.target = rotation * 0.05;
   };
 
   useEffect(() => {
@@ -1128,99 +885,139 @@ const Room = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (!scene) return;
-    // Build children map from ROOM_PARTS
+
+    // Build children map with exact original naming
     const found = {};
+    const roomPartMap = {
+      cube: ['Cube', 'cube'],
+      aquarium: ['Aquarium', 'aquarium', 'FishTank', 'fish_tank'],
+      computer: ['Computer', 'computer', 'PC', 'pc'],
+      screen: ['Screen', 'screen', 'Monitor_Screen'],
+      clock: ['Clock', 'clock'],
+      shelves: ['Shelves', 'shelves', 'Shelf', 'shelf'],
+      floor_items: ['Floor_Items', 'floor_items', 'FloorItems'],
+      desks: ['Desks', 'desks', 'Desk', 'desk', 'Table', 'table'],
+      table_stuff: ['Table_Stuff', 'table_stuff', 'TableStuff'],
+      mini_floor: ['Mini_Floor', 'mini_floor'],
+      chair: ['Chair', 'chair'],
+      fish: ['Fish', 'fish'],
+      body: ['Body', 'body', 'Room', 'room'],
+      // Mini platform pieces
+      mailbox: ['Mailbox', 'mailbox'],
+      lamp: ['Lamp', 'lamp'],
+      floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
+      floor_second: ['FloorSecond', 'floorsecond', 'Floor_Second', 'floor_second'],
+      floor_third: ['FloorThird', 'floorthird', 'Floor_Third', 'floor_third'],
+      dirt: ['Dirt', 'dirt'],
+      flower1: ['Flower1', 'flower1', 'Flower_1'],
+      flower2: ['Flower2', 'flower2', 'Flower_2'],
+    };
+
     const indexByName = (name) => name?.toLowerCase?.() || '';
 
-  const names = [];
     scene.traverse((child) => {
       if (child.isMesh || child.isGroup) {
         child.castShadow = true;
         child.receiveShadow = true;
       }
+
       const lc = indexByName(child.name);
-      if (child.name) names.push(child.name);
-      Object.entries(ROOM_PARTS).forEach(([key, candidates]) => {
+      Object.entries(roomPartMap).forEach(([key, candidates]) => {
         if (found[key]) return;
         if (candidates.some((n) => indexByName(n) === lc)) {
           found[key] = child;
         }
       });
     });
-  // One-time list to help mapping while integrating names
-    if (!window.__ROOM_NODE_LOGGED__) {
-      window.__ROOM_NODE_LOGGED__ = true;
-  console.log('[Room] GLB nodes:', names);
-    }
 
-    // Aquarium glass material
+    // Aquarium glass material (exact original)
     if (found.aquarium) {
-      const mat = new THREE.MeshPhysicalMaterial({
+      const glassMaterial = new THREE.MeshPhysicalMaterial({
         color: 0x549dd2,
         roughness: 0,
         transmission: 1,
-        ior: 1.5,
-        transparent: true,
+        ior: 3,
         opacity: 1,
         depthWrite: false,
+        depthTest: false,
       });
-      if (found.aquarium.isGroup && found.aquarium.children[0]?.material) {
-        found.aquarium.children[0].material = mat;
+      
+      if (found.aquarium.children?.[0]?.material) {
+        found.aquarium.children[0].material = glassMaterial;
       } else if (found.aquarium.material) {
-        found.aquarium.material = mat;
+        found.aquarium.material = glassMaterial;
       }
     }
 
-    // Video texture on screen
+    // Computer screen video texture (exact original)
     if (found.computer || found.screen) {
       const video = document.createElement('video');
-      video.src = '/textures/coding.mp4';
+      video.src = '/textures/coding.mp4'; // Make sure this video exists
       video.muted = true;
       video.loop = true;
       video.playsInline = true;
       video.autoplay = true;
       video.play();
-      const tex = new THREE.VideoTexture(video);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      const mat = new THREE.MeshBasicMaterial({ map: tex });
-      const target = found.screen || (found.computer?.children?.[1]);
-      if (target && target.material) target.material = mat;
+      
+      const videoTexture = new THREE.VideoTexture(video);
+      videoTexture.minFilter = THREE.NearestFilter;
+      videoTexture.magFilter = THREE.NearestFilter;
+      videoTexture.generateMipmaps = false;
+      videoTexture.colorSpace = THREE.SRGBColorSpace;
+      
+      const screenMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+      
+      const target = found.screen || found.computer?.children?.[1];
+      if (target?.material) {
+        target.material = screenMaterial;
+      }
     }
 
-    // Position tweak for mini floor
+    // Mini floor positioning (exact original)
     if (found.mini_floor) {
       found.mini_floor.position.x = -0.289521;
       found.mini_floor.position.z = 8.83572;
     }
 
-    // Hide known parts initially (scale 0) for staged reveal; leave others visible
-    const hideKeys = [
-      'aquarium','clock','shelves','floor_items','desks','table_stuff','computer','mini_floor','chair','fish',
-      // mini-platform/pathway pieces
-      'mailbox','lamp','floor_first','floor_second','floor_third','dirt','flower1','flower2'
-    ];
-    hideKeys.forEach((k) => {
-      const obj = found[k];
-      if (obj && obj.scale && obj.scale.set) obj.scale.set(0,0,0);
-    });
+    // Create cube if not found (fallback)
     let cube = found.cube;
     if (!cube) {
-      // Fallback cube if model doesn't provide one
-      const geo = new THREE.BoxGeometry(1, 1, 1);
-      const mat = new THREE.MeshStandardMaterial({ color: 0xe5a1aa, metalness: 0.2, roughness: 0.6 });
-      cube = new THREE.Mesh(geo, mat);
+      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+      const cubeMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xe5a1aa, 
+        metalness: 0.2, 
+        roughness: 0.6 
+      });
+      cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
       cube.name = 'cube_fallback';
       scene.add(cube);
       found.cube = cube;
     }
+
+    // Cube positioning (exact original)
     if (cube) {
       cube.position.set(0, -1, 0);
       cube.rotation.y = Math.PI / 4;
-      // Ensure cube visible to animate in
-      if (cube.scale && cube.scale.set) cube.scale.set(1,1,1);
+      cube.scale.set(0, 0, 0); // Start hidden
     }
 
-    // Mixer for animations
+    // Hide all objects initially for staged reveal (exact original behavior)
+    const hideObjects = [
+      'aquarium', 'clock', 'shelves', 'floor_items', 'desks', 'table_stuff', 
+      'computer', 'mini_floor', 'chair', 'fish',
+      // Mini platform pieces
+      'mailbox', 'lamp', 'floor_first', 'floor_second', 'floor_third', 
+      'dirt', 'flower1', 'flower2'
+    ];
+
+    hideObjects.forEach((key) => {
+      const obj = found[key];
+      if (obj?.scale?.set) {
+        obj.scale.set(0, 0, 0);
+      }
+    });
+
+    // Animation mixer setup (exact original)
     if (animations.length) {
       mixerRef.current = new THREE.AnimationMixer(scene);
       const action = mixerRef.current.clipAction(animations[0]);
@@ -1240,21 +1037,26 @@ const Room = forwardRef((props, ref) => {
       rectLightRef.current = rectLight;
     }
 
-    // Share map
+    // Share the children map
     setChildrenMap(found);
+
   }, [scene, animations, setChildrenMap, rectLightRef]);
 
+  // Animation loop (exact original)
   useFrame((state) => {
     const roomRef = ref?.current || internalRef.current;
+    
     if (roomRef) {
+      // Mouse lerp rotation (exact original)
       lerp.current.current = THREE.MathUtils.lerp(
         lerp.current.current,
         lerp.current.target,
         lerp.current.ease
       );
       roomRef.rotation.y = lerp.current.current;
-      roomRef.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
     }
+
+    // Animation mixer update (exact original)
     if (mixerRef.current) {
       mixerRef.current.update(state.clock.getDelta() * 0.9);
     }
@@ -1274,17 +1076,17 @@ const Room = forwardRef((props, ref) => {
       position={[0, 0, 0]}
       {...props}
     >
-  {scene && <primitive object={scene} />}
+      {scene && <primitive object={scene} />}
     </group>
   );
 });
 
 Room.displayName = 'Room';
 
-export default Room;
-
 // Preload model to avoid jank on first reveal
 useGLTF.preload('/models/room.glb');
+
+export default Room;
 import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback } from 'react';
 import * as THREE from 'three';
@@ -1374,174 +1176,315 @@ const Preloader = () => {
 };
 
 export default Preloader;
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useThreeContext } from '../../contexts/ThreeContext';
 
+// Text to span conversion utility (exact original function)
+const convertToSpans = (element) => {
+  if (!element) return;
+  element.style.overflow = "hidden";
+  element.innerHTML = element.innerText
+    .split("")
+    .map((char) => {
+      if (char === " ") {
+        return `<span>&nbsp;</span>`;
+      }
+      return `<span class="animatedis">${char}</span>`;
+    })
+    .join("");
+  return element;
+};
+
 const PreloaderAnimations = () => {
   const timelineRef = useRef();
-
   const { roomRef, childrenMap, setControlsEnabled } = useThreeContext();
+  const sizes = { width: window.innerWidth, height: window.innerHeight };
+  const device = sizes.width < 968 ? 'mobile' : 'desktop';
 
-  useEffect(() => {
-    // Convert intro text to spans for animation
-    const convertToSpans = (element) => {
-      if (!element) return;
-      const text = element.textContent;
-      element.innerHTML = text
-        .split('')
-        .map(char => {
-          if (char === ' ') return '<span class="animatedis">&nbsp;</span>';
-          return `<span class="animatedis">${char}</span>`;
-        })
-        .join('');
+  useGSAP(() => {
+    // Convert text elements to spans for animation
+    const convertTextElements = () => {
+      convertToSpans(document.querySelector('.intro-text'));
+      convertToSpans(document.querySelector('.hero-main-title'));
+      convertToSpans(document.querySelector('.hero-main-description'));
+      convertToSpans(document.querySelector('.hero-second-subheading'));
+      convertToSpans(document.querySelector('.second-sub'));
     };
 
-    // Convert text elements - target the correct intro text
-    const introText = document.querySelector('.intro-text');
-    convertToSpans(introText);
+    // First intro animation
+    const firstIntro = () => {
+      return new Promise((resolve) => {
+        const timeline = gsap.timeline();
+        
+        // Set initial states
+        timeline.set('.animatedis', { y: 0, yPercent: 100 });
+        
+        // Hide preloader
+        timeline.to('.preloader', {
+          opacity: 0,
+          delay: 1,
+          onComplete: () => {
+            const preloader = document.querySelector('.preloader');
+            if (preloader) {
+              preloader.classList.add('hidden');
+            }
+          },
+        });
 
-  // Create timeline for preloader animations
-  timelineRef.current = gsap.timeline({ delay: 2.5 });
-    
-    // Hide preloader
-    timelineRef.current.to('.preloader', {
-      opacity: 0,
-      delay: 1,
-      onComplete: () => {
-        const preloader = document.querySelector('.preloader');
-        if (preloader) {
-          preloader.classList.add('hidden');
+        // Animate cube and room (exact original behavior)
+        const room = roomRef.current;
+        const cube = childrenMap?.cube;
+        
+        if (device === 'desktop') {
+          if (cube) {
+            timeline.to(cube.scale, {
+              x: 1.4,
+              y: 1.4,
+              z: 1.4,
+              ease: 'back.out(2.5)',
+              duration: 0.7,
+            });
+          }
+          if (room) {
+            timeline.to(room.position, {
+              x: -1,
+              ease: 'power1.out',
+              duration: 0.7,
+            }, '<');
+          }
+        } else {
+          if (cube) {
+            timeline.to(cube.scale, {
+              x: 1.4,
+              y: 1.4,
+              z: 1.4,
+              ease: 'back.out(2.5)',
+              duration: 0.7,
+            });
+          }
+          if (room) {
+            timeline.to(room.position, {
+              z: -1,
+              ease: 'power1.out',
+              duration: 0.7,
+            }, '<');
+          }
         }
-      }
-    });
 
-    // Initialize intro text visibility
-    timelineRef.current.set('.intro-text', { opacity: 1 });
-
-    // Animate intro text
-    timelineRef.current.to('.intro-text .animatedis', {
-      yPercent: 0,
-      stagger: 0.05,
-      ease: 'back.out(1.7)',
-    })
-    .to('.arrow-svg-wrapper', {
-      opacity: 1,
-    }, 'same')
-    .to('.toggle-bar', {
-      opacity: 1,
-    }, 'same');
-
-    // First intro also nudge cube/room if available
-    timelineRef.current.add(() => {
-      const room = roomRef.current;
-      const cube = childrenMap?.cube;
-      if (room && cube) {
-        gsap.to(cube.scale, { x: 1, y: 1, z: 1, duration: 0.7, ease: 'back.out(1.7)' });
-        gsap.to(room.position, { x: 0.2, y: 0.05, duration: 0.7, ease: 'power2.out' });
-      }
-    }, 'same');
-
-    // Add scroll event listener for second intro
-  const handleScroll = (e) => {
-      if (e.deltaY > 0) {
-        playSecondIntro();
-        window.removeEventListener('wheel', handleScroll);
-      }
+        // Animate intro text
+        timeline
+          .to('.intro-text .animatedis', {
+            yPercent: 0,
+            stagger: 0.05,
+            ease: 'back.out(1.7)',
+          })
+          .to('.arrow-svg-wrapper', {
+            opacity: 1,
+          }, 'same')
+          .to('.toggle-bar', {
+            opacity: 1,
+            onComplete: resolve,
+          }, 'same');
+      });
     };
 
-    const handleTouch = (e) => {
-      const initialY = e.touches[0].clientY;
+    // Second intro animation (exact original sequence)
+    const secondIntro = () => {
+      return new Promise((resolve) => {
+        const secondTimeline = gsap.timeline();
+
+        // Fade out intro elements
+        secondTimeline
+          .to('.intro-text .animatedis', {
+            yPercent: 100,
+            stagger: 0.05,
+            ease: 'back.in(1.7)',
+          }, 'fadeout')
+          .to('.arrow-svg-wrapper', {
+            opacity: 0,
+          }, 'fadeout');
+
+        // Room and cube transformations (exact original)
+        const room = roomRef.current;
+        const parts = childrenMap || {};
+
+        if (room && parts.cube) {
+          secondTimeline
+            .to(room.position, {
+              x: 0,
+              y: 0,
+              z: 0,
+              ease: 'power1.out',
+            }, 'same')
+            .to(parts.cube.rotation, {
+              y: 2 * Math.PI + Math.PI / 4,
+            }, 'same')
+            .to(parts.cube.scale, {
+              x: 10,
+              y: 10,
+              z: 10,
+            }, 'same')
+            .to(parts.cube.position, {
+              x: 0.638711,
+              y: 8.5618,
+              z: 1.3243,
+            }, 'same');
+
+          // Set body visible and hide cube
+          if (parts.body) {
+            secondTimeline.set(parts.body.scale, {
+              x: 1,
+              y: 1,
+              z: 1,
+            });
+          }
+
+          secondTimeline.to(parts.cube.scale, {
+            x: 0,
+            y: 0,
+            z: 0,
+            duration: 1,
+          }, 'introtext');
+        }
+
+        // Animate hero text
+        secondTimeline
+          .to('.hero-main-title .animatedis', {
+            yPercent: 0,
+            stagger: 0.07,
+            ease: 'back.out(1.7)',
+          }, 'introtext')
+          .to('.hero-main-description .animatedis', {
+            yPercent: 0,
+            stagger: 0.07,
+            ease: 'back.out(1.7)',
+          }, 'introtext')
+          .to('.first-sub .animatedis', {
+            yPercent: 0,
+            stagger: 0.07,
+            ease: 'back.out(1.7)',
+          }, 'introtext')
+          .to('.second-sub .animatedis', {
+            yPercent: 0,
+            stagger: 0.07,
+            ease: 'back.out(1.7)',
+          }, 'introtext');
+
+        // Sequential room object reveals (exact original sequence)
+        const showObject = (obj, delay = '>-0.5') => {
+          if (obj) {
+            secondTimeline.to(obj.scale, {
+              x: 1,
+              y: 1,
+              z: 1,
+              ease: 'back.out(2.2)',
+              duration: 0.5,
+            }, delay);
+          }
+        };
+
+        showObject(parts.aquarium, '>-0.5');
+        showObject(parts.clock, '>-0.4');
+        showObject(parts.shelves, '>-0.3');
+        showObject(parts.floor_items, '>-0.2');
+        showObject(parts.desks, '>-0.1');
+        showObject(parts.table_stuff, '>-0.1');
+        showObject(parts.computer);
+
+        // Mini floor and chair
+        if (parts.mini_floor) {
+          secondTimeline.set(parts.mini_floor.scale, {
+            x: 1,
+            y: 1,
+            z: 1,
+          });
+        }
+
+        if (parts.chair) {
+          secondTimeline
+            .to(parts.chair.scale, {
+              x: 1,
+              y: 1,
+              z: 1,
+              ease: 'back.out(2.2)',
+              duration: 0.5,
+            }, 'chair')
+            .to(parts.chair.rotation, {
+              y: 4 * Math.PI + Math.PI / 4,
+              ease: 'power2.out',
+              duration: 1,
+            }, 'chair');
+        }
+
+        showObject(parts.fish, 'chair');
+
+        secondTimeline.to('.arrow-svg-wrapper', {
+          opacity: 1,
+          onComplete: resolve,
+        });
+      });
+    };
+
+    // Main animation sequence
+    const playIntro = async () => {
+      convertTextElements();
+      await firstIntro();
       
-      const handleTouchMove = (moveEvent) => {
-        const currentY = moveEvent.touches[0].clientY;
-        const difference = initialY - currentY;
-        if (difference > 0) {
+      // Set up scroll listeners for second intro
+      const handleScroll = (e) => {
+        if (e.deltaY > 0) {
           playSecondIntro();
-          window.removeEventListener('touchstart', handleTouch);
-          window.removeEventListener('touchmove', handleTouchMove);
+          removeEventListeners();
         }
       };
 
-      window.addEventListener('touchmove', handleTouchMove, { once: true });
-    };
+      const handleTouch = (e) => {
+        const initialY = e.touches[0].clientY;
+        
+        const handleTouchMove = (moveEvent) => {
+          const currentY = moveEvent.touches[0].clientY;
+          const difference = initialY - currentY;
+          if (difference > 0) {
+            playSecondIntro();
+            removeEventListeners();
+          }
+        };
 
-  const playSecondIntro = () => {
-      const secondTimeline = gsap.timeline();
-      
-      secondTimeline.to('.intro-text .animatedis', {
-        yPercent: -100,
-        stagger: 0.05,
-        ease: 'back.in(1.7)',
-      })
-      .to('.arrow-svg-wrapper', {
-        opacity: 0,
-      }, 'same');
+        window.addEventListener('touchmove', handleTouchMove, { once: true });
+      };
 
-      // 3D reveal sequence
-  const room = roomRef.current;
-  const parts = childrenMap || {};
-      if (room) {
-        // spin/stretch cube and move camera-like effect via room
-        if (parts.cube) {
-          secondTimeline
-            .to(parts.cube.rotation, { y: `+=${Math.PI * 2 + Math.PI / 4}`, duration: 1.2, ease: 'power3.out' }, 'same')
-            .to(parts.cube.scale, { x: 1.1, y: 1.1, z: 10, duration: 0.9, ease: 'power2.out' }, 'same')
-            .to(parts.cube.position, { z: 1.35, duration: 0.9, ease: 'power2.out' }, 'same')
-            .to(parts.cube.scale, { x: 1, y: 1, z: 1, duration: 0.35, ease: 'back.out(2)' });
-        }
+      const removeEventListeners = () => {
+        window.removeEventListener('wheel', handleScroll);
+        window.removeEventListener('touchstart', handleTouch);
+      };
 
-        // reveal major parts in sequence
-        const show = (obj, label) => obj && secondTimeline.to(obj.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, label);
-        show(parts.aquarium, '>-0.5');
-        show(parts.clock, '>-0.4');
-        show(parts.shelves, '>-0.3');
-        show(parts.floor_items, '>-0.2');
-        show(parts.desks, '>-0.1');
-        show(parts.table_stuff, '>-0.1');
-        if (parts.computer) secondTimeline.to(parts.computer.scale, { x: 1, y: 1, z: 1, ease: 'back.out(2.2)', duration: 0.5 });
-  if (parts.mini_floor) secondTimeline.set(parts.mini_floor.scale, { x: 1, y: 1, z: 1 });
-        if (parts.chair) {
-          secondTimeline.to(parts.chair.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 'chair');
-          secondTimeline.to(parts.chair.rotation, { y: `+=${Math.PI / 2}`, duration: 1.0 }, 'chair');
-        }
-        if (parts.fish) secondTimeline.to(parts.fish.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 'chair');
-      }
+      const playSecondIntro = async () => {
+        await secondIntro();
+        setControlsEnabled(true);
+      };
 
-  secondTimeline.to('.arrow-svg-wrapper', { opacity: 1, onComplete: () => setControlsEnabled(true) });
-    };
-
-    setTimeout(() => {
       window.addEventListener('wheel', handleScroll);
       window.addEventListener('touchstart', handleTouch);
-    }, 2200);
 
-    // Hide arrow once hero leaves view and hide intro text properly
-    const onWindowScroll = () => {
-      const hero = document.querySelector('.hero');
-      if (!hero) return;
-      const rect = hero.getBoundingClientRect();
-      const heroBelowTop = rect.bottom <= 0 || rect.top <= -rect.height * 0.3;
-      if (heroBelowTop) {
-        gsap.to('.arrow-svg-wrapper', { opacity: 0, duration: 0.3, overwrite: true });
-        gsap.to('.intro-text', { opacity: 0, duration: 0.3, overwrite: true });
-        window.removeEventListener('scroll', onWindowScroll);
-      } else {
-        // Ensure intro text is visible when in hero
-        gsap.to('.intro-text', { opacity: 1, duration: 0.3, overwrite: true });
-      }
+      return () => {
+        removeEventListeners();
+      };
     };
-    window.addEventListener('scroll', onWindowScroll);
+
+    // Start the intro sequence after a short delay
+    const timer = setTimeout(() => {
+      playIntro();
+    }, 2500);
 
     return () => {
-      window.removeEventListener('wheel', handleScroll);
-      window.removeEventListener('touchstart', handleTouch);
-  if (timelineRef.current) {
+      clearTimeout(timer);
+      if (timelineRef.current) {
         timelineRef.current.kill();
       }
-  window.removeEventListener('scroll', onWindowScroll);
     };
-  }, [roomRef, childrenMap, setControlsEnabled]);
+  }, [roomRef, childrenMap, setControlsEnabled, device]);
 
   return null;
 };
@@ -1750,31 +1693,6 @@ export const projectsData = [
     featured: false
   }
 ];
-// Canonical keys => possible GLB node names
-export const ROOM_PARTS = {
-  cube: ['Cube', 'cube'],
-  aquarium: ['Aquarium', 'aquarium', 'FishTank', 'fish_tank'],
-  computer: ['Computer', 'computer', 'PC', 'pc'] ,
-  screen: ['Screen', 'screen', 'Monitor_Screen'],
-  clock: ['Clock', 'clock'],
-  shelves: ['Shelves', 'shelves', 'Shelf', 'shelf'],
-  floor_items: ['Floor_Items', 'floor_items', 'FloorItems'],
-  desks: ['Desks', 'desks', 'Desk', 'desk', 'Table', 'table'],
-  table_stuff: ['Table_Stuff', 'table_stuff', 'TableStuff'],
-  mini_floor: ['Mini_Floor', 'mini_floor'],
-  chair: ['Chair', 'chair'],
-  fish: ['Fish', 'fish'],
-  body: ['Body', 'body', 'Room', 'room'],
-  // Mini platform / pathway pieces (names vary by GLB version)
-  mailbox: ['Mailbox', 'mailbox'],
-  lamp: ['Lamp', 'lamp'],
-  floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
-  floor_second: ['FloorSecond', 'floorsecond', 'Floor_Second', 'floor_second'],
-  floor_third: ['FloorThird', 'floorthird', 'Floor_Third', 'floor_third'],
-  dirt: ['Dirt', 'dirt'],
-  flower1: ['Flower1', 'flower1', 'Flower_1'],
-  flower2: ['Flower2', 'flower2', 'Flower_2'],
-};
 export const sectionsData = {
   hero: {
     id: "hero",
@@ -1828,94 +1746,6 @@ export const themeConfig = {
     }
   }
 };
-import React, { createContext, useContext, useRef, useEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
-
-const AnimationContext = createContext();
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const useAnimation = () => {
-  const context = useContext(AnimationContext);
-  if (!context) {
-    throw new Error('useAnimation must be used within an AnimationProvider');
-  }
-  return context;
-};
-
-export const AnimationProvider = ({ children }) => {
-  const timelineRef = useRef(null);
-
-  useEffect(() => {
-    timelineRef.current = gsap.timeline();
-    
-    return () => {
-      if (timelineRef.current) {
-        timelineRef.current.kill();
-      }
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
-
-  const animateSection = (element, options = {}) => {
-    return gsap.fromTo(element, 
-      { opacity: 0, y: 50 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        duration: 1,
-        ease: "power2.out",
-        ...options,
-        scrollTrigger: {
-          trigger: element,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-          ...options.scrollTrigger
-        }
-      }
-    );
-  };
-
-  const animateText = (element, options = {}) => {
-    return gsap.fromTo(element,
-      { opacity: 0, y: 30 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power2.out",
-        stagger: 0.1,
-        ...options
-      }
-    );
-  };
-
-  const fadeIn = (element, options = {}) => {
-    return gsap.fromTo(element,
-      { opacity: 0 },
-      {
-        opacity: 1,
-        duration: 1,
-        ease: "power2.out",
-        ...options
-      }
-    );
-  };
-
-  return (
-    <AnimationContext.Provider value={{
-      timeline: timelineRef.current,
-      animateSection,
-      animateText,
-      fadeIn
-    }}>
-      {children}
-    </AnimationContext.Provider>
-  );
-};
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext();
@@ -1948,7 +1778,6 @@ import React, { createContext, useContext, useMemo, useRef, useState } from 'rea
 
 const ThreeContext = createContext(null);
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useThreeContext = () => {
   const ctx = useContext(ThreeContext);
   if (!ctx) throw new Error('useThreeContext must be used within ThreeProvider');
@@ -1959,34 +1788,36 @@ export const ThreeProvider = ({ children }) => {
   const roomRef = useRef(null);
   const floorRef = useRef(null);
   const rectLightRef = useRef(null);
+  
   const [camera, setCamera] = useState(null);
   const [childrenMap, setChildrenMap] = useState({});
   const [controlsEnabled, setControlsEnabled] = useState(false);
-  const [preloaderComplete, setPreloaderComplete] = useState(false);
 
   const value = useMemo(() => ({
-    // refs
+    // Three.js refs
     roomRef,
     floorRef,
     rectLightRef,
-    // camera
+    
+    // Camera
     camera,
     setCamera,
-    // mesh parts
+    
+    // Room object parts
     childrenMap,
     setChildrenMap,
-    // flow state
+    
+    // Animation flow control
     controlsEnabled,
     setControlsEnabled,
-    preloaderComplete,
-    setPreloaderComplete,
-  }), [camera, childrenMap, controlsEnabled, preloaderComplete]);
+  }), [camera, childrenMap, controlsEnabled]);
 
   return (
-    <ThreeContext.Provider value={value}>{children}</ThreeContext.Provider>
+    <ThreeContext.Provider value={value}>
+      {children}
+    </ThreeContext.Provider>
   );
 };
-import React from 'react';
 import Hero from './components/sections/Hero';
 import About from './components/sections/About';
 import Projects from './components/sections/Projects';
@@ -1997,104 +1828,101 @@ import ThemeToggle from './components/ui/ThemeToggle';
 import Preloader from './components/ui/Preloader';
 import PreloaderAnimations from './components/ui/PreloaderAnimations';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { AnimationProvider } from './contexts/AnimationContext';
 import { ThreeProvider } from './contexts/ThreeContext';
 
 function App() {
   return (
     <ThreeProvider>
       <ThemeProvider>
-        <AnimationProvider>
-          <div className="App relative min-h-screen">
-            <Preloader />
-            <PreloaderAnimations />
-            
-            {/* Fixed Three.js Experience */}
-            <div className="experience fixed w-full h-full">
-              <ThreeJSExperience />
-            </div>
-            
-            {/* Theme Toggle */}
-            <div className="toggle-bar">
-              <ThemeToggle />
-            </div>
-            
-            {/* Page Content */}
-            <div className="page">
-              <div className="page-wrapper">
-                
-                {/* Hero Section */}
-                <section className="hero">
-                  <Hero />
-                </section>
-                
-                {/* Intro Text */}
-                <div className="intro-text">
-                  Click on the cube and scroll to get started!
-                </div>
-                
-                {/* Arrow indicator */}
-                <div className="arrow-svg-wrapper">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 14.95q-.2 0-.375-.063-.175-.062-.325-.212L6.675 10.05q-.275-.275-.262-.688.012-.412.287-.687.275-.275.7-.275.425 0 .7.275l3.9 3.9 3.925-3.925q.275-.275.688-.263.412.013.687.288.275.275.275.7 0 .425-.275.7l-4.6 4.6q-.15.15-.325.212-.175.063-.375.063Z"/>
-                  </svg>
-                </div>
-                
-                {/* First Move Section Margin */}
-                <div className="first-move section-margin"></div>
-                
-                {/* About Section */}
-                <section className="section first-section left">
-                  <div className="progress-wrapper progress-bar-wrapper-left">
-                    <div className="progress-bar"></div>
-                  </div>
-                  <About />
-                </section>
-                
-                {/* Second Move Section Margin */}
-                <div className="second-move section-margin"></div>
-                
-                {/* Projects Section */}
-                <section className="section second-section right">
-                  <div className="progress-wrapper progress-bar-wrapper-right">
-                    <div className="progress-bar blue-background"></div>
-                  </div>
-                  <Projects />
-                </section>
-                
-                {/* Third Move Section Margin */}
-                <div className="third-move section-margin"></div>
-                
-                {/* Experience Section */}
-                <section className="section third-section left">
-                  <div className="progress-wrapper progress-bar-wrapper-left">
-                    <div className="progress-bar green-background"></div>
-                  </div>
-                  <Experience />
-                </section>
-                
-                {/* Fourth Move Section Margin */}
-                <div className="fourth-move section-margin"></div>
-                
-                {/* Contact Section */}
-                <section className="section fourth-section right">
-                  <div className="progress-wrapper progress-bar-wrapper-right">
-                    <div className="progress-bar"></div>
-                  </div>
-                  <Contact />
-                </section>
-                
-                {/* Footer */}
-                <footer className="footer">
-                  <span className="footer__copyright">
-                    Copyright &copy; 2025 - Safwan Sayeed
-                  </span>
-                </footer>
-                
+        <div className="App relative min-h-screen">
+          <Preloader />
+          <PreloaderAnimations />
+          
+          {/* Fixed Three.js Experience */}
+          <div className="experience fixed w-full h-full">
+            <ThreeJSExperience />
+          </div>
+          
+          {/* Theme Toggle */}
+          <div className="toggle-bar">
+            <ThemeToggle />
+          </div>
+          
+          {/* Page Content */}
+          <div className="page">
+            <div className="page-wrapper">
+              
+              {/* Hero Section */}
+              <section className="hero">
+                <Hero />
+              </section>
+              
+              {/* Intro Text */}
+              <div className="intro-text">
+                Welcome to my portfolio!
               </div>
+              
+              {/* Arrow indicator */}
+              <div className="arrow-svg-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 14.95q-.2 0-.375-.063-.175-.062-.325-.212L6.675 10.05q-.275-.275-.262-.688.012-.412.287-.687.275-.275.7-.275.425 0 .7.275l3.9 3.9 3.925-3.925q.275-.275.688-.263.412.013.687.288.275.275.275.7 0 .425-.275.7l-4.6 4.6q-.15.15-.325.212-.175.063-.375.063Z"/>
+                </svg>
+              </div>
+              
+              {/* First Move Section Margin */}
+              <div className="first-move section-margin"></div>
+              
+              {/* About Section */}
+              <section className="section first-section left">
+                <div className="progress-wrapper progress-bar-wrapper-left">
+                  <div className="progress-bar"></div>
+                </div>
+                <About />
+              </section>
+              
+              {/* Second Move Section Margin */}
+              <div className="second-move section-margin"></div>
+              
+              {/* Projects Section */}
+              <section className="section second-section right">
+                <div className="progress-wrapper progress-bar-wrapper-right">
+                  <div className="progress-bar blue-background"></div>
+                </div>
+                <Projects />
+              </section>
+              
+              {/* Third Move Section Margin */}
+              <div className="third-move section-margin"></div>
+              
+              {/* Experience Section */}
+              <section className="section third-section left">
+                <div className="progress-wrapper progress-bar-wrapper-left">
+                  <div className="progress-bar green-background"></div>
+                </div>
+                <Experience />
+              </section>
+              
+              {/* Fourth Move Section Margin */}
+              <div className="fourth-move section-margin"></div>
+              
+              {/* Contact Section */}
+              <section className="section fourth-section right">
+                <div className="progress-wrapper progress-bar-wrapper-right">
+                  <div className="progress-bar blue-background"></div>
+                </div>
+                <Contact />
+              </section>
+              
+              {/* Footer */}
+              <footer className="footer">
+                <span className="footer__copyright">
+                  Copyright &copy; 2025 - Safwan Sayeed
+                </span>
+              </footer>
+              
             </div>
           </div>
-        </AnimationProvider>
+        </div>
       </ThemeProvider>
     </ThreeProvider>
   );
@@ -2102,7 +1930,24 @@ function App() {
 
 export default App;
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import 'tailwindcss';
+@import "tailwindcss";
+
+/* Import Montserrat Font */
+/* Configure Tailwind v4 Theme */
+@theme {
+  /* Font Configuration */
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  
+  /* Color Variables - matching original */
+  --color-text-light: #333332;
+  --color-background-light: #FAF4E5;
+  --color-pink-light: #e5a1aa;
+  --color-green-light: #7AD0AC;
+  --color-blue-light: #8395CD;
+  
+  --color-text-dark: #FAF4E5;
+  --color-background-dark: #8395CD;
+}
 
 /* CSS Variables for Theme */
 :root {
@@ -2152,10 +1997,6 @@ html, body {
 /* Force Montserrat on all text elements */
 h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select {
   font-family: 'Montserrat', sans-serif !important;
-}
-
-h1, section, p, span, svg {
-  transition: background-color 0.5s, color 0.5s;
 }
 
 h1, section, p, span, svg {
@@ -2734,8 +2575,43 @@ createRoot(document.getElementById('root')).render(
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+{
+  "name": "safwan-portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@react-three/drei": "^10.7.3",
+    "@react-three/fiber": "^9.3.0",
+    "@tailwindcss/vite": "^4.1.12",
+    "gsap": "^3.13.0",
+    "lenis": "^1.3.8",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tailwindcss": "^4.1.12",
+    "three": "^0.179.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "vite": "^7.1.2"
+  }
+}
 
-structure of the src folder 
+The File Structure from the src is 
 src/
 ├─ components/
 │  ├─ sections/
@@ -2745,20 +2621,6 @@ src/
 │  │  ├─ Hero.jsx
 │  │  └─ Projects.jsx
 │  ├─ three/
-│  │  ├─ Experience/
-│  │  │  ├─ Utils/
-│  │  │  │  ├─ Resources.js
-│  │  │  │  ├─ Sizes.js
-│  │  │  │  └─ Time.js
-│  │  │  ├─ World/
-│  │  │  │  ├─ Controls.js
-│  │  │  │  ├─ Environment.js
-│  │  │  │  ├─ Room.js
-│  │  │  │  └─ World.js
-│  │  │  ├─ Camera.js
-│  │  │  ├─ Experience.jsx
-│  │  │  ├─ Preloader.js
-│  │  │  └─ Renderer.js
 │  │  ├─ Controls.jsx
 │  │  ├─ Experience.jsx
 │  │  ├─ Floor.jsx
@@ -2774,11 +2636,9 @@ src/
 │  ├─ experience.js
 │  ├─ personal.js
 │  ├─ projects.js
-│  ├─ roomParts.js
 │  ├─ sections.js
 │  └─ theme.js
 ├─ contexts/
-│  ├─ AnimationContext.jsx
 │  ├─ ThemeContext.jsx
 │  └─ ThreeContext.jsx
 ├─ App.jsx
