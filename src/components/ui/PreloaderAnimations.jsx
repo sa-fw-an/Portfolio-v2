@@ -21,8 +21,8 @@ const PreloaderAnimations = () => {
         .join('');
     };
 
-    // Convert text elements
-    const introText = document.querySelector('.intro-text span');
+    // Convert text elements - target the correct intro text
+    const introText = document.querySelector('.intro-text');
     convertToSpans(introText);
 
   // Create timeline for preloader animations
@@ -39,6 +39,9 @@ const PreloaderAnimations = () => {
         }
       }
     });
+
+    // Initialize intro text visibility
+    timelineRef.current.set('.intro-text', { opacity: 1 });
 
     // Animate intro text
     timelineRef.current.to('.intro-text .animatedis', {
@@ -137,7 +140,7 @@ const PreloaderAnimations = () => {
       window.addEventListener('touchstart', handleTouch);
     }, 2200);
 
-    // Hide arrow once hero leaves view
+    // Hide arrow once hero leaves view and hide intro text properly
     const onWindowScroll = () => {
       const hero = document.querySelector('.hero');
       if (!hero) return;
@@ -145,7 +148,11 @@ const PreloaderAnimations = () => {
       const heroBelowTop = rect.bottom <= 0 || rect.top <= -rect.height * 0.3;
       if (heroBelowTop) {
         gsap.to('.arrow-svg-wrapper', { opacity: 0, duration: 0.3, overwrite: true });
+        gsap.to('.intro-text', { opacity: 0, duration: 0.3, overwrite: true });
         window.removeEventListener('scroll', onWindowScroll);
+      } else {
+        // Ensure intro text is visible when in hero
+        gsap.to('.intro-text', { opacity: 1, duration: 0.3, overwrite: true });
       }
     };
     window.addEventListener('scroll', onWindowScroll);

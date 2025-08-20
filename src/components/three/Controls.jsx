@@ -221,30 +221,63 @@ const Controls = ({ roomRef, floorRef }) => {
         },
 
         'all': () => {
-          // Reset zoom to original when in the hero area (reversible)
+          // Reset zoom to original when scrolling back to hero (reversible and strong)
           if (camera.isOrthographicCamera) {
             const resetTl = gsap.timeline({
               scrollTrigger: {
                 trigger: '.hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: 0.6,
+                start: 'top 80%',
+                end: 'bottom 20%',
+                scrub: 0.3,
+                onUpdate: (self) => {
+                  // Ensure camera resets properly when scrolling back up
+                  if (self.direction === -1) {
+                    camera.zoom = 1;
+                    camera.updateProjectionMatrix();
+                  }
+                }
               }
             });
             resetTl.to(camera, {
               zoom: 1,
-              duration: 0.2,
+              duration: 0.4,
+              ease: 'power2.out',
               overwrite: 'auto',
               onUpdate: () => camera.updateProjectionMatrix(),
             });
+            
+            // Additional reset for room position when back in hero
+            const roomResetTl = gsap.timeline({
+              scrollTrigger: {
+                trigger: '.hero',
+                start: 'top 80%',
+                end: 'bottom 20%',
+                scrub: 0.3,
+              }
+            });
+            roomResetTl.to(roomRef.current.position, {
+              x: 0,
+              y: 0,
+              z: 0,
+              duration: 0.4,
+              ease: 'power2.out',
+            });
           }
-          // Floor circles
+          // Floor circles with proper indexing
           if (floorRef.current) {
-            const circles = floorRef.current.children?.filter?.(c => c.geometry?.type === 'CircleGeometry') || [];
-            const [first, second, third] = circles;
-            if (first) gsap.timeline({ scrollTrigger: { trigger: '.first-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(first.scale, { x: 3, y: 3, z: 3 });
-            if (second) gsap.timeline({ scrollTrigger: { trigger: '.second-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(second.scale, { x: 3, y: 3, z: 3 });
-            if (third) gsap.timeline({ scrollTrigger: { trigger: '.third-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(third.scale, { x: 3, y: 3, z: 3 });
+            const circles = [];
+            floorRef.current.traverse((child) => {
+              if (child.geometry?.type === 'CircleGeometry') {
+                circles.push(child);
+              }
+            });
+            
+            if (circles.length >= 3) {
+              const [first, second, third] = circles;
+              if (first) gsap.timeline({ scrollTrigger: { trigger: '.first-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(first.scale, { x: 3, y: 3, z: 3 });
+              if (second) gsap.timeline({ scrollTrigger: { trigger: '.second-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(second.scale, { x: 3, y: 3, z: 3 });
+              if (third) gsap.timeline({ scrollTrigger: { trigger: '.third-move', start: 'top top', end: 'bottom bottom', scrub: 0.6 } }).to(third.scale, { x: 3, y: 3, z: 3 });
+            }
           }
 
           // Sections progress bars & radii

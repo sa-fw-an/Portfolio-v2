@@ -18,7 +18,8 @@ const SceneInner = () => {
 
   return (
     <Canvas
-      camera={{ fov: 35, position: [0, 6.5, 10], near: 0.1, far: 1000 }}
+      orthographic
+      camera={{ zoom: 1, position: [0, 6.5, 10], near: 0.1, far: 1000 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       dpr={Math.min(window.devicePixelRatio, 2)}
       onCreated={onCreated}
