@@ -50,7 +50,10 @@ const Room = forwardRef((props, ref) => {
       });
     });
   // One-time list to help mapping while integrating names
+    if (!window.__ROOM_NODE_LOGGED__) {
+      window.__ROOM_NODE_LOGGED__ = true;
   console.log('[Room] GLB nodes:', names);
+    }
 
     // Aquarium glass material
     if (found.aquarium) {
@@ -102,7 +105,16 @@ const Room = forwardRef((props, ref) => {
       const obj = found[k];
       if (obj && obj.scale && obj.scale.set) obj.scale.set(0,0,0);
     });
-    const cube = found.cube;
+    let cube = found.cube;
+    if (!cube) {
+      // Fallback cube if model doesn't provide one
+      const geo = new THREE.BoxGeometry(1, 1, 1);
+      const mat = new THREE.MeshStandardMaterial({ color: 0xe5a1aa, metalness: 0.2, roughness: 0.6 });
+      cube = new THREE.Mesh(geo, mat);
+      cube.name = 'cube_fallback';
+      scene.add(cube);
+      found.cube = cube;
+    }
     if (cube) {
       cube.position.set(0, -1, 0);
       cube.rotation.y = Math.PI / 4;

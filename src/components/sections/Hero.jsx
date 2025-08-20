@@ -47,12 +47,6 @@ const Hero = () => {
 
         {/* Secondary content - right side */}
         <div className="hero-second">
-          <h2 
-            ref={secondSubRef}
-            className="hero-second-subheading"
-          >
-            Portfolio
-          </h2>
           <p className="second-sub">
             <span className="animatedis">Scroll Down</span>
           </p>

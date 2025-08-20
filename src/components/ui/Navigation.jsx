@@ -31,19 +31,22 @@ const Navigation = () => {
 
   return (
     <nav ref={container} className="fixed top-8 left-8 z-50 opacity-0">
-      <div className="flex flex-col space-y-4">
+      <ul className="flex flex-col space-y-2">
         {navigationLinks.map((link) => (
-          <button
-            key={link.id}
-            onClick={() => scrollToSection(link.href)}
-            className={`text-left px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
-              activeSection === link.href.slice(1) ? 'bg-[--color-pink] text-white' : 'text-[--color-text] hover:bg-[--color-pink] hover:text-white'
-            }`}
-          >
-            {link.name}
-          </button>
+          <li key={link.id}>
+            <button
+              onClick={() => scrollToSection(link.href)}
+              className={`text-left text-sm tracking-wide transition-colors duration-200 font-medium border-b ${
+                activeSection === link.href.slice(1)
+                  ? 'border-[--color-pink] text-[--color-text]'
+                  : 'border-transparent text-[--color-text] hover:border-[--color-pink]'
+              }`}
+            >
+              {link.name}
+            </button>
+          </li>
         ))}
-      </div>
+      </ul>
     </nav>
   );
 };

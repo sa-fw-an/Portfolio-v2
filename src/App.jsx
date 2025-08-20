@@ -27,9 +27,6 @@ function App() {
           <div className="experience fixed w-full h-full">
             <ThreeJSExperience />
           </div>
-          
-          {/* UI Components */}
-          <Navigation />
           <ThemeToggle />
           <ScrollProgress />
           

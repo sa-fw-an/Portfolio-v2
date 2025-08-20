@@ -33,8 +33,8 @@ const Experience = () => {
       {/* Lighting */}
       <Lights theme={theme} />
       
-      {/* Environment */}
-      <Environment preset="city" />
+  {/* Neutral environment (no HDRI) */}
+    <Environment preset="night" />
       
       {/* 3D Objects */}
       <Floor ref={floorRef} />

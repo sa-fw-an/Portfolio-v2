@@ -44,6 +44,10 @@ const Controls = ({ roomRef, floorRef }) => {
       if (camera && roomRef.current) {
         camera.position.set(0, 6.5, 10);
         if (camera.isOrthographicCamera) camera.rotation.x = -Math.PI / 6;
+        if (camera.isOrthographicCamera) {
+          camera.zoom = 1;
+          camera.updateProjectionMatrix();
+        }
         roomRef.current.scale.set(0.11, 0.11, 0.11);
         roomRef.current.position.set(0, 0, 0);
       }
@@ -83,6 +87,21 @@ const Controls = ({ roomRef, floorRef }) => {
         ScrollTrigger.defaults({ scroller });
       }
 
+          // Helper: create a zoom tween step within timelines (reversible)
+          const zoomStep = (tl, value, label = '<', duration = 0.6) => {
+            if (!camera.isOrthographicCamera) return tl;
+            return tl.to(
+              camera,
+              {
+                zoom: value,
+                duration,
+                overwrite: 'auto',
+                onUpdate: () => camera.updateProjectionMatrix(),
+              },
+              label
+            );
+          };
+
       // MatchMedia to split Desktop/Mobile
       ScrollTrigger.matchMedia({
         '(min-width: 969px)': () => {
@@ -90,42 +109,59 @@ const Controls = ({ roomRef, floorRef }) => {
           roomRef.current.scale.set(0.11, 0.11, 0.11);
           camera.position.set(0, 6.5, 10);
 
-          // 1) First section
-      gsap.timeline({
+          // 1) First section (content left => move room to right)
+          let tl1 = gsap.timeline({
             scrollTrigger: {
-        trigger: '.first-move',
-        start: 'top 70%',
-        end: 'top 15%',
+              trigger: '.first-move',
+              start: 'top 70%',
+              end: 'top 15%',
               scrub: 0.6,
             }
           })
-      .to(roomRef.current.position, { x: 0.4, y: 0.1, z: 0 })
-      .to(camera.position, { y: 6.2, x: 0.2 }, '<');
+            .to(roomRef.current.position, { x: 1.8, y: 0, z: 0 })
+            .to(camera.position, { y: 6.2, x: 0.25 }, '<');
+          zoomStep(tl1, 1.3, '<', 0.6);
 
-          // 2) Second section
-          gsap.timeline({
+          // 2) Second section (content right => move room to left)
+          let tl2 = gsap.timeline({
             scrollTrigger: {
-        trigger: '.second-move',
-        start: 'top 85%',
-        end: 'top 25%',
+              trigger: '.second-move',
+              start: 'top 85%',
+              end: 'top 25%',
               scrub: 0.6,
             }
           })
-      .to(roomRef.current.scale, { x: 0.13, y: 0.13, z: 0.13 }, 'same')
-      .to(roomRef.current.position, { x: 1.0, y: 0.2 }, 'same')
-      .to(camera.position, { x: -0.6, y: 5.9 }, 'same');
+            .to(roomRef.current.scale, { x: 0.13, y: 0.13, z: 0.13 }, 'same')
+            .to(roomRef.current.position, { x: -0.9, y: 0.2 }, 'same')
+            .to(camera.position, { x: 0.2, y: 5.9 }, 'same');
+          zoomStep(tl2, 1.25, 'same', 0.8);
 
-          // 3) Third section
-          gsap.timeline({
+          // 3) Third section (content left => move room to right and push in, but keep framed)
+          let tl3 = gsap.timeline({
             scrollTrigger: {
-        trigger: '.third-move',
-        start: 'top 95%',
-        end: 'top 35%',
+              trigger: '.third-move',
+              start: 'top 95%',
+              end: 'top 35%',
               scrub: 0.6,
             }
           })
-      .to(roomRef.current.position, { z: -3.0 })
-      .to(camera.position, { x: -2.0, y: 3.0 }, '<');
+            .to(roomRef.current.position, { x: 0.5, z: -2.2 })
+            .to(camera.position, { x: 0.1, y: 5.6 }, '<')
+            .to(camera.rotation, { x: -Math.PI / 6.1 }, '<');
+          zoomStep(tl3, 1.28, '<', 0.8);
+
+          // 4) Fourth section (content right => move room to left again)
+          let tl4 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.fourth-move',
+              start: 'top 95%',
+              end: 'top 35%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: -0.8, z: -3.2 })
+            .to(camera.position, { x: 0.2, y: 5.4 }, '<');
+          zoomStep(tl4, 1.32, '<', 0.8);
         },
 
         '(max-width: 968px)': () => {
@@ -133,40 +169,75 @@ const Controls = ({ roomRef, floorRef }) => {
           roomRef.current.scale.set(0.07, 0.07, 0.07);
           camera.position.set(0, 6.5, 10);
 
-          // 1) First section
-      gsap.timeline({
+          // 1) First section (content left => move room to right)
+          let mtl1 = gsap.timeline({
             scrollTrigger: {
-        trigger: '.first-move',
-        start: 'top 75%',
-        end: 'top 25%',
-              scrub: 0.6,
-            }
-          }).to(roomRef.current.scale, { x: 0.1, y: 0.1, z: 0.1 });
-
-          // 2) Second section
-      gsap.timeline({
-            scrollTrigger: {
-        trigger: '.second-move',
-        start: 'top 85%',
-        end: 'top 35%',
+              trigger: '.first-move',
+              start: 'top 75%',
+              end: 'top 25%',
               scrub: 0.6,
             }
           })
-          .to(roomRef.current.position, { x: 0.8, y: 0.4 }, 'same')
-          .to(roomRef.current.scale, { x: 0.12, y: 0.12, z: 0.12 }, 'same');
+            .to(roomRef.current.scale, { x: 0.1, y: 0.1, z: 0.1 })
+            .to(roomRef.current.position, { x: 0.4 }, '<');
+          zoomStep(mtl1, 1.15, '<', 0.6);
 
-          // 3) Third section
-      gsap.timeline({
+          // 2) Second section (content right => move room to left)
+          let mtl2 = gsap.timeline({
             scrollTrigger: {
-        trigger: '.third-move',
-        start: 'top 95%',
-        end: 'top 45%',
+              trigger: '.second-move',
+              start: 'top 85%',
+              end: 'top 35%',
               scrub: 0.6,
             }
-          }).to(roomRef.current.position, { z: -4.5 });
+          })
+            .to(roomRef.current.position, { x: -0.6, y: 0.3 }, 'same')
+            .to(roomRef.current.scale, { x: 0.12, y: 0.12, z: 0.12 }, 'same');
+          zoomStep(mtl2, 1.22, 'same', 0.6);
+
+          // 3) Third section (content left => move room to right and push in)
+          let mtl3 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.third-move',
+              start: 'top 95%',
+              end: 'top 45%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: 0.4, z: -3.8 });
+          zoomStep(mtl3, 1.25, '<', 0.6);
+
+          // 4) Fourth section (content right => move room to left again)
+          let mtl4 = gsap.timeline({
+            scrollTrigger: {
+              trigger: '.fourth-move',
+              start: 'top 95%',
+              end: 'top 45%',
+              scrub: 0.6,
+            }
+          })
+            .to(roomRef.current.position, { x: -0.5, z: -4.2 });
+          zoomStep(mtl4, 1.28, '<', 0.6);
         },
 
         'all': () => {
+          // Reset zoom to original when in the hero area (reversible)
+          if (camera.isOrthographicCamera) {
+            const resetTl = gsap.timeline({
+              scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.6,
+              }
+            });
+            resetTl.to(camera, {
+              zoom: 1,
+              duration: 0.2,
+              overwrite: 'auto',
+              onUpdate: () => camera.updateProjectionMatrix(),
+            });
+          }
           // Floor circles
           if (floorRef.current) {
             const circles = floorRef.current.children?.filter?.(c => c.geometry?.type === 'CircleGeometry') || [];
