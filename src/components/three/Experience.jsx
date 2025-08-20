@@ -11,7 +11,7 @@ const Experience = () => {
   const { theme } = useTheme();
   const roomRef = useRef();
   const floorRef = useRef();
-  const { roomRef: sharedRoomRef, floorRef: sharedFloorRef } = useThreeContext();
+  const { roomRef: sharedRoomRef, floorRef: sharedFloorRef, setCamera } = useThreeContext();
 
   useEffect(() => {
     sharedRoomRef.current = roomRef.current;
@@ -20,21 +20,26 @@ const Experience = () => {
 
   return (
     <>
-      {/* Orthographic camera to mimic reference look */}
+      {/* Orthographic camera matching original setup */}
       <OrthographicCamera
         makeDefault
         position={[0, 6.5, 10]}
         rotation={[-Math.PI / 6, 0, 0]}
-        near={-100}
-        far={100}
-        // Frustum sized in Controls when resizing via aspect
+        near={-50}
+        far={50}
+        left={-5}
+        right={5}
+        top={5}
+        bottom={-5}
+        zoom={1}
+        onUpdate={(camera) => setCamera?.(camera)}
       />
 
       {/* Lighting */}
       <Lights theme={theme} />
       
-  {/* Neutral environment (no HDRI) */}
-    <Environment preset="night" />
+      {/* Environment preset maintained as requested */}
+      <Environment preset="night" />
       
       {/* 3D Objects */}
       <Floor ref={floorRef} />

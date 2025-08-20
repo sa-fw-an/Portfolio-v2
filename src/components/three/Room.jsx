@@ -12,7 +12,7 @@ const Room = forwardRef((props, ref) => {
   const { scene, animations } = useGLTF('/models/room.glb');
   const mixerRef = useRef(null);
 
-  const { setChildrenMap, roomRef: sharedRoomRef } = useThreeContext();
+  const { setChildrenMap, roomRef: sharedRoomRef, rectLightRef } = useThreeContext();
 
   // Mouse movement effect
   const mouse = useRef({ x: 0, y: 0 });
@@ -129,9 +129,22 @@ const Room = forwardRef((props, ref) => {
       action.play();
     }
 
+    // Add RectAreaLight (exact original setup)
+    const rectLight = new THREE.RectAreaLight(0xffffff, 1, 0.5, 0.7);
+    rectLight.position.set(7.68244, 7, 0.5);
+    rectLight.rotation.x = -Math.PI / 2;
+    rectLight.rotation.z = Math.PI / 4;
+    scene.add(rectLight);
+    found.rectLight = rectLight;
+
+    // Store rectLight ref for external access
+    if (rectLightRef) {
+      rectLightRef.current = rectLight;
+    }
+
     // Share map
     setChildrenMap(found);
-  }, [scene, animations, setChildrenMap]);
+  }, [scene, animations, setChildrenMap, rectLightRef]);
 
   useFrame((state) => {
     const roomRef = ref?.current || internalRef.current;

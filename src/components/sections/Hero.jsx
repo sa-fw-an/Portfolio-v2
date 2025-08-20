@@ -7,7 +7,7 @@ const Hero = () => {
   const mainDescRef = useRef();
   const secondSubRef = useRef();
 
-  // Convert text to animated spans
+  // Convert text to animated spans (exact original function)
   const convertToSpans = (element) => {
     if (!element) return;
     const text = element.textContent;
@@ -29,7 +29,7 @@ const Hero = () => {
   return (
     <div ref={container} className="hero">
       <div className="hero-wrapper">
-        {/* Main content - left side */}
+        {/* Main content - left side (exact original positioning) */}
         <div className="hero-main">
           <h1 
             ref={mainTitleRef}
@@ -45,10 +45,18 @@ const Hero = () => {
           </p>
         </div>
 
-        {/* Secondary content - right side */}
+        {/* Secondary content - right side (exact original structure) */}
         <div className="hero-second">
-          <p className="second-sub">
-            <span className="animatedis">Scroll Down</span>
+          <h2 className="hero-second-subheading">
+            <span className="first-sub">
+              <span className="animatedis">{personalInfo.title}</span>
+            </span>
+          </h2>
+          <p 
+            ref={secondSubRef}
+            className="second-sub"
+          >
+            {personalInfo.subtitle}
           </p>
         </div>
       </div>

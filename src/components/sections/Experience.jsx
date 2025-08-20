@@ -1,30 +1,41 @@
 import React from 'react';
 import { sectionsData } from '../../constants/sections';
+import { experienceData } from '../../constants/experience';
 
 const Experience = () => {
   return (
     <React.Fragment>
-      <div className="section-intro-wrapper relative py-[20%] px-[5%] border-b-2 border-[var(--color-blue)] pb-[400px]">
-        <div className="section-title relative text-[var(--color-blue)]">
-          <span className="section-title-text block text-4xl font-medium origin-left skew-y-[25deg] z-[5] uppercase text-[var(--color-blue)]">
+      <div className="section-intro-wrapper green-text green-border">
+        <div className="section-title green-text">
+          <span className="section-title-text green-text">
             {sectionsData.experience.title}
           </span>
-          <span className="styleOne absolute top-0 block w-full max-w-[278px] h-[60px] border border-[var(--color-blue)] origin-left skew-y-[-25deg]"></span>
-          <span className="styleTwo absolute top-20 block w-full max-w-[278px] h-[60px] border border-[var(--color-blue)] origin-left skew-y-[-25deg]"></span>
-          <span className="styleThree absolute top-20 block w-full max-w-[278px] h-[60px] origin-left skew-y-[25deg] bg-[var(--color-blue)]"></span>
+          <span className="styleOne green-border"></span>
+          <span className="styleTwo green-border"></span>
+          <span className="styleThree green-background"></span>
         </div>
-        <div className="section-number absolute bottom-[15px] right-0 text-[var(--color-blue)] text-2xl">
+        <div className="section-number green-text">
           {sectionsData.experience.number}
         </div>
       </div>
 
-      <div className="section-detail-wrapper relative py-[20%] px-[5%]">
-        <h3 className="section-heading text-lg font-bold leading-[1.8] mt-16 text-[var(--color-text)]">
+      <div className="section-detail-wrapper">
+        <h3 className="section-heading">
           Work Experience
         </h3>
-        <p className="section-text leading-8 mt-[18px] text-base text-[var(--color-text)]">
+        <p className="section-text">
           My professional journey includes various projects and collaborations that have shaped my expertise in modern web technologies.
         </p>
+
+        {experienceData.map((exp, index) => (
+          <div key={index} className="experience-item">
+            <h4 className="experience-title">{exp.position}</h4>
+            <h5 className="experience-company">{exp.company}</h5>
+            <p className="experience-duration">{exp.duration}</p>
+            <p className="experience-description">{exp.description}</p>
+            {exp.current && <span className="current-badge">Current</span>}
+          </div>
+        ))}
       </div>
     </React.Fragment>
   );

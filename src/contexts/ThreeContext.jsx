@@ -16,6 +16,7 @@ export const ThreeProvider = ({ children }) => {
   const [camera, setCamera] = useState(null);
   const [childrenMap, setChildrenMap] = useState({});
   const [controlsEnabled, setControlsEnabled] = useState(false);
+  const [preloaderComplete, setPreloaderComplete] = useState(false);
 
   const value = useMemo(() => ({
     // refs
@@ -31,7 +32,9 @@ export const ThreeProvider = ({ children }) => {
     // flow state
     controlsEnabled,
     setControlsEnabled,
-  }), [camera, childrenMap, controlsEnabled]);
+    preloaderComplete,
+    setPreloaderComplete,
+  }), [camera, childrenMap, controlsEnabled, preloaderComplete]);
 
   return (
     <ThreeContext.Provider value={value}>{children}</ThreeContext.Provider>

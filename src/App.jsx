@@ -5,9 +5,7 @@ import Projects from './components/sections/Projects';
 import Experience from './components/sections/Experience';
 import Contact from './components/sections/Contact';
 import ThreeJSExperience from './components/three/ThreeJSExperience';
-import Navigation from './components/ui/Navigation';
 import ThemeToggle from './components/ui/ThemeToggle';
-import ScrollProgress from './components/ui/ScrollProgress';
 import Preloader from './components/ui/Preloader';
 import PreloaderAnimations from './components/ui/PreloaderAnimations';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -20,89 +18,94 @@ function App() {
       <ThemeProvider>
         <AnimationProvider>
           <div className="App relative min-h-screen">
-          <Preloader />
-          <PreloaderAnimations />
-          
-          {/* Fixed Three.js Experience */}
-          <div className="experience fixed w-full h-full">
-            <ThreeJSExperience />
-          </div>
-          <ThemeToggle />
-          <ScrollProgress />
-          
-          {/* Page Content */}
-          <div className="page z-[99999] w-full h-screen overflow-hidden">
-            <div className="page-wrapper relative">
-              
-              {/* Hero Section */}
-              <section className="hero w-screen h-screen">
-                <Hero />
-              </section>
-              
-              {/* Intro Text */}
-              <div className="intro-text flex justify-center items-center absolute top-1/2 left-1/2 font-medium text-base text-[var(--color-text)] transform -translate-x-1/2 -translate-y-1/2 opacity-0">
-                <span className="animatedis">Click on the cube and scroll to get started!</span>
+            <Preloader />
+            <PreloaderAnimations />
+            
+            {/* Fixed Three.js Experience */}
+            <div className="experience fixed w-full h-full">
+              <ThreeJSExperience />
+            </div>
+            
+            {/* Theme Toggle */}
+            <div className="toggle-bar">
+              <ThemeToggle />
+            </div>
+            
+            {/* Page Content */}
+            <div className="page">
+              <div className="page-wrapper">
+                
+                {/* Hero Section */}
+                <section className="hero">
+                  <Hero />
+                </section>
+                
+                {/* Intro Text */}
+                <div className="intro-text">
+                  Click on the cube and scroll to get started!
+                </div>
+                
+                {/* Arrow indicator */}
+                <div className="arrow-svg-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 14.95q-.2 0-.375-.063-.175-.062-.325-.212L6.675 10.05q-.275-.275-.262-.688.012-.412.287-.687.275-.275.7-.275.425 0 .7.275l3.9 3.9 3.925-3.925q.275-.275.688-.263.412.013.687.288.275.275.275.7 0 .425-.275.7l-4.6 4.6q-.15.15-.325.212-.175.063-.375.063Z"/>
+                  </svg>
+                </div>
+                
+                {/* First Move Section Margin */}
+                <div className="first-move section-margin"></div>
+                
+                {/* About Section */}
+                <section className="section first-section left">
+                  <div className="progress-wrapper progress-bar-wrapper-left">
+                    <div className="progress-bar"></div>
+                  </div>
+                  <About />
+                </section>
+                
+                {/* Second Move Section Margin */}
+                <div className="second-move section-margin"></div>
+                
+                {/* Projects Section */}
+                <section className="section second-section right">
+                  <div className="progress-wrapper progress-bar-wrapper-right">
+                    <div className="progress-bar blue-background"></div>
+                  </div>
+                  <Projects />
+                </section>
+                
+                {/* Third Move Section Margin */}
+                <div className="third-move section-margin"></div>
+                
+                {/* Experience Section */}
+                <section className="section third-section left">
+                  <div className="progress-wrapper progress-bar-wrapper-left">
+                    <div className="progress-bar green-background"></div>
+                  </div>
+                  <Experience />
+                </section>
+                
+                {/* Fourth Move Section Margin */}
+                <div className="fourth-move section-margin"></div>
+                
+                {/* Contact Section */}
+                <section className="section fourth-section right">
+                  <div className="progress-wrapper progress-bar-wrapper-right">
+                    <div className="progress-bar"></div>
+                  </div>
+                  <Contact />
+                </section>
+                
+                {/* Footer */}
+                <footer className="footer">
+                  <span className="footer__copyright">
+                    Copyright &copy; 2025 - Safwan Sayeed
+                  </span>
+                </footer>
+                
               </div>
-              
-              {/* Arrow indicator */}
-              <div className="arrow-svg-wrapper absolute top-[90%] left-1/2 opacity-0 text-[var(--color-text)] transform -translate-x-1/2 -translate-y-1/2 animate-bounce">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 16l-6-6h12z"/>
-                </svg>
-              </div>
-              
-              {/* Section Margins for scroll */}
-              <div className="section-margin h-[3000px] w-full"></div>
-              
-              {/* About Section */}
-              <section className="section first-move relative w-1/2 p-[1000px_4%] m-0 bg-[var(--color-background)] overflow-hidden left rounded-tr-[700px] rounded-br-0">
-                <div className="progress-wrapper h-0 w-3 z-[9999]">
-                  <div className="progress-bar-wrapper-left absolute top-0 left-0">
-                    <div className="progress-bar h-screen w-full bg-[var(--color-pink)] origin-top transform scale-y-100"></div>
-                  </div>
-                </div>
-                <About />
-              </section>
-              
-              <div className="section-margin h-[3000px] w-full"></div>
-              
-              {/* Projects Section */}
-              <section className="section second-move relative w-1/2 p-[1000px_4%] m-0 bg-[var(--color-background)] overflow-hidden right ml-auto rounded-tl-[700px] rounded-bl-0">
-                <div className="progress-wrapper h-0 w-3 z-[9999]">
-                  <div className="progress-bar-wrapper-right absolute top-0 right-0">
-                    <div className="progress-bar h-screen w-full bg-[var(--color-green)] origin-top transform scale-y-100"></div>
-                  </div>
-                </div>
-                <Projects />
-              </section>
-              
-              <div className="section-margin h-[3000px] w-full"></div>
-              
-              {/* Experience Section */}
-              <section className="section third-move relative w-1/2 p-[1000px_4%] m-0 bg-[var(--color-background)] overflow-hidden left rounded-tr-[700px] rounded-br-0">
-                <div className="progress-wrapper h-0 w-3 z-[9999]">
-                  <div className="progress-bar-wrapper-left absolute top-0 left-0">
-                    <div className="progress-bar h-screen w-full bg-[var(--color-blue)] origin-top transform scale-y-100"></div>
-                  </div>
-                </div>
-                <Experience />
-              </section>
-              
-              <div className="section-margin h-[3000px] w-full"></div>
-              
-              {/* Contact Section */}
-              <section className="section fourth-move relative w-1/2 p-[1000px_4%] m-0 bg-[var(--color-background)] overflow-hidden right ml-auto rounded-tl-[700px] rounded-bl-0">
-                <div className="progress-wrapper h-0 w-3 z-[9999]">
-                  <div className="progress-bar-wrapper-right absolute top-0 right-0">
-                    <div className="progress-bar h-screen w-full bg-[var(--color-pink)] origin-top transform scale-y-100"></div>
-                  </div>
-                </div>
-                <Contact />
-              </section>
-              
             </div>
           </div>
-        </div>
         </AnimationProvider>
       </ThemeProvider>
     </ThreeProvider>
