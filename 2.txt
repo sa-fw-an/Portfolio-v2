@@ -1,3 +1,41 @@
+This is My project and this is the package.json file of it:
+{
+  "name": "safwan-portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@react-three/drei": "^10.7.3",
+    "@react-three/fiber": "^9.3.0",
+    "@tailwindcss/vite": "^4.1.12",
+    "gsap": "^3.13.0",
+    "lenis": "^1.3.8",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tailwindcss": "^4.1.12",
+    "three": "^0.179.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "vite": "^7.1.2"
+  }
+}
+
+Here is the code of the src folder:
 import React from 'react';
 import { sectionsData } from '../../constants/sections';
 import { personalInfo } from '../../constants/personal';
@@ -761,18 +799,18 @@ const Floor = forwardRef((props, ref) => {
         <meshStandardMaterial color="#ffe6a2" side={THREE.FrontSide} />
       </mesh>
       
-      {/* Colored Circles */}
-  <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.29, 0]} scale={[0,0,0]} receiveShadow>
+      {/* Colored Circles - with shadows */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.29, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#e5a1aa" />
       </mesh>
       
-  <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2, -0.28, 0]} scale={[0,0,0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2, -0.28, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#8395cd" />
       </mesh>
       
-  <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.27, 0]} scale={[0,0,0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.27, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#7ad0ac" />
       </mesh>
@@ -856,7 +894,12 @@ const Room = forwardRef((props, ref) => {
   
   // Enable DRACO decoding if model is compressed
   useGLTF.setDecoderPath('/draco/');
-  const { scene, animations } = useGLTF('/models/room.glb');
+  
+  // Try to load the room model - fallback to creating basic objects if not found
+  let scene, animations;
+  const gltf = useGLTF('/models/room.glb', true);
+  scene = gltf.scene;
+  animations = gltf.animations || [];
 
   const { setChildrenMap, roomRef: sharedRoomRef, rectLightRef } = useThreeContext();
 
@@ -872,128 +915,199 @@ const Room = forwardRef((props, ref) => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useEffect(() => {
-    if (!scene) return;
-
-    // Build children map with exact original naming
-    const found = {};
-    const roomPartMap = {
-      cube: ['Cube', 'cube'],
-      aquarium: ['Aquarium', 'aquarium', 'FishTank', 'fish_tank'],
-      computer: ['Computer', 'computer', 'PC', 'pc'],
-      screen: ['Screen', 'screen', 'Monitor_Screen'],
-      clock: ['Clock', 'clock'],
-      shelves: ['Shelves', 'shelves', 'Shelf', 'shelf'],
-      floor_items: ['Floor_Items', 'floor_items', 'FloorItems'],
-      desks: ['Desks', 'desks', 'Desk', 'desk', 'Table', 'table'],
-      table_stuff: ['Table_Stuff', 'table_stuff', 'TableStuff'],
-      mini_floor: ['Mini_Floor', 'mini_floor'],
-      chair: ['Chair', 'chair'],
-      fish: ['Fish', 'fish'],
-      body: ['Body', 'body', 'Room', 'room'],
-      // Mini platform pieces
-      mailbox: ['Mailbox', 'mailbox'],
-      lamp: ['Lamp', 'lamp'],
-      floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
-      floor_second: ['FloorSecond', 'floorsecond', 'Floor_Second', 'floor_second'],
-      floor_third: ['FloorThird', 'floorthird', 'Floor_Third', 'floor_third'],
-      dirt: ['Dirt', 'dirt'],
-      flower1: ['Flower1', 'flower1', 'Flower_1'],
-      flower2: ['Flower2', 'flower2', 'Flower_2'],
-    };
-
-    const indexByName = (name) => name?.toLowerCase?.() || '';
-
-    scene.traverse((child) => {
-      if (child.isMesh || child.isGroup) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-
-      const lc = indexByName(child.name);
-      Object.entries(roomPartMap).forEach(([key, candidates]) => {
-        if (found[key]) return;
-        if (candidates.some((n) => indexByName(n) === lc)) {
-          found[key] = child;
-        }
-      });
+  // Create fallback objects if model doesn't exist
+  const createFallbackObjects = () => {
+    const group = new THREE.Group();
+    
+    // Create basic room objects
+    const objects = {};
+    
+    // Cube (most important for animations)
+    const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const cubeMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0xe5a1aa, 
+      metalness: 0.2, 
+      roughness: 0.6 
     });
+    objects.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    objects.cube.position.set(0, -1, 0);
+    objects.cube.rotation.y = Math.PI / 4;
+    objects.cube.scale.set(0, 0, 0);
+    objects.cube.name = 'Cube';
+    objects.cube.castShadow = true;
+    objects.cube.receiveShadow = true;
+    group.add(objects.cube);
+    
+    // Body/Room container
+    objects.body = new THREE.Group();
+    objects.body.name = 'Body';
+    objects.body.scale.set(0, 0, 0);
+    group.add(objects.body);
+    
+    // Create other basic objects
+    const createBasicObject = (name, color, position, scale = [0, 0, 0]) => {
+      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+      const material = new THREE.MeshStandardMaterial({ color });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.fromArray(position);
+      mesh.scale.fromArray(scale);
+      mesh.name = name;
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      objects.body.add(mesh);
+      return mesh;
+    };
+    
+    objects.aquarium = createBasicObject('Aquarium', 0x549dd2, [2, 0, 0]);
+    objects.computer = createBasicObject('Computer', 0x666666, [-2, 0, 0]);
+    objects.clock = createBasicObject('Clock', 0xffffff, [0, 2, 0]);
+    objects.shelves = createBasicObject('Shelves', 0x8b4513, [-1, 1, -1]);
+    objects.floor_items = createBasicObject('Floor_Items', 0x654321, [1, -0.5, 1]);
+    objects.desks = createBasicObject('Desks', 0x8b4513, [0, 0, -2]);
+    objects.table_stuff = createBasicObject('Table_Stuff', 0x999999, [0.5, 0.5, -1.5]);
+    objects.chair = createBasicObject('Chair', 0x654321, [0, 0, 2]);
+    objects.fish = createBasicObject('Fish', 0xff6600, [2.2, 0, 0.2]);
+    
+    // Mini platform objects
+    objects.mini_floor = createBasicObject('Mini_Floor', 0xffe6a2, [-0.289521, -1, 8.83572], [1, 1, 1]);
+    objects.mailbox = createBasicObject('Mailbox', 0x666666, [-5, 0, 13]);
+    objects.lamp = createBasicObject('Lamp', 0xffff00, [-4.5, 1, 13]);
+    objects.floor_first = createBasicObject('FloorFirst', 0xffe6a2, [-5.5, -0.5, 12.5]);
+    objects.floor_second = createBasicObject('FloorSecond', 0xffe6a2, [-4.5, -0.5, 13.5]);
+    objects.floor_third = createBasicObject('FloorThird', 0xffe6a2, [-5, -0.5, 14]);
+    objects.dirt = createBasicObject('Dirt', 0x8b4513, [-5.2, -0.3, 13.2]);
+    objects.flower1 = createBasicObject('Flower1', 0xff69b4, [-5.1, 0.2, 13.1]);
+    objects.flower2 = createBasicObject('Flower2', 0xff1493, [-4.9, 0.2, 13.3]);
+    
+    return { group, objects };
+  };
 
-    // Aquarium glass material (exact original)
-    if (found.aquarium) {
-      const glassMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0x549dd2,
-        roughness: 0,
-        transmission: 1,
-        ior: 3,
-        opacity: 1,
-        depthWrite: false,
-        depthTest: false,
+  useEffect(() => {
+    let roomGroup;
+    let found = {};
+
+    if (scene) {
+      // Use loaded model
+      roomGroup = scene;
+      
+      // Build children map with exact original naming
+      const roomPartMap = {
+        cube: ['Cube', 'cube'],
+        aquarium: ['Aquarium', 'aquarium', 'FishTank', 'fish_tank'],
+        computer: ['Computer', 'computer', 'PC', 'pc'],
+        screen: ['Screen', 'screen', 'Monitor_Screen'],
+        clock: ['Clock', 'clock'],
+        shelves: ['Shelves', 'shelves', 'Shelf', 'shelf'],
+        floor_items: ['Floor_Items', 'floor_items', 'FloorItems'],
+        desks: ['Desks', 'desks', 'Desk', 'desk', 'Table', 'table'],
+        table_stuff: ['Table_Stuff', 'table_stuff', 'TableStuff'],
+        mini_floor: ['Mini_Floor', 'mini_floor'],
+        chair: ['Chair', 'chair'],
+        fish: ['Fish', 'fish'],
+        body: ['Body', 'body', 'Room', 'room'],
+        // Mini platform pieces
+        mailbox: ['Mailbox', 'mailbox'],
+        lamp: ['Lamp', 'lamp'],
+        floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
+        floor_second: ['FloorSecond', 'floorsecond', 'Floor_Second', 'floor_second'],
+        floor_third: ['FloorThird', 'floorthird', 'Floor_Third', 'floor_third'],
+        dirt: ['Dirt', 'dirt'],
+        flower1: ['Flower1', 'flower1', 'Flower_1'],
+        flower2: ['Flower2', 'flower2', 'Flower_2'],
+      };
+
+      const indexByName = (name) => name?.toLowerCase?.() || '';
+
+      scene.traverse((child) => {
+        if (child.isMesh || child.isGroup) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+
+        const lc = indexByName(child.name);
+        Object.entries(roomPartMap).forEach(([key, candidates]) => {
+          if (found[key]) return;
+          if (candidates.some((n) => indexByName(n) === lc)) {
+            found[key] = child;
+          }
+        });
       });
-      
-      if (found.aquarium.children?.[0]?.material) {
-        found.aquarium.children[0].material = glassMaterial;
-      } else if (found.aquarium.material) {
-        found.aquarium.material = glassMaterial;
+
+      // Aquarium glass material (exact original)
+      if (found.aquarium) {
+        const glassMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0x549dd2,
+          roughness: 0,
+          transmission: 1,
+          ior: 3,
+          opacity: 1,
+          depthWrite: false,
+          depthTest: false,
+        });
+        
+        if (found.aquarium.children?.[0]?.material) {
+          found.aquarium.children[0].material = glassMaterial;
+        } else if (found.aquarium.material) {
+          found.aquarium.material = glassMaterial;
+        }
       }
-    }
 
-    // Computer screen video texture (exact original)
-    if (found.computer || found.screen) {
-      const video = document.createElement('video');
-      video.src = '/textures/coding.mp4'; // Make sure this video exists
-      video.muted = true;
-      video.loop = true;
-      video.playsInline = true;
-      video.autoplay = true;
-      video.play();
-      
-      const videoTexture = new THREE.VideoTexture(video);
-      videoTexture.minFilter = THREE.NearestFilter;
-      videoTexture.magFilter = THREE.NearestFilter;
-      videoTexture.generateMipmaps = false;
-      videoTexture.colorSpace = THREE.SRGBColorSpace;
-      
-      const screenMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-      
-      const target = found.screen || found.computer?.children?.[1];
-      if (target?.material) {
-        target.material = screenMaterial;
+      // Computer screen video texture (exact original)
+      if (found.computer || found.screen) {
+        const video = document.createElement('video');
+        video.src = '/textures/coding.mp4';
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        
+        video.play().catch(console.warn);
+        
+        const videoTexture = new THREE.VideoTexture(video);
+        videoTexture.minFilter = THREE.NearestFilter;
+        videoTexture.magFilter = THREE.NearestFilter;
+        videoTexture.generateMipmaps = false;
+        videoTexture.colorSpace = THREE.SRGBColorSpace;
+        
+        const screenMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+        
+        const target = found.screen || found.computer?.children?.[1];
+        if (target?.material) {
+          target.material = screenMaterial;
+        }
       }
+
+      // Mini floor positioning (exact original)
+      if (found.mini_floor) {
+        found.mini_floor.position.x = -0.289521;
+        found.mini_floor.position.z = 8.83572;
+      }
+
+    } else {
+      // Use fallback objects
+      const fallback = createFallbackObjects();
+      roomGroup = fallback.group;
+      found = fallback.objects;
     }
 
-    // Mini floor positioning (exact original)
-    if (found.mini_floor) {
-      found.mini_floor.position.x = -0.289521;
-      found.mini_floor.position.z = 8.83572;
-    }
-
-    // Create cube if not found (fallback) - FIXED VERSION
-    let cube = found.cube;
-    if (!cube) {
-      // Create a more proportional cube geometry
-      const cubeGeometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+    // Create cube if not found (fallback)
+    if (!found.cube) {
+      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
       const cubeMaterial = new THREE.MeshStandardMaterial({ 
         color: 0xe5a1aa, 
-        metalness: 0.1, 
-        roughness: 0.7,
-        // Add some emissive to make it more visible
-        emissive: 0x111111,
+        metalness: 0.2, 
+        roughness: 0.6 
       });
-      cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-      cube.name = 'cube_fallback';
-      scene.add(cube);
-      found.cube = cube;
+      found.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      found.cube.name = 'cube_fallback';
+      roomGroup.add(found.cube);
     }
 
-    // FIXED Cube positioning - adjusted for better appearance with orthographic camera
-    if (cube) {
-      // Position the cube more towards the camera view center
-      // The camera is at [0, 6.5, 10] looking down at -30 degrees
-      // So we need to position the cube higher to account for the viewing angle
-      cube.position.set(0, 0.5, 0); // Raised from -1 to 0.5
-      cube.rotation.y = Math.PI / 4; // Keep the rotation
-      cube.scale.set(0, 0, 0); // Start hidden
+    // Cube positioning (exact original)
+    if (found.cube) {
+      found.cube.position.set(0, -1, 0);
+      found.cube.rotation.y = Math.PI / 4;
+      found.cube.scale.set(0, 0, 0); // Start hidden
     }
 
     // Hide all objects initially for staged reveal (exact original behavior)
@@ -1014,7 +1128,7 @@ const Room = forwardRef((props, ref) => {
 
     // Animation mixer setup (exact original)
     if (animations.length) {
-      mixerRef.current = new THREE.AnimationMixer(scene);
+      mixerRef.current = new THREE.AnimationMixer(roomGroup);
       const action = mixerRef.current.clipAction(animations[0]);
       action.play();
     }
@@ -1024,7 +1138,7 @@ const Room = forwardRef((props, ref) => {
     rectLight.position.set(7.68244, 7, 0.5);
     rectLight.rotation.x = -Math.PI / 2;
     rectLight.rotation.z = Math.PI / 4;
-    scene.add(rectLight);
+    roomGroup.add(rectLight);
     found.rectLight = rectLight;
 
     // Store rectLight ref for external access
@@ -1072,6 +1186,12 @@ const Room = forwardRef((props, ref) => {
       {...props}
     >
       {scene && <primitive object={scene} />}
+      {!scene && (
+        // Render fallback objects if model doesn't load
+        <group>
+          {/* Fallback objects will be added in useEffect */}
+        </group>
+      )}
     </group>
   );
 });
@@ -1090,23 +1210,58 @@ import { useThreeContext } from '../../contexts/ThreeContext';
 
 const SceneInner = () => {
   const { setCamera } = useThreeContext();
+  
   const onCreated = useCallback((state) => {
     const { gl, camera } = state;
-    gl.useLegacyLights = false; // three >= 0.153
+    
+    // Configure renderer (exact original settings)
+    gl.useLegacyLights = false;
     gl.outputColorSpace = THREE.SRGBColorSpace;
     gl.toneMapping = THREE.CineonToneMapping;
     gl.toneMappingExposure = 1.75;
+    gl.shadowMap.enabled = true;
+    gl.shadowMap.type = THREE.PCFSoftShadowMap;
     gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    // Configure camera (exact original)
+    if (camera.isOrthographicCamera) {
+      const aspect = window.innerWidth / window.innerHeight;
+      const frustum = 5;
+      camera.left = (-aspect * frustum) / 2;
+      camera.right = (aspect * frustum) / 2;
+      camera.top = frustum / 2;
+      camera.bottom = -frustum / 2;
+      camera.near = -50;
+      camera.far = 50;
+      camera.position.set(0, 6.5, 10);
+      camera.rotation.x = -Math.PI / 6;
+      camera.updateProjectionMatrix();
+    }
+    
     setCamera(camera);
   }, [setCamera]);
 
   return (
     <Canvas
       orthographic
-      camera={{ zoom: 1, position: [0, 6.5, 10], near: 0.1, far: 1000 }}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      camera={{ 
+        zoom: 1, 
+        position: [0, 6.5, 10], 
+        near: -50, 
+        far: 50,
+        left: -5,
+        right: 5,
+        top: 5,
+        bottom: -5
+      }}
+      gl={{ 
+        antialias: true, 
+        alpha: true, 
+        powerPreference: 'high-performance'
+      }}
       dpr={Math.min(window.devicePixelRatio, 2)}
       onCreated={onCreated}
+      shadows
     >
       <Suspense fallback={null}>
         <Experience />
@@ -1199,24 +1354,52 @@ const PreloaderAnimations = () => {
   const device = sizes.width < 968 ? 'mobile' : 'desktop';
 
   useGSAP(() => {
-    // Convert text elements to spans for animation
-    const convertTextElements = () => {
-      convertToSpans(document.querySelector('.intro-text'));
-      convertToSpans(document.querySelector('.hero-main-title'));
-      convertToSpans(document.querySelector('.hero-main-description'));
-      convertToSpans(document.querySelector('.hero-second-subheading'));
-      convertToSpans(document.querySelector('.second-sub'));
+    // Wait for assets to be ready before starting animations
+    const checkAssetsReady = () => {
+      return roomRef.current && childrenMap && Object.keys(childrenMap).length > 0;
     };
 
-    // First intro animation
+    const waitForAssets = () => {
+      return new Promise((resolve) => {
+        const check = () => {
+          if (checkAssetsReady()) {
+            resolve();
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        check();
+      });
+    };
+
+    // Convert text elements to spans for animation
+    const convertTextElements = () => {
+      // Wait for elements to exist in DOM
+      const elements = [
+        '.intro-text',
+        '.hero-main-title', 
+        '.hero-main-description',
+        '.hero-second-subheading',
+        '.second-sub'
+      ];
+      
+      elements.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+          convertToSpans(element);
+        }
+      });
+    };
+
+    // First intro animation (exact original sequence)
     const firstIntro = () => {
       return new Promise((resolve) => {
         const timeline = gsap.timeline();
         
-        // Set initial states
+        // Set initial states (exact original)
         timeline.set('.animatedis', { y: 0, yPercent: 100 });
         
-        // Hide preloader
+        // Hide preloader first (exact original timing)
         timeline.to('.preloader', {
           opacity: 0,
           delay: 1,
@@ -1228,47 +1411,48 @@ const PreloaderAnimations = () => {
           },
         });
 
-        // Animate cube and room (exact original behavior)
+        // Get references to room and cube
         const room = roomRef.current;
         const cube = childrenMap?.cube;
         
+        if (!room || !cube) {
+          console.warn('Room or cube not found, skipping first intro');
+          resolve();
+          return;
+        }
+
+        // Device-specific cube and room animations (exact original)
         if (device === 'desktop') {
-          if (cube) {
-            timeline.to(cube.scale, {
+          timeline
+            .to(cube.scale, {
               x: 1.4,
-              y: 1.4,
+              y: 1.4, 
               z: 1.4,
               ease: 'back.out(2.5)',
               duration: 0.7,
-            });
-          }
-          if (room) {
-            timeline.to(room.position, {
+            })
+            .to(room.position, {
               x: -1,
               ease: 'power1.out',
               duration: 0.7,
-            }, '<');
-          }
+            }, '<'); // Start at same time as cube animation
         } else {
-          if (cube) {
-            timeline.to(cube.scale, {
+          timeline
+            .to(cube.scale, {
               x: 1.4,
               y: 1.4,
               z: 1.4,
               ease: 'back.out(2.5)',
               duration: 0.7,
-            });
-          }
-          if (room) {
-            timeline.to(room.position, {
+            })
+            .to(room.position, {
               z: -1,
               ease: 'power1.out',
               duration: 0.7,
-            }, '<');
-          }
+            }, '<'); // Start at same time as cube animation
         }
 
-        // Animate intro text
+        // Animate intro text and UI elements (exact original)
         timeline
           .to('.intro-text .animatedis', {
             yPercent: 0,
@@ -1290,7 +1474,7 @@ const PreloaderAnimations = () => {
       return new Promise((resolve) => {
         const secondTimeline = gsap.timeline();
 
-        // Fade out intro elements
+        // Fade out intro elements (exact original)
         secondTimeline
           .to('.intro-text .animatedis', {
             yPercent: 100,
@@ -1327,7 +1511,7 @@ const PreloaderAnimations = () => {
               z: 1.3243,
             }, 'same');
 
-          // Set body visible and hide cube
+          // Set body/room visible and hide cube (exact original)
           if (parts.body) {
             secondTimeline.set(parts.body.scale, {
               x: 1,
@@ -1344,7 +1528,7 @@ const PreloaderAnimations = () => {
           }, 'introtext');
         }
 
-        // Animate hero text
+        // Animate hero text (exact original)
         secondTimeline
           .to('.hero-main-title .animatedis', {
             yPercent: 0,
@@ -1367,9 +1551,9 @@ const PreloaderAnimations = () => {
             ease: 'back.out(1.7)',
           }, 'introtext');
 
-        // Sequential room object reveals (exact original sequence)
+        // Sequential room object reveals (exact original sequence and timing)
         const showObject = (obj, delay = '>-0.5') => {
-          if (obj) {
+          if (obj && obj.scale) {
             secondTimeline.to(obj.scale, {
               x: 1,
               y: 1,
@@ -1380,6 +1564,7 @@ const PreloaderAnimations = () => {
           }
         };
 
+        // Reveal objects in exact original order
         showObject(parts.aquarium, '>-0.5');
         showObject(parts.clock, '>-0.4');
         showObject(parts.shelves, '>-0.3');
@@ -1388,7 +1573,7 @@ const PreloaderAnimations = () => {
         showObject(parts.table_stuff, '>-0.1');
         showObject(parts.computer);
 
-        // Mini floor and chair
+        // Mini floor and chair special handling (exact original)
         if (parts.mini_floor) {
           secondTimeline.set(parts.mini_floor.scale, {
             x: 1,
@@ -1415,6 +1600,7 @@ const PreloaderAnimations = () => {
 
         showObject(parts.fish, 'chair');
 
+        // Final arrow reveal (exact original)
         secondTimeline.to('.arrow-svg-wrapper', {
           opacity: 1,
           onComplete: resolve,
@@ -1424,10 +1610,16 @@ const PreloaderAnimations = () => {
 
     // Main animation sequence
     const playIntro = async () => {
+      // Wait for all assets to be ready
+      await waitForAssets();
+      
+      // Convert text elements
       convertTextElements();
+      
+      // Play first intro
       await firstIntro();
       
-      // Set up scroll listeners for second intro
+      // Set up scroll listeners for second intro (exact original)
       const handleScroll = (e) => {
         if (e.deltaY > 0) {
           playSecondIntro();
@@ -1468,10 +1660,10 @@ const PreloaderAnimations = () => {
       };
     };
 
-    // Start the intro sequence after a short delay
+    // Start the intro sequence
     const timer = setTimeout(() => {
       playIntro();
-    }, 2500);
+    }, 100); // Small delay to ensure DOM is ready
 
     return () => {
       clearTimeout(timer);
@@ -1773,6 +1965,7 @@ import React, { createContext, useContext, useMemo, useRef, useState } from 'rea
 
 const ThreeContext = createContext(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useThreeContext = () => {
   const ctx = useContext(ThreeContext);
   if (!ctx) throw new Error('useThreeContext must be used within ThreeProvider');
@@ -1924,36 +2117,24 @@ function App() {
 }
 
 export default App;
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@400..700&display=swap');
 @import "tailwindcss";
 
-/* Import Montserrat Font */
-/* Configure Tailwind v4 Theme */
+/* Main font configuration */
 @theme {
-  /* Font Configuration */
-  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  
-  /* Color Variables - matching original */
-  --color-text-light: #333332;
-  --color-background-light: #FAF4E5;
-  --color-pink-light: #e5a1aa;
-  --color-green-light: #7AD0AC;
-  --color-blue-light: #8395CD;
-  
-  --color-text-dark: #FAF4E5;
-  --color-background-dark: #8395CD;
+  --font-sans: "Edu NSW ACT Cursive", cursive;
 }
 
-/* CSS Variables for Theme */
+/* CSS Variables for Theming */
 :root {
-  /* Light Theme Variables */
+  /* Light Theme */
   --color-text-light: #333332;
   --color-background-light: #FAF4E5;
   --color-pink-light: #e5a1aa;
   --color-green-light: #7AD0AC;
   --color-blue-light: #8395CD;
 
-  /* Dark Theme Variables */
+  /* Dark Theme */
   --color-text-dark: #FAF4E5;
   --color-background-dark: #8395CD;
 }
@@ -1974,7 +2155,7 @@ export default App;
   --color-blue: var(--color-text-dark);
 }
 
-/* Base Styles - Force Montserrat everywhere */
+/* Base Styles - Force Montserrat */
 * {
   margin: 0;
   padding: 0;
@@ -1983,13 +2164,11 @@ export default App;
 }
 
 html, body {
-  font-family: 'Montserrat', sans-serif !important;
   background-color: var(--color-background);
   color: var(--color-text);
   font-weight: 400;
 }
 
-/* Force Montserrat on all text elements */
 h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select {
   font-family: 'Montserrat', sans-serif !important;
 }
@@ -2011,7 +2190,7 @@ h1, section, p, span, svg {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Preloader */
@@ -2056,15 +2235,9 @@ h1, section, p, span, svg {
 }
 
 @keyframes load {
-  0% {
-    transform: translateY(0);
-  }
-  20% {
-    transform: translateY(-12px);
-  }
-  40% {
-    transform: translateY(0);
-  }
+  0% { transform: translateY(0); }
+  20% { transform: translateY(-12px); }
+  40% { transform: translateY(0); }
 }
 
 /* Page Structure */
@@ -2079,7 +2252,7 @@ h1, section, p, span, svg {
   position: relative;
 }
 
-/* Preloader Text Animation */
+/* Text & Arrow Animation Wrappers */
 .animatedis {
   display: inline-block;
   transform: translateY(100%);
@@ -2098,7 +2271,6 @@ h1, section, p, span, svg {
   transform: translate(-50%, -50%);
   z-index: 10;
   pointer-events: none;
-  opacity: 0;
 }
 
 .arrow-svg-wrapper {
@@ -2107,17 +2279,13 @@ h1, section, p, span, svg {
   left: 50%;
   opacity: 0;
   color: var(--color-text);
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   animation: bounce 0.5s ease-in alternate infinite;
 }
 
 @keyframes bounce {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(8px);
-  }
+  0% { transform: translateY(0); }
+  100% { transform: translateY(8px); }
 }
 
 /* Toggle Bar */
@@ -2133,11 +2301,8 @@ h1, section, p, span, svg {
   z-index: 99999999999999;
 }
 
-.sun-wrapper, 
-.moon-wrapper {
+.sun-wrapper, .moon-wrapper {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
   align-items: center;
   color: var(--color-text);
 }
@@ -2148,11 +2313,10 @@ h1, section, p, span, svg {
   width: 56px;
   height: 28px;
   display: flex;
-  justify-content: center;
   align-items: center;
   background-color: var(--color-pink);
   border-radius: 999px;
-  margin: 0px 16px;
+  margin: 0 16px;
   border: none;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
@@ -2238,7 +2402,7 @@ h1, section, p, span, svg {
   width: 100%;
   background-color: var(--color-pink);
   transform-origin: top center;
-  transform: scaleY(1);
+  transform: scaleY(0); /* Start scaled to 0 */
 }
 
 /* Section Content */
@@ -2247,10 +2411,6 @@ h1, section, p, span, svg {
   padding: 20% 5%;
   border-bottom: 2px solid var(--color-pink);
   padding-bottom: 400px;
-}
-
-.section-intro-wrapper:nth-child(3) {
-  border-bottom: 2px solid var(--color-green);
 }
 
 .section-detail-wrapper {
@@ -2273,7 +2433,7 @@ h1, section, p, span, svg {
   color: var(--color-text);
 }
 
-/* Fancy Decoration Part of Section */
+/* Section Title Decoration */
 .section-title {
   position: relative;
   color: var(--color-pink);
@@ -2290,9 +2450,7 @@ h1, section, p, span, svg {
   color: var(--color-pink);
 }
 
-.styleOne,
-.styleTwo,
-.styleThree {
+.styleOne, .styleTwo, .styleThree {
   position: absolute;
   display: block;
   width: 100%;
@@ -2303,14 +2461,8 @@ h1, section, p, span, svg {
   transform: skewY(-25deg);
 }
 
-.styleOne {
-  top: 0px;
-}
-
-.styleTwo {
-  top: 80px;
-}
-
+.styleOne { top: 0px; }
+.styleTwo { top: 80px; }
 .styleThree {
   top: 80px;
   transform: skewY(25deg);
@@ -2355,13 +2507,11 @@ h1, section, p, span, svg {
 
 .hero-main-title {
   font-size: 64px;
-  font-family: 'Open Sans', 'Helvetica Neue';
   color: var(--color-text);
 }
 
 .hero-main-description {
   font-size: 18px;
-  font-family: 'Open Sans', 'Helvetica Neue';
   color: var(--color-text);
 }
 
@@ -2371,114 +2521,46 @@ h1, section, p, span, svg {
   color: var(--color-text);
 }
 
-/* Color Overrides */
-.blue-text {
-  color: var(--color-blue);
-}
-
-.blue-border {
-  border-color: var(--color-blue);
-}
-
-.blue-background {
-  background-color: var(--color-blue);
-}
-
-.green-text {
-  color: var(--color-green);
-}
-
-.green-border {
-  border-color: var(--color-green);
-}
-
-.green-background {
-  background-color: var(--color-green);
-}
-
-/* Mobile Responsive */
-@media (max-width: 968px) {
-  .section {
-    width: 100%;
-  }
-  .progress-bar-wrapper-left {
-    right: 0;
-    left: auto;
-  }
-  .hero-main {
-    bottom: 120px;
-  }
-  .hero-second {
-    top: 160px;
-  }
-  .hero-wrapper {
-    width: calc(100% - 60px);
-  }
-  .hero-main-title {
-    font-size: 32px;
-  }
-  .hero-main-description {
-    font-size: 18px;
-  }
-  .hero-second-subheading {
-    font-size: 18px;
-  }
-}
-
-/* Additional styles for exact original matching */
-.intro-text .animatedis {
-  display: inline-block;
-  transform: translateY(100%);
-}
-
-.first-sub {
+.first-sub, .second-sub {
   display: block;
+  overflow: hidden;
 }
 
 .second-sub {
-  display: block;
   margin-top: 8px;
 }
 
-/* Smooth Scrolling */
-html {
-  scroll-behavior: smooth;
-}
+/* Color Overrides */
+.blue-text { color: var(--color-blue); }
+.blue-border { border-color: var(--color-blue); }
+.blue-background { background-color: var(--color-blue); }
+.green-text { color: var(--color-green); }
+.green-border { border-color: var(--color-green); }
+.green-background { background-color: var(--color-green); }
 
-/* Canvas styles */
-canvas {
-  outline: none;
-}
-
-/* Project Items */
-.project-item {
+/* Project & Experience Items */
+.project-item, .experience-item {
   margin: 32px 0;
   padding: 24px 0;
   border-bottom: 1px solid var(--color-text);
-  opacity: 0.7;
+  opacity: 0.85;
+  position: relative;
 }
-
-.project-title {
+.project-title, .experience-title {
   font-size: 20px;
   font-weight: 600;
-  color: var(--color-text);
   margin-bottom: 8px;
 }
-
-.project-description {
+.project-description, .experience-description {
   font-size: 16px;
-  color: var(--color-text);
   line-height: 1.6;
-  margin-bottom: 16px;
 }
-
 .project-tech {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 16px;
+  margin: 16px 0;
 }
-
 .tech-tag {
   padding: 4px 12px;
   background-color: var(--color-blue);
@@ -2486,54 +2568,22 @@ canvas {
   font-size: 12px;
   border-radius: 16px;
 }
-
 .project-link {
   color: var(--color-blue);
   text-decoration: none;
   font-weight: 500;
-  font-size: 16px;
 }
-
-.project-link:hover {
-  opacity: 0.8;
-}
-
-/* Experience Items */
-.experience-item {
-  margin: 32px 0;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--color-text);
-  opacity: 0.7;
-  position: relative;
-}
-
-.experience-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 4px;
-}
-
 .experience-company {
   font-size: 18px;
   font-weight: 500;
   color: var(--color-green);
   margin-bottom: 8px;
 }
-
 .experience-duration {
   font-size: 14px;
-  color: var(--color-text);
   opacity: 0.8;
   margin-bottom: 12px;
 }
-
-.experience-description {
-  font-size: 16px;
-  color: var(--color-text);
-  line-height: 1.6;
-}
-
 .current-badge {
   position: absolute;
   top: 24px;
@@ -2544,6 +2594,19 @@ canvas {
   font-size: 12px;
   border-radius: 16px;
   font-weight: 500;
+}
+
+
+/* Mobile Responsive */
+@media (max-width: 968px) {
+  .section { width: 100%; }
+  .progress-bar-wrapper-left { right: 0; left: auto; }
+  .hero-main { bottom: 120px; }
+  .hero-second { display: none; } /* Hide on mobile like original */
+  .hero-wrapper { width: calc(100% - 60px); }
+  .hero-main-title { font-size: 32px; }
+  .hero-main-description { font-size: 18px; }
+  .hero-second-subheading { font-size: 18px; }
 }
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -2564,7 +2627,7 @@ createRoot(document.getElementById('root')).render(
     <title>Safwan Sayeed - Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/index.css" />
   </head>
   <body>
@@ -2572,43 +2635,42 @@ createRoot(document.getElementById('root')).render(
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-{
-  "name": "safwan-portfolio",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview --host"
-  },
-  "dependencies": {
-    "@gsap/react": "^2.1.2",
-    "@react-three/drei": "^10.7.3",
-    "@react-three/fiber": "^9.3.0",
-    "@tailwindcss/vite": "^4.1.12",
-    "gsap": "^3.13.0",
-    "lenis": "^1.3.8",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "tailwindcss": "^4.1.12",
-    "three": "^0.179.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "eslint": "^9.33.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
-    "vite": "^7.1.2"
-  }
-}
+Here is the Vite configuration file for your React project with Tailwind CSS support.
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
-The File Structure from the src is 
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(),
+    tailwindcss()
+  ],
+})
+
+Here is the File Structure of the Public Folder:
+public/
+├─ draco/
+│  ├─ gltf/
+│  │  ├─ draco_decoder.js
+│  │  ├─ draco_decoder.wasm
+│  │  ├─ draco_encoder.js
+│  │  └─ draco_wasm_wrapper.js
+│  ├─ draco_decoder.js
+│  ├─ draco_decoder.wasm
+│  ├─ draco_encoder.js
+│  ├─ draco_wasm_wrapper.js
+│  └─ README.md
+├─ models/
+│  ├─ New Boko.glb
+│  └─ room.glb
+├─ social/
+│  ├─ credly.jpg
+│  ├─ credly.pdf
+│  └─ screenshot.png
+└─ textures/
+   └─ coding.mp4
+
+Here is the File Structure of the src Folder:
 src/
 ├─ components/
 │  ├─ sections/

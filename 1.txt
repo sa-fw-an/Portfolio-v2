@@ -1,3 +1,25 @@
+Here is the package.json file for this Project that I am inspired from:
+{
+  "name": "boko-tutorial",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@ashthornton/asscroll": "^2.0.7",
+    "events": "^3.3.0",
+    "gsap": "^3.10.4",
+    "lil-gui": "^0.16.1",
+    "three": "^0.141.0",
+    "vite": "^2.9.9"
+  }
+}
+
+Here is the code for the Project: 
+
 export default [
     {
         name: "room",
@@ -2372,3 +2394,54 @@ svg{
   }
 }
 
+Here is the Project Structure:
+mdamiruddin-3dportfolio/
+├─ Experience/
+│  ├─ Utils/
+│  │  ├─ assets.js
+│  │  ├─ covertDivsToSpans.js
+│  │  ├─ Resources.js
+│  │  ├─ Sizes.js
+│  │  └─ Time.js
+│  ├─ World/
+│  │  ├─ Controls.js
+│  │  ├─ Environment.js
+│  │  ├─ Floor.js
+│  │  ├─ Room.js
+│  │  └─ World.js
+│  ├─ Camera.js
+│  ├─ Experience.js
+│  ├─ Preloader.js
+│  ├─ Renderer.js
+│  └─ Theme.js
+├─ public/
+│  ├─ draco/
+│  │  ├─ gltf/
+│  │  │  ├─ draco_decoder.js
+│  │  │  ├─ draco_decoder.wasm
+│  │  │  ├─ draco_encoder.js
+│  │  │  └─ draco_wasm_wrapper.js
+│  │  ├─ draco_decoder.js
+│  │  ├─ draco_decoder.wasm
+│  │  ├─ draco_encoder.js
+│  │  ├─ draco_wasm_wrapper.js
+│  │  └─ README.md
+│  ├─ models/
+│  │  ├─ Finale Version 16.glb
+│  │  └─ New Boko.glb
+│  ├─ social/
+│  │  ├─ credly.jpg
+│  │  ├─ credly.pdf
+│  │  └─ screenshot.png
+│  └─ textures/
+│     └─ kda.mp4
+├─ .gitignore
+├─ favicon.svg
+├─ index.html
+├─ LEARN.md
+├─ LICENSE.md
+├─ main.js
+├─ package-lock.json
+├─ package.json
+├─ README.md
+└─ style.css
