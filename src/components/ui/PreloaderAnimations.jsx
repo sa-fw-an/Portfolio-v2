@@ -3,7 +3,6 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useThreeContext } from '../../contexts/ThreeContext';
 
-// Text to span conversion utility (exact original function)
 const convertToSpans = (element) => {
   if (!element) return;
   element.style.overflow = "hidden";
@@ -20,13 +19,12 @@ const convertToSpans = (element) => {
 };
 
 const PreloaderAnimations = () => {
-  const timelineRef = useRef();
   const { roomRef, childrenMap, setControlsEnabled } = useThreeContext();
   const sizes = { width: window.innerWidth, height: window.innerHeight };
   const device = sizes.width < 968 ? 'mobile' : 'desktop';
+  const timelineRef = useRef();
 
   useGSAP(() => {
-    // Wait for assets to be ready before starting animations
     const checkAssetsReady = () => {
       return roomRef.current && childrenMap && Object.keys(childrenMap).length > 0;
     };
@@ -44,14 +42,12 @@ const PreloaderAnimations = () => {
       });
     };
 
-    // Convert text elements to spans for animation
     const convertTextElements = () => {
-      // Wait for elements to exist in DOM
       const elements = [
         '.intro-text',
         '.hero-main-title', 
         '.hero-main-description',
-        '.hero-second-subheading',
+        '.first-sub',
         '.second-sub'
       ];
       
@@ -63,15 +59,16 @@ const PreloaderAnimations = () => {
       });
     };
 
-    // First intro animation (exact original sequence)
+    // First intro animation (exact original)
     const firstIntro = () => {
       return new Promise((resolve) => {
         const timeline = gsap.timeline();
+        timelineRef.current = timeline;
         
-        // Set initial states (exact original)
+        // Set initial states
         timeline.set('.animatedis', { y: 0, yPercent: 100 });
         
-        // Hide preloader first (exact original timing)
+        // Hide preloader
         timeline.to('.preloader', {
           opacity: 0,
           delay: 1,
@@ -83,17 +80,16 @@ const PreloaderAnimations = () => {
           },
         });
 
-        // Get references to room and cube
         const room = roomRef.current;
         const cube = childrenMap?.cube;
         
         if (!room || !cube) {
-          console.warn('Room or cube not found, skipping first intro');
+          console.warn('Room or cube not found');
           resolve();
           return;
         }
 
-        // Device-specific cube and room animations (exact original)
+        // Device-specific animations (exact original)
         if (device === 'desktop') {
           timeline
             .to(cube.scale, {
@@ -107,7 +103,7 @@ const PreloaderAnimations = () => {
               x: -1,
               ease: 'power1.out',
               duration: 0.7,
-            }, '<'); // Start at same time as cube animation
+            }, '<');
         } else {
           timeline
             .to(cube.scale, {
@@ -121,10 +117,10 @@ const PreloaderAnimations = () => {
               z: -1,
               ease: 'power1.out',
               duration: 0.7,
-            }, '<'); // Start at same time as cube animation
+            }, '<');
         }
 
-        // Animate intro text and UI elements (exact original)
+        // Animate intro text (exact original)
         timeline
           .to('.intro-text .animatedis', {
             yPercent: 0,
@@ -141,12 +137,12 @@ const PreloaderAnimations = () => {
       });
     };
 
-    // Second intro animation (exact original sequence)
+    // Second intro animation (exact original)
     const secondIntro = () => {
       return new Promise((resolve) => {
         const secondTimeline = gsap.timeline();
 
-        // Fade out intro elements (exact original)
+        // Fade out intro elements
         secondTimeline
           .to('.intro-text .animatedis', {
             yPercent: 100,
@@ -157,7 +153,6 @@ const PreloaderAnimations = () => {
             opacity: 0,
           }, 'fadeout');
 
-        // Room and cube transformations (exact original)
         const room = roomRef.current;
         const parts = childrenMap || {};
 
@@ -183,7 +178,7 @@ const PreloaderAnimations = () => {
               z: 1.3243,
             }, 'same');
 
-          // Set body/room visible and hide cube (exact original)
+          // Set body visible and hide cube
           if (parts.body) {
             secondTimeline.set(parts.body.scale, {
               x: 1,
@@ -200,7 +195,7 @@ const PreloaderAnimations = () => {
           }, 'introtext');
         }
 
-        // Animate hero text (exact original)
+        // Animate hero text
         secondTimeline
           .to('.hero-main-title .animatedis', {
             yPercent: 0,
@@ -223,9 +218,9 @@ const PreloaderAnimations = () => {
             ease: 'back.out(1.7)',
           }, 'introtext');
 
-        // Sequential room object reveals (exact original sequence and timing)
+        // Sequential room object reveals (exact original sequence)
         const showObject = (obj, delay = '>-0.5') => {
-          if (obj && obj.scale) {
+          if (obj?.scale) {
             secondTimeline.to(obj.scale, {
               x: 1,
               y: 1,
@@ -236,7 +231,6 @@ const PreloaderAnimations = () => {
           }
         };
 
-        // Reveal objects in exact original order
         showObject(parts.aquarium, '>-0.5');
         showObject(parts.clock, '>-0.4');
         showObject(parts.shelves, '>-0.3');
@@ -245,7 +239,6 @@ const PreloaderAnimations = () => {
         showObject(parts.table_stuff, '>-0.1');
         showObject(parts.computer);
 
-        // Mini floor and chair special handling (exact original)
         if (parts.mini_floor) {
           secondTimeline.set(parts.mini_floor.scale, {
             x: 1,
@@ -272,7 +265,6 @@ const PreloaderAnimations = () => {
 
         showObject(parts.fish, 'chair');
 
-        // Final arrow reveal (exact original)
         secondTimeline.to('.arrow-svg-wrapper', {
           opacity: 1,
           onComplete: resolve,
@@ -280,18 +272,10 @@ const PreloaderAnimations = () => {
       });
     };
 
-    // Main animation sequence
     const playIntro = async () => {
-      // Wait for all assets to be ready
       await waitForAssets();
-      
-      // Convert text elements
       convertTextElements();
-      
-      // Play first intro
       await firstIntro();
-      
-      // Set up scroll listeners for second intro (exact original)
       const handleScroll = (e) => {
         if (e.deltaY > 0) {
           playSecondIntro();
@@ -303,7 +287,7 @@ const PreloaderAnimations = () => {
         const initialY = e.touches[0].clientY;
         
         const handleTouchMove = (moveEvent) => {
-          const currentY = moveEvent.touches[0].clientY;
+          const currentY = moveEvent.touches.clientY;
           const difference = initialY - currentY;
           if (difference > 0) {
             playSecondIntro();
@@ -327,15 +311,12 @@ const PreloaderAnimations = () => {
       window.addEventListener('wheel', handleScroll);
       window.addEventListener('touchstart', handleTouch);
 
-      return () => {
-        removeEventListeners();
-      };
+      return removeEventListeners;
     };
 
-    // Start the intro sequence
     const timer = setTimeout(() => {
       playIntro();
-    }, 100); // Small delay to ensure DOM is ready
+    }, 100);
 
     return () => {
       clearTimeout(timer);

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Controls = ({ roomRef, floorRef }) => {
   const { camera, size } = useThree();
-  const { controlsEnabled, childrenMap } = useThreeContext();
+  const { controlsEnabled, childrenMap, rectLightRef } = useThreeContext();
   const lenisRef = useRef(null);
 
   useGSAP(() => {
@@ -26,7 +26,7 @@ const Controls = ({ roomRef, floorRef }) => {
     const setupScrollTriggers = () => {
       if (!roomRef.current || !floorRef.current) return;
 
-      // Set initial camera and room positions (exact original)
+      // Set initial positions
       if (camera && roomRef.current) {
         camera.position.set(0, 6.5, 10);
         if (camera.isOrthographicCamera) {
@@ -43,18 +43,21 @@ const Controls = ({ roomRef, floorRef }) => {
         roomRef.current.position.set(0, 0, 0);
       }
 
-      // Set page overflow for scroll triggers
+      // Set page overflow
       const pageElement = document.querySelector('.page');
       if (pageElement) {
         pageElement.style.overflow = 'visible';
       }
 
-      // Smooth scroll with Lenis (exact original setup)
+      // Smooth scroll with Lenis (exact original)
       if (!lenisRef.current) {
         const lenis = new Lenis({
-          smoothWheel: true,
           lerp: 0.1,
+          smoothWheel: true,
+          wheelMultiplier: 1,
+          touchMultiplier: 2,
         });
+        
         lenisRef.current = lenis;
         
         function raf(time) {
@@ -63,13 +66,13 @@ const Controls = ({ roomRef, floorRef }) => {
         }
         requestAnimationFrame(raf);
 
-        // ScrollTrigger proxy setup
-        ScrollTrigger.scrollerProxy(document.documentElement, {
+        // ScrollTrigger proxy
+        ScrollTrigger.scrollerProxy(document.body, {
           scrollTop(value) {
             if (arguments.length) {
               lenis.scrollTo(value, { immediate: true });
             }
-            return lenis.scroll || window.scrollY || 0;
+            return lenis.scroll || document.documentElement.scrollTop || document.body.scrollTop || 0;
           },
           getBoundingClientRect() {
             return { 
@@ -82,19 +85,22 @@ const Controls = ({ roomRef, floorRef }) => {
         });
         
         lenis.on('scroll', ScrollTrigger.update);
-        ScrollTrigger.defaults({ scroller: document.documentElement });
       }
 
-      // Desktop/Mobile responsive animations (exact original)
+      // Responsive animations (exact original)
       ScrollTrigger.matchMedia({
         // Desktop
         '(min-width: 969px)': () => {
-          // Reset positions
           roomRef.current.scale.set(0.11, 0.11, 0.11);
+          if (rectLightRef?.current) {
+            rectLightRef.current.width = 0.5;
+            rectLightRef.current.height = 0.7;
+          }
           camera.position.set(0, 6.5, 10);
+          roomRef.current.position.set(0, 0, 0);
 
-          // First section (exact original)
-          const firstMoveTimeline = gsap.timeline({
+          // First section
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.first-move',
               start: 'top top',
@@ -102,19 +108,16 @@ const Controls = ({ roomRef, floorRef }) => {
               scrub: 0.6,
               invalidateOnRefresh: true,
             },
-          });
-          firstMoveTimeline.fromTo(
+          }).fromTo(
             roomRef.current.position,
             { x: 0, y: 0, z: 0 },
             {
-              x: () => {
-                return size.width * 0.0014;
-              },
+              x: () => size.width * 0.0014,
             }
           );
 
-          // Second section (exact original)
-          const secondMoveTimeline = gsap.timeline({
+          // Second section
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.second-move',
               start: 'top top',
@@ -139,10 +142,18 @@ const Controls = ({ roomRef, floorRef }) => {
               z: 0.4,
             },
             'same'
+          )
+          .to(
+            rectLightRef?.current || {},
+            {
+              width: 0.5 * 4,
+              height: 0.7 * 4,
+            },
+            'same'
           );
 
-          // Third section (exact original)
-          const thirdMoveTimeline = gsap.timeline({
+          // Third section
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.third-move',
               start: 'top top',
@@ -158,13 +169,16 @@ const Controls = ({ roomRef, floorRef }) => {
 
         // Mobile
         '(max-width: 968px)': () => {
-          // Reset positions
           roomRef.current.scale.set(0.07, 0.07, 0.07);
           roomRef.current.position.set(0, 0, 0);
+          if (rectLightRef?.current) {
+            rectLightRef.current.width = 0.3;
+            rectLightRef.current.height = 0.4;
+          }
           camera.position.set(0, 6.5, 10);
 
           // First section
-          const firstMoveTimeline = gsap.timeline({
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.first-move',
               start: 'top top',
@@ -178,7 +192,7 @@ const Controls = ({ roomRef, floorRef }) => {
           });
 
           // Second section
-          const secondMoveTimeline = gsap.timeline({
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.second-move',
               start: 'top top',
@@ -197,6 +211,14 @@ const Controls = ({ roomRef, floorRef }) => {
             'same'
           )
           .to(
+            rectLightRef?.current || {},
+            {
+              width: 0.3 * 3.4,
+              height: 0.4 * 3.4,
+            },
+            'same'
+          )
+          .to(
             roomRef.current.position,
             {
               x: 1.5,
@@ -205,7 +227,7 @@ const Controls = ({ roomRef, floorRef }) => {
           );
 
           // Third section
-          const thirdMoveTimeline = gsap.timeline({
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.third-move',
               start: 'top top',
@@ -220,7 +242,7 @@ const Controls = ({ roomRef, floorRef }) => {
 
         // All devices
         all: () => {
-          // Section borders and progress bars (exact original)
+          // Section borders and progress bars
           const sections = document.querySelectorAll('.section');
           sections.forEach((section) => {
             const progressWrapper = section.querySelector('.progress-wrapper');
@@ -285,7 +307,7 @@ const Controls = ({ roomRef, floorRef }) => {
             }
           });
 
-          // Floor circles animation (exact original)
+          // Floor circles animation
           if (floorRef.current) {
             const circles = [];
             floorRef.current.traverse((child) => {
@@ -319,11 +341,15 @@ const Controls = ({ roomRef, floorRef }) => {
                   end: 'bottom bottom',
                   scrub: 0.6,
                 },
-              }).to(second.scale, {
+              })
+              .to(second.scale, {
                 x: 3,
                 y: 3,
                 z: 3,
-              });
+              }, 'same')
+              .to(roomRef.current.position, {
+                y: 0.7,
+              }, 'same');
 
               // Third circle
               gsap.timeline({
@@ -341,7 +367,7 @@ const Controls = ({ roomRef, floorRef }) => {
             }
           }
 
-          // Mini-platform animations (exact original)
+          // Mini platform animations (exact original)
           if (childrenMap && Object.keys(childrenMap).length) {
             const secondPartTimeline = gsap.timeline({
               scrollTrigger: {
@@ -352,7 +378,7 @@ const Controls = ({ roomRef, floorRef }) => {
 
             const parts = childrenMap;
             
-            // Sequential mini platform reveals (exact original timing)
+            // Sequential reveals
             if (parts.mini_floor) {
               secondPartTimeline.to(parts.mini_floor.position, {
                 x: -5.44055,
@@ -362,7 +388,7 @@ const Controls = ({ roomRef, floorRef }) => {
             }
 
             const animateObject = (obj, delay = '+=0') => {
-              if (obj) {
+              if (obj?.scale) {
                 secondPartTimeline.to(obj.scale, {
                   x: 1,
                   y: 1,
@@ -390,7 +416,7 @@ const Controls = ({ roomRef, floorRef }) => {
 
     // Update on resize
     const onResize = () => {
-      if (camera.isOrthographicCamera) {
+      if (camera?.isOrthographicCamera) {
         const aspect = size.width / size.height;
         const frustum = 5;
         camera.left = (-aspect * frustum) / 2;
@@ -412,7 +438,7 @@ const Controls = ({ roomRef, floorRef }) => {
         lenisRef.current = null;
       }
     };
-  }, [camera, roomRef, floorRef, size.width, size.height, controlsEnabled, childrenMap]);
+  }, [camera, roomRef, floorRef, size.width, size.height, controlsEnabled, childrenMap, rectLightRef]);
 
   return null;
 };

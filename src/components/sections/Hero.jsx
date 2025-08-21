@@ -5,10 +5,10 @@ const Hero = () => {
   const containerRef = useRef();
   const mainTitleRef = useRef();
   const mainDescRef = useRef();
-  const secondSubRef = useRef();
   const firstSubRef = useRef();
+  const secondSubRef = useRef();
 
-  // Convert text to animated spans (exact original function)
+  // Convert text to animated spans
   const convertToSpans = (element) => {
     if (!element) return;
     const text = element.textContent;
@@ -22,17 +22,16 @@ const Hero = () => {
   };
 
   useEffect(() => {
-    // Convert all text elements to spans for GSAP animation
     convertToSpans(mainTitleRef.current);
     convertToSpans(mainDescRef.current);
-    convertToSpans(secondSubRef.current);
     convertToSpans(firstSubRef.current);
+    convertToSpans(secondSubRef.current);
   }, []);
 
   return (
     <div ref={containerRef} className="hero">
       <div className="hero-wrapper">
-        {/* Main content - left side (exact original positioning) */}
+        {/* Main content - left side */}
         <div className="hero-main">
           <h1 
             ref={mainTitleRef}
@@ -45,6 +44,22 @@ const Hero = () => {
             className="hero-main-description"
           >
             {personalInfo.title}
+          </p>
+        </div>
+
+        {/* Second content - right side */}
+        <div className="hero-second">
+          <p 
+            ref={firstSubRef}
+            className="hero-second-subheading first-sub"
+          >
+            {personalInfo.name}
+          </p>
+          <p 
+            ref={secondSubRef}
+            className="hero-second-subheading second-sub"
+          >
+            Portfolio
           </p>
         </div>
       </div>

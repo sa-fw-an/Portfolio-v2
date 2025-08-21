@@ -24,9 +24,7 @@ function App() {
           </div>
           
           {/* Theme Toggle */}
-          <div className="toggle-bar">
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
           
           {/* Page Content */}
           <div className="page">
@@ -96,7 +94,7 @@ function App() {
               {/* Footer */}
               <footer className="footer">
                 <span className="footer__copyright">
-                  Copyright &copy; 2025 - Safwan Sayeed
+                  Copyright © 2025 - Safwan Sayeed
                 </span>
               </footer>
               
