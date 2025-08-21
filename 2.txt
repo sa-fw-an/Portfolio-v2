@@ -190,10 +190,10 @@ const Hero = () => {
   const containerRef = useRef();
   const mainTitleRef = useRef();
   const mainDescRef = useRef();
-  const secondSubRef = useRef();
   const firstSubRef = useRef();
+  const secondSubRef = useRef();
 
-  // Convert text to animated spans (exact original function)
+  // Convert text to animated spans
   const convertToSpans = (element) => {
     if (!element) return;
     const text = element.textContent;
@@ -207,17 +207,16 @@ const Hero = () => {
   };
 
   useEffect(() => {
-    // Convert all text elements to spans for GSAP animation
     convertToSpans(mainTitleRef.current);
     convertToSpans(mainDescRef.current);
-    convertToSpans(secondSubRef.current);
     convertToSpans(firstSubRef.current);
+    convertToSpans(secondSubRef.current);
   }, []);
 
   return (
     <div ref={containerRef} className="hero">
       <div className="hero-wrapper">
-        {/* Main content - left side (exact original positioning) */}
+        {/* Main content - left side */}
         <div className="hero-main">
           <h1 
             ref={mainTitleRef}
@@ -230,6 +229,22 @@ const Hero = () => {
             className="hero-main-description"
           >
             {personalInfo.title}
+          </p>
+        </div>
+
+        {/* Second content - right side */}
+        <div className="hero-second">
+          <p 
+            ref={firstSubRef}
+            className="hero-second-subheading first-sub"
+          >
+            {personalInfo.name}
+          </p>
+          <p 
+            ref={secondSubRef}
+            className="hero-second-subheading second-sub"
+          >
+            Portfolio
           </p>
         </div>
       </div>
@@ -312,7 +327,7 @@ const Projects = () => {
 };
 
 export default Projects;
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -324,7 +339,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Controls = ({ roomRef, floorRef }) => {
   const { camera, size } = useThree();
-  const { controlsEnabled, childrenMap } = useThreeContext();
+  const { controlsEnabled, childrenMap, rectLightRef } = useThreeContext();
   const lenisRef = useRef(null);
 
   useGSAP(() => {
@@ -340,7 +355,7 @@ const Controls = ({ roomRef, floorRef }) => {
     const setupScrollTriggers = () => {
       if (!roomRef.current || !floorRef.current) return;
 
-      // Set initial camera and room positions (exact original)
+      // Set initial positions
       if (camera && roomRef.current) {
         camera.position.set(0, 6.5, 10);
         if (camera.isOrthographicCamera) {
@@ -357,18 +372,21 @@ const Controls = ({ roomRef, floorRef }) => {
         roomRef.current.position.set(0, 0, 0);
       }
 
-      // Set page overflow for scroll triggers
+      // Set page overflow
       const pageElement = document.querySelector('.page');
       if (pageElement) {
         pageElement.style.overflow = 'visible';
       }
 
-      // Smooth scroll with Lenis (exact original setup)
+      // Smooth scroll with Lenis (exact original)
       if (!lenisRef.current) {
         const lenis = new Lenis({
-          smoothWheel: true,
           lerp: 0.1,
+          smoothWheel: true,
+          wheelMultiplier: 1,
+          touchMultiplier: 2,
         });
+        
         lenisRef.current = lenis;
         
         function raf(time) {
@@ -377,13 +395,13 @@ const Controls = ({ roomRef, floorRef }) => {
         }
         requestAnimationFrame(raf);
 
-        // ScrollTrigger proxy setup
-        ScrollTrigger.scrollerProxy(document.documentElement, {
+        // ScrollTrigger proxy
+        ScrollTrigger.scrollerProxy(document.body, {
           scrollTop(value) {
             if (arguments.length) {
               lenis.scrollTo(value, { immediate: true });
             }
-            return lenis.scroll || window.scrollY || 0;
+            return lenis.scroll || document.documentElement.scrollTop || document.body.scrollTop || 0;
           },
           getBoundingClientRect() {
             return { 
@@ -396,19 +414,22 @@ const Controls = ({ roomRef, floorRef }) => {
         });
         
         lenis.on('scroll', ScrollTrigger.update);
-        ScrollTrigger.defaults({ scroller: document.documentElement });
       }
 
-      // Desktop/Mobile responsive animations (exact original)
+      // Responsive animations (exact original)
       ScrollTrigger.matchMedia({
         // Desktop
         '(min-width: 969px)': () => {
-          // Reset positions
           roomRef.current.scale.set(0.11, 0.11, 0.11);
+          if (rectLightRef?.current) {
+            rectLightRef.current.width = 0.5;
+            rectLightRef.current.height = 0.7;
+          }
           camera.position.set(0, 6.5, 10);
+          roomRef.current.position.set(0, 0, 0);
 
-          // First section (exact original)
-          const firstMoveTimeline = gsap.timeline({
+          // First section
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.first-move',
               start: 'top top',
@@ -416,19 +437,16 @@ const Controls = ({ roomRef, floorRef }) => {
               scrub: 0.6,
               invalidateOnRefresh: true,
             },
-          });
-          firstMoveTimeline.fromTo(
+          }).fromTo(
             roomRef.current.position,
             { x: 0, y: 0, z: 0 },
             {
-              x: () => {
-                return size.width * 0.0014;
-              },
+              x: () => size.width * 0.0014,
             }
           );
 
-          // Second section (exact original)
-          const secondMoveTimeline = gsap.timeline({
+          // Second section
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.second-move',
               start: 'top top',
@@ -453,10 +471,18 @@ const Controls = ({ roomRef, floorRef }) => {
               z: 0.4,
             },
             'same'
+          )
+          .to(
+            rectLightRef?.current || {},
+            {
+              width: 0.5 * 4,
+              height: 0.7 * 4,
+            },
+            'same'
           );
 
-          // Third section (exact original)
-          const thirdMoveTimeline = gsap.timeline({
+          // Third section
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.third-move',
               start: 'top top',
@@ -472,13 +498,16 @@ const Controls = ({ roomRef, floorRef }) => {
 
         // Mobile
         '(max-width: 968px)': () => {
-          // Reset positions
           roomRef.current.scale.set(0.07, 0.07, 0.07);
           roomRef.current.position.set(0, 0, 0);
+          if (rectLightRef?.current) {
+            rectLightRef.current.width = 0.3;
+            rectLightRef.current.height = 0.4;
+          }
           camera.position.set(0, 6.5, 10);
 
           // First section
-          const firstMoveTimeline = gsap.timeline({
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.first-move',
               start: 'top top',
@@ -492,7 +521,7 @@ const Controls = ({ roomRef, floorRef }) => {
           });
 
           // Second section
-          const secondMoveTimeline = gsap.timeline({
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.second-move',
               start: 'top top',
@@ -511,6 +540,14 @@ const Controls = ({ roomRef, floorRef }) => {
             'same'
           )
           .to(
+            rectLightRef?.current || {},
+            {
+              width: 0.3 * 3.4,
+              height: 0.4 * 3.4,
+            },
+            'same'
+          )
+          .to(
             roomRef.current.position,
             {
               x: 1.5,
@@ -519,7 +556,7 @@ const Controls = ({ roomRef, floorRef }) => {
           );
 
           // Third section
-          const thirdMoveTimeline = gsap.timeline({
+          gsap.timeline({
             scrollTrigger: {
               trigger: '.third-move',
               start: 'top top',
@@ -534,7 +571,7 @@ const Controls = ({ roomRef, floorRef }) => {
 
         // All devices
         all: () => {
-          // Section borders and progress bars (exact original)
+          // Section borders and progress bars
           const sections = document.querySelectorAll('.section');
           sections.forEach((section) => {
             const progressWrapper = section.querySelector('.progress-wrapper');
@@ -599,7 +636,7 @@ const Controls = ({ roomRef, floorRef }) => {
             }
           });
 
-          // Floor circles animation (exact original)
+          // Floor circles animation
           if (floorRef.current) {
             const circles = [];
             floorRef.current.traverse((child) => {
@@ -633,11 +670,15 @@ const Controls = ({ roomRef, floorRef }) => {
                   end: 'bottom bottom',
                   scrub: 0.6,
                 },
-              }).to(second.scale, {
+              })
+              .to(second.scale, {
                 x: 3,
                 y: 3,
                 z: 3,
-              });
+              }, 'same')
+              .to(roomRef.current.position, {
+                y: 0.7,
+              }, 'same');
 
               // Third circle
               gsap.timeline({
@@ -655,7 +696,7 @@ const Controls = ({ roomRef, floorRef }) => {
             }
           }
 
-          // Mini-platform animations (exact original)
+          // Mini platform animations (exact original)
           if (childrenMap && Object.keys(childrenMap).length) {
             const secondPartTimeline = gsap.timeline({
               scrollTrigger: {
@@ -666,7 +707,7 @@ const Controls = ({ roomRef, floorRef }) => {
 
             const parts = childrenMap;
             
-            // Sequential mini platform reveals (exact original timing)
+            // Sequential reveals
             if (parts.mini_floor) {
               secondPartTimeline.to(parts.mini_floor.position, {
                 x: -5.44055,
@@ -676,7 +717,7 @@ const Controls = ({ roomRef, floorRef }) => {
             }
 
             const animateObject = (obj, delay = '+=0') => {
-              if (obj) {
+              if (obj?.scale) {
                 secondPartTimeline.to(obj.scale, {
                   x: 1,
                   y: 1,
@@ -704,7 +745,7 @@ const Controls = ({ roomRef, floorRef }) => {
 
     // Update on resize
     const onResize = () => {
-      if (camera.isOrthographicCamera) {
+      if (camera?.isOrthographicCamera) {
         const aspect = size.width / size.height;
         const frustum = 5;
         camera.left = (-aspect * frustum) / 2;
@@ -726,12 +767,13 @@ const Controls = ({ roomRef, floorRef }) => {
         lenisRef.current = null;
       }
     };
-  }, [camera, roomRef, floorRef, size.width, size.height, controlsEnabled, childrenMap]);
+  }, [camera, roomRef, floorRef, size.width, size.height, controlsEnabled, childrenMap, rectLightRef]);
 
   return null;
 };
 
 export default Controls;
+
 import { Environment, OrthographicCamera } from '@react-three/drei';
 import { useRef, useEffect } from 'react';
 import Room from './Room';
@@ -895,7 +937,6 @@ const Room = forwardRef((props, ref) => {
   // Enable DRACO decoding if model is compressed
   useGLTF.setDecoderPath('/draco/');
   
-  // Try to load the room model - fallback to creating basic objects if not found
   let scene, animations;
   const gltf = useGLTF('/models/room.glb', true);
   scene = gltf.scene;
@@ -916,72 +957,6 @@ const Room = forwardRef((props, ref) => {
   }, []);
 
   // Create fallback objects if model doesn't exist
-  const createFallbackObjects = () => {
-    const group = new THREE.Group();
-    
-    // Create basic room objects
-    const objects = {};
-    
-    // Cube (most important for animations)
-    const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const cubeMaterial = new THREE.MeshStandardMaterial({ 
-      color: 0xe5a1aa, 
-      metalness: 0.2, 
-      roughness: 0.6 
-    });
-    objects.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-    objects.cube.position.set(0, -1, 0);
-    objects.cube.rotation.y = Math.PI / 4;
-    objects.cube.scale.set(0, 0, 0);
-    objects.cube.name = 'Cube';
-    objects.cube.castShadow = true;
-    objects.cube.receiveShadow = true;
-    group.add(objects.cube);
-    
-    // Body/Room container
-    objects.body = new THREE.Group();
-    objects.body.name = 'Body';
-    objects.body.scale.set(0, 0, 0);
-    group.add(objects.body);
-    
-    // Create other basic objects
-    const createBasicObject = (name, color, position, scale = [0, 0, 0]) => {
-      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-      const material = new THREE.MeshStandardMaterial({ color });
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.fromArray(position);
-      mesh.scale.fromArray(scale);
-      mesh.name = name;
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      objects.body.add(mesh);
-      return mesh;
-    };
-    
-    objects.aquarium = createBasicObject('Aquarium', 0x549dd2, [2, 0, 0]);
-    objects.computer = createBasicObject('Computer', 0x666666, [-2, 0, 0]);
-    objects.clock = createBasicObject('Clock', 0xffffff, [0, 2, 0]);
-    objects.shelves = createBasicObject('Shelves', 0x8b4513, [-1, 1, -1]);
-    objects.floor_items = createBasicObject('Floor_Items', 0x654321, [1, -0.5, 1]);
-    objects.desks = createBasicObject('Desks', 0x8b4513, [0, 0, -2]);
-    objects.table_stuff = createBasicObject('Table_Stuff', 0x999999, [0.5, 0.5, -1.5]);
-    objects.chair = createBasicObject('Chair', 0x654321, [0, 0, 2]);
-    objects.fish = createBasicObject('Fish', 0xff6600, [2.2, 0, 0.2]);
-    
-    // Mini platform objects
-    objects.mini_floor = createBasicObject('Mini_Floor', 0xffe6a2, [-0.289521, -1, 8.83572], [1, 1, 1]);
-    objects.mailbox = createBasicObject('Mailbox', 0x666666, [-5, 0, 13]);
-    objects.lamp = createBasicObject('Lamp', 0xffff00, [-4.5, 1, 13]);
-    objects.floor_first = createBasicObject('FloorFirst', 0xffe6a2, [-5.5, -0.5, 12.5]);
-    objects.floor_second = createBasicObject('FloorSecond', 0xffe6a2, [-4.5, -0.5, 13.5]);
-    objects.floor_third = createBasicObject('FloorThird', 0xffe6a2, [-5, -0.5, 14]);
-    objects.dirt = createBasicObject('Dirt', 0x8b4513, [-5.2, -0.3, 13.2]);
-    objects.flower1 = createBasicObject('Flower1', 0xff69b4, [-5.1, 0.2, 13.1]);
-    objects.flower2 = createBasicObject('Flower2', 0xff1493, [-4.9, 0.2, 13.3]);
-    
-    return { group, objects };
-  };
-
   useEffect(() => {
     let roomGroup;
     let found = {};
@@ -1005,7 +980,6 @@ const Room = forwardRef((props, ref) => {
         chair: ['Chair', 'chair'],
         fish: ['Fish', 'fish'],
         body: ['Body', 'body', 'Room', 'room'],
-        // Mini platform pieces
         mailbox: ['Mailbox', 'mailbox'],
         lamp: ['Lamp', 'lamp'],
         floor_first: ['FloorFirst', 'floorfirst', 'Floor_First', 'floor_first'],
@@ -1083,29 +1057,11 @@ const Room = forwardRef((props, ref) => {
         found.mini_floor.position.z = 8.83572;
       }
 
-    } else {
-      // Use fallback objects
-      const fallback = createFallbackObjects();
-      roomGroup = fallback.group;
-      found = fallback.objects;
-    }
-
-    // Create cube if not found (fallback)
-    if (!found.cube) {
-      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-      const cubeMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xe5a1aa, 
-        metalness: 0.2, 
-        roughness: 0.6 
-      });
-      found.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-      found.cube.name = 'cube_fallback';
-      roomGroup.add(found.cube);
     }
 
     // Cube positioning (exact original)
     if (found.cube) {
-      found.cube.position.set(0, -1, 0);
+      found.cube.position.set(0, 2, 0);
       found.cube.rotation.y = Math.PI / 4;
       found.cube.scale.set(0, 0, 0); // Start hidden
     }
@@ -1114,9 +1070,8 @@ const Room = forwardRef((props, ref) => {
     const hideObjects = [
       'aquarium', 'clock', 'shelves', 'floor_items', 'desks', 'table_stuff', 
       'computer', 'mini_floor', 'chair', 'fish',
-      // Mini platform pieces
       'mailbox', 'lamp', 'floor_first', 'floor_second', 'floor_third', 
-      'dirt', 'flower1', 'flower2'
+      'dirt', 'flower1', 'flower2', 'body'
     ];
 
     hideObjects.forEach((key) => {
@@ -1186,12 +1141,6 @@ const Room = forwardRef((props, ref) => {
       {...props}
     >
       {scene && <primitive object={scene} />}
-      {!scene && (
-        // Render fallback objects if model doesn't load
-        <group>
-          {/* Fallback objects will be added in useEffect */}
-        </group>
-      )}
     </group>
   );
 });
@@ -1331,7 +1280,6 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useThreeContext } from '../../contexts/ThreeContext';
 
-// Text to span conversion utility (exact original function)
 const convertToSpans = (element) => {
   if (!element) return;
   element.style.overflow = "hidden";
@@ -1348,13 +1296,12 @@ const convertToSpans = (element) => {
 };
 
 const PreloaderAnimations = () => {
-  const timelineRef = useRef();
   const { roomRef, childrenMap, setControlsEnabled } = useThreeContext();
   const sizes = { width: window.innerWidth, height: window.innerHeight };
   const device = sizes.width < 968 ? 'mobile' : 'desktop';
+  const timelineRef = useRef();
 
   useGSAP(() => {
-    // Wait for assets to be ready before starting animations
     const checkAssetsReady = () => {
       return roomRef.current && childrenMap && Object.keys(childrenMap).length > 0;
     };
@@ -1372,14 +1319,12 @@ const PreloaderAnimations = () => {
       });
     };
 
-    // Convert text elements to spans for animation
     const convertTextElements = () => {
-      // Wait for elements to exist in DOM
       const elements = [
         '.intro-text',
         '.hero-main-title', 
         '.hero-main-description',
-        '.hero-second-subheading',
+        '.first-sub',
         '.second-sub'
       ];
       
@@ -1391,15 +1336,16 @@ const PreloaderAnimations = () => {
       });
     };
 
-    // First intro animation (exact original sequence)
+    // First intro animation (exact original)
     const firstIntro = () => {
       return new Promise((resolve) => {
         const timeline = gsap.timeline();
+        timelineRef.current = timeline;
         
-        // Set initial states (exact original)
+        // Set initial states
         timeline.set('.animatedis', { y: 0, yPercent: 100 });
         
-        // Hide preloader first (exact original timing)
+        // Hide preloader
         timeline.to('.preloader', {
           opacity: 0,
           delay: 1,
@@ -1411,17 +1357,16 @@ const PreloaderAnimations = () => {
           },
         });
 
-        // Get references to room and cube
         const room = roomRef.current;
         const cube = childrenMap?.cube;
         
         if (!room || !cube) {
-          console.warn('Room or cube not found, skipping first intro');
+          console.warn('Room or cube not found');
           resolve();
           return;
         }
 
-        // Device-specific cube and room animations (exact original)
+        // Device-specific animations (exact original)
         if (device === 'desktop') {
           timeline
             .to(cube.scale, {
@@ -1435,7 +1380,7 @@ const PreloaderAnimations = () => {
               x: -1,
               ease: 'power1.out',
               duration: 0.7,
-            }, '<'); // Start at same time as cube animation
+            }, '<');
         } else {
           timeline
             .to(cube.scale, {
@@ -1449,10 +1394,10 @@ const PreloaderAnimations = () => {
               z: -1,
               ease: 'power1.out',
               duration: 0.7,
-            }, '<'); // Start at same time as cube animation
+            }, '<');
         }
 
-        // Animate intro text and UI elements (exact original)
+        // Animate intro text (exact original)
         timeline
           .to('.intro-text .animatedis', {
             yPercent: 0,
@@ -1469,12 +1414,12 @@ const PreloaderAnimations = () => {
       });
     };
 
-    // Second intro animation (exact original sequence)
+    // Second intro animation (exact original)
     const secondIntro = () => {
       return new Promise((resolve) => {
         const secondTimeline = gsap.timeline();
 
-        // Fade out intro elements (exact original)
+        // Fade out intro elements
         secondTimeline
           .to('.intro-text .animatedis', {
             yPercent: 100,
@@ -1485,7 +1430,6 @@ const PreloaderAnimations = () => {
             opacity: 0,
           }, 'fadeout');
 
-        // Room and cube transformations (exact original)
         const room = roomRef.current;
         const parts = childrenMap || {};
 
@@ -1511,7 +1455,7 @@ const PreloaderAnimations = () => {
               z: 1.3243,
             }, 'same');
 
-          // Set body/room visible and hide cube (exact original)
+          // Set body visible and hide cube
           if (parts.body) {
             secondTimeline.set(parts.body.scale, {
               x: 1,
@@ -1528,7 +1472,7 @@ const PreloaderAnimations = () => {
           }, 'introtext');
         }
 
-        // Animate hero text (exact original)
+        // Animate hero text
         secondTimeline
           .to('.hero-main-title .animatedis', {
             yPercent: 0,
@@ -1551,9 +1495,9 @@ const PreloaderAnimations = () => {
             ease: 'back.out(1.7)',
           }, 'introtext');
 
-        // Sequential room object reveals (exact original sequence and timing)
+        // Sequential room object reveals (exact original sequence)
         const showObject = (obj, delay = '>-0.5') => {
-          if (obj && obj.scale) {
+          if (obj?.scale) {
             secondTimeline.to(obj.scale, {
               x: 1,
               y: 1,
@@ -1564,7 +1508,6 @@ const PreloaderAnimations = () => {
           }
         };
 
-        // Reveal objects in exact original order
         showObject(parts.aquarium, '>-0.5');
         showObject(parts.clock, '>-0.4');
         showObject(parts.shelves, '>-0.3');
@@ -1573,7 +1516,6 @@ const PreloaderAnimations = () => {
         showObject(parts.table_stuff, '>-0.1');
         showObject(parts.computer);
 
-        // Mini floor and chair special handling (exact original)
         if (parts.mini_floor) {
           secondTimeline.set(parts.mini_floor.scale, {
             x: 1,
@@ -1600,7 +1542,6 @@ const PreloaderAnimations = () => {
 
         showObject(parts.fish, 'chair');
 
-        // Final arrow reveal (exact original)
         secondTimeline.to('.arrow-svg-wrapper', {
           opacity: 1,
           onComplete: resolve,
@@ -1608,18 +1549,10 @@ const PreloaderAnimations = () => {
       });
     };
 
-    // Main animation sequence
     const playIntro = async () => {
-      // Wait for all assets to be ready
       await waitForAssets();
-      
-      // Convert text elements
       convertTextElements();
-      
-      // Play first intro
       await firstIntro();
-      
-      // Set up scroll listeners for second intro (exact original)
       const handleScroll = (e) => {
         if (e.deltaY > 0) {
           playSecondIntro();
@@ -1631,7 +1564,7 @@ const PreloaderAnimations = () => {
         const initialY = e.touches[0].clientY;
         
         const handleTouchMove = (moveEvent) => {
-          const currentY = moveEvent.touches[0].clientY;
+          const currentY = moveEvent.touches.clientY;
           const difference = initialY - currentY;
           if (difference > 0) {
             playSecondIntro();
@@ -1655,15 +1588,12 @@ const PreloaderAnimations = () => {
       window.addEventListener('wheel', handleScroll);
       window.addEventListener('touchstart', handleTouch);
 
-      return () => {
-        removeEventListeners();
-      };
+      return removeEventListeners;
     };
 
-    // Start the intro sequence
     const timer = setTimeout(() => {
       playIntro();
-    }, 100); // Small delay to ensure DOM is ready
+    }, 100);
 
     return () => {
       clearTimeout(timer);
@@ -1961,7 +1891,7 @@ export const ThemeProvider = ({ children }) => {
     </ThemeContext.Provider>
   );
 };
-import React, { createContext, useContext, useMemo, useRef, useState } from 'react';
+import { createContext, useContext, useMemo, useRef, useState } from 'react';
 
 const ThreeContext = createContext(null);
 
@@ -2032,9 +1962,7 @@ function App() {
           </div>
           
           {/* Theme Toggle */}
-          <div className="toggle-bar">
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
           
           {/* Page Content */}
           <div className="page">
@@ -2104,7 +2032,7 @@ function App() {
               {/* Footer */}
               <footer className="footer">
                 <span className="footer__copyright">
-                  Copyright &copy; 2025 - Safwan Sayeed
+                  Copyright © 2025 - Safwan Sayeed
                 </span>
               </footer>
               
