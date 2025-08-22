@@ -2,7 +2,7 @@ import { useRef, useEffect, forwardRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { useThreeContext } from '../../contexts/ThreeContext';
+import { useThreeContext } from '@/contexts/ThreeContext';
 
 const Room = forwardRef((props, ref) => {
   const internalRef = useRef();

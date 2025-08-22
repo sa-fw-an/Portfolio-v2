@@ -1,6 +1,6 @@
 import React from 'react';
-import { sectionsData } from '../../constants/sections';
-import { experienceData } from '../../constants/experience';
+import { sectionsData } from '@/constants/sections';
+import { experienceData } from '@/constants/experience';
 
 const Experience = () => {
   const config = sectionsData.experience;

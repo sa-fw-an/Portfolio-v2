@@ -5,8 +5,8 @@ import Room from './Room';
 import Floor from './Floor';
 import Lights from './Lights';
 import Controls from './Controls';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useThreeContext } from '../../contexts/ThreeContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useThreeContext } from '@/contexts/ThreeContext';
 
 const Experience = () => {
   const { theme } = useTheme();

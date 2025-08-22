@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback } from 'react';
 import * as THREE from 'three';
 import Experience from './Experience.jsx';
-import { useThreeContext } from '../../contexts/ThreeContext';
+import { useThreeContext } from '@/contexts/ThreeContext';
 
 const SceneInner = () => {
   const { setCamera } = useThreeContext();

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { useThreeContext } from '../../contexts/ThreeContext';
+import { useThreeContext } from '@/contexts/ThreeContext';
 
 const convertToSpans = (element) => {
   if (!element) return;

@@ -4,8 +4,8 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { useThreeContext } from '../../contexts/ThreeContext';
-import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '../../constants/animations';
+import { useThreeContext } from '@/contexts/ThreeContext';
+import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '@/constants/animations';
 
 gsap.registerPlugin(ScrollTrigger);
 

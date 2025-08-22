@@ -1,6 +1,6 @@
 import React from 'react';
-import { sectionsData } from '../../constants/sections';
-import { projectsData } from '../../constants/projects';
+import { sectionsData } from '@/constants/sections';
+import { projectsData } from '@/constants/projects';
 
 const Projects = () => {
   const config = sectionsData.projects;

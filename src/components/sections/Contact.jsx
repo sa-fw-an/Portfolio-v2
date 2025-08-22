@@ -1,5 +1,5 @@
 import React from 'react';
-import { sectionsData } from '../../constants/sections';
+import { sectionsData } from '@/constants/sections';
 
 const Contact = () => {
   const config = sectionsData.contact;

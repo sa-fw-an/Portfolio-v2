@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { personalInfo } from '../../constants/personal';
+import { personalInfo } from '@/constants/personal';
 
 const Hero = () => {
   const containerRef = useRef();
