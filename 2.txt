@@ -41,66 +41,75 @@ import { sectionsData } from '../../constants/sections';
 import { personalInfo } from '../../constants/personal';
 
 const About = () => {
+  const config = sectionsData.about;
+
   return (
     <React.Fragment>
-      <div className="section-intro-wrapper">
-        <div className="section-title">
-          <span className="section-title-text">
-            {sectionsData.about.title}
-          </span>
-          <span className="styleOne"></span>
-          <span className="styleTwo"></span>
-          <span className="styleThree"></span>
+      <div className={`${config.triggerClass} section-margin`}></div>
+      <section className={`section ${config.layout} ${config.cssClasses}`}>
+        <div className={config.progressBar.wrapperClass}>
+          <div className={`progress-bar ${config.progressBar.colorClass}`}></div>
         </div>
-        <div className="section-number">
-          {sectionsData.about.number}
+        
+        <div className="section-intro-wrapper">
+          <div className="section-title">
+            <span className="section-title-text">
+              {config.title}
+            </span>
+            <span className="styleOne"></span>
+            <span className="styleTwo"></span>
+            <span className="styleThree"></span>
+          </div>
+          <div className="section-number">
+            {config.number}
+          </div>
         </div>
-      </div>
 
-      <div className="section-detail-wrapper">
-        <h3 className="section-heading">
-          About Me
-        </h3>
-        <p className="section-text">
-          {sectionsData.about.content.main}
-        </p>
+        <div className="section-detail-wrapper">
+          <h3 className="section-heading">
+            About Me
+          </h3>
+          <p className="section-text">
+            {config.content.main}
+          </p>
 
-        <h3 className="section-heading">
-          Tech Stack
-        </h3>
-        <p className="section-text">
-          {sectionsData.about.content.techStack}
-        </p>
+          <h3 className="section-heading">
+            Tech Stack
+          </h3>
+          <p className="section-text">
+            {config.content.techStack}
+          </p>
 
-        <h3 className="section-heading">
-          I'm very flexible with time zone communications & locations
-        </h3>
-        <p className="section-text">
-          {sectionsData.about.content.location}
-        </p>
+          <h3 className="section-heading">
+            I'm very flexible with time zone communications & locations
+          </h3>
+          <p className="section-text">
+            {config.content.location}
+          </p>
 
-        <h3 className="section-heading">
-          My Passion for Coding
-        </h3>
-        <p className="section-text">
-          {sectionsData.about.content.passion}
-          <br /><br />
-          In my free time, I engage in:<br />
-          ⦿ Working on personal projects to create impactful applications<br />
-          ⦿ Contributing to open-source projects, giving back to the community and collaborating with fellow developers<br />
-          ⦿ Competitive coding to sharpen my problem-solving abilities<br />
-          ⦿ Ethical hacking to understand security challenges better<br />
-          Coding is more than just a job for me - it's a way to learn, grow, and make a difference!
-        </p>
+          <h3 className="section-heading">
+            My Passion for Coding
+          </h3>
+          <p className="section-text">
+            {config.content.passion}
+            <br /><br />
+            In my free time, I engage in:<br />
+            ⦿ Working on personal projects to create impactful applications<br />
+            ⦿ Contributing to open-source projects, giving back to the community and collaborating with fellow developers<br />
+            ⦿ Competitive coding to sharpen my problem-solving abilities<br />
+            ⦿ Ethical hacking to understand security challenges better<br />
+            Coding is more than just a job for me - it's a way to learn, grow, and make a difference!
+          </p>
 
-        <h3 className="section-heading">
-          Contact me
-        </h3>
-        <p className="section-text">
-          📞 {personalInfo.phone}<br />
-          📧 {personalInfo.email}
-        </p>
-      </div>
+          <h3 className="section-heading">
+            Contact me
+          </h3>
+          <p className="section-text">
+            📞 {personalInfo.phone}<br />
+            📧 {personalInfo.email}
+          </p>
+        </div>
+      </section>
     </React.Fragment>
   );
 };
@@ -110,30 +119,39 @@ import React from 'react';
 import { sectionsData } from '../../constants/sections';
 
 const Contact = () => {
+  const config = sectionsData.contact;
+
   return (
     <React.Fragment>
-      <div className="section-intro-wrapper">
-        <div className="section-title">
-          <span className="section-title-text">
-            {sectionsData.contact.title}
-          </span>
-          <span className="styleOne"></span>
-          <span className="styleTwo"></span>
-          <span className="styleThree"></span>
+      <div className={`${config.triggerClass} section-margin`}></div>
+      <section className={`section ${config.layout} ${config.cssClasses}`}>
+        <div className={config.progressBar.wrapperClass}>
+          <div className={`progress-bar ${config.progressBar.colorClass}`}></div>
         </div>
-        <div className="section-number">
-          {sectionsData.contact.number}
+        
+        <div className="section-intro-wrapper">
+          <div className="section-title">
+            <span className="section-title-text">
+              {config.title}
+            </span>
+            <span className="styleOne"></span>
+            <span className="styleTwo"></span>
+            <span className="styleThree"></span>
+          </div>
+          <div className="section-number">
+            {config.number}
+          </div>
         </div>
-      </div>
 
-      <div className="section-detail-wrapper">
-        <h3 className="section-heading">
-          {sectionsData.contact.subtitle}
-        </h3>
-        <p className="section-text">
-          {sectionsData.contact.description}
-        </p>
-      </div>
+        <div className="section-detail-wrapper">
+          <h3 className="section-heading">
+            {config.subtitle}
+          </h3>
+          <p className="section-text">
+            {config.description}
+          </p>
+        </div>
+      </section>
     </React.Fragment>
   );
 };
@@ -144,40 +162,51 @@ import { sectionsData } from '../../constants/sections';
 import { experienceData } from '../../constants/experience';
 
 const Experience = () => {
+  const config = sectionsData.experience;
+
   return (
     <React.Fragment>
-      <div className="section-intro-wrapper green-text green-border">
-        <div className="section-title green-text">
-          <span className="section-title-text green-text">
-            {sectionsData.experience.title}
-          </span>
-          <span className="styleOne green-border"></span>
-          <span className="styleTwo green-border"></span>
-          <span className="styleThree green-background"></span>
+      <div className={`${config.triggerClass} section-margin`}></div>
+      
+      {/* Auto-configured section with progress bar */}
+      <section className={`section ${config.layout} ${config.cssClasses}`}>
+        <div className={config.progressBar.wrapperClass}>
+          <div className={`progress-bar ${config.progressBar.colorClass}`}></div>
         </div>
-        <div className="section-number green-text">
-          {sectionsData.experience.number}
-        </div>
-      </div>
-
-      <div className="section-detail-wrapper">
-        <h3 className="section-heading">
-          Work Experience
-        </h3>
-        <p className="section-text">
-          My professional journey includes various projects and collaborations that have shaped my expertise in modern web technologies.
-        </p>
-
-        {experienceData.map((exp, index) => (
-          <div key={index} className="experience-item">
-            <h4 className="experience-title">{exp.position}</h4>
-            <h5 className="experience-company">{exp.company}</h5>
-            <p className="experience-duration">{exp.duration}</p>
-            <p className="experience-description">{exp.description}</p>
-            {exp.current && <span className="current-badge">Current</span>}
+        
+        <div className="section-intro-wrapper green-text green-border">
+          <div className="section-title green-text">
+            <span className="section-title-text green-text">
+              {config.title}
+            </span>
+            <span className="styleOne green-border"></span>
+            <span className="styleTwo green-border"></span>
+            <span className="styleThree green-background"></span>
           </div>
-        ))}
-      </div>
+          <div className="section-number green-text">
+            {config.number}
+          </div>
+        </div>
+
+        <div className="section-detail-wrapper">
+          <h3 className="section-heading">
+            Work Experience
+          </h3>
+          <p className="section-text">
+            My professional journey includes various projects and collaborations that have shaped my expertise in modern web technologies.
+          </p>
+
+          {experienceData.map((exp, index) => (
+            <div key={index} className="experience-item">
+              <h4 className="experience-title">{exp.position}</h4>
+              <h5 className="experience-company">{exp.company}</h5>
+              <p className="experience-duration">{exp.duration}</p>
+              <p className="experience-description">{exp.description}</p>
+              {exp.current && <span className="current-badge">Current</span>}
+            </div>
+          ))}
+        </div>
+      </section>
     </React.Fragment>
   );
 };
@@ -240,22 +269,6 @@ const Hero = () => {
             {personalInfo.title}
           </p>
         </div>
-
-        {/* Second content - right side */}
-        <div className="hero-second">
-          <p 
-            ref={firstSubRef}
-            className="hero-second-subheading first-sub"
-          >
-            {personalInfo.name}
-          </p>
-          <p 
-            ref={secondSubRef}
-            className="hero-second-subheading second-sub"
-          >
-            Portfolio
-          </p>
-        </div>
       </div>
     </div>
   );
@@ -267,70 +280,81 @@ import { sectionsData } from '../../constants/sections';
 import { projectsData } from '../../constants/projects';
 
 const Projects = () => {
+  const config = sectionsData.projects;
   const featuredProjects = projectsData.filter(p => p.featured);
   const otherProjects = projectsData.filter(p => !p.featured);
 
   return (
     <React.Fragment>
-      <div className="section-intro-wrapper blue-text blue-border">
-        <div className="section-title blue-text">
-          <span className="section-title-text blue-text">
-            {sectionsData.projects.title}
-          </span>
-          <span className="styleOne blue-border"></span>
-          <span className="styleTwo blue-border"></span>
-          <span className="styleThree blue-background"></span>
+      {/* Auto-generated section margin */}
+      <div className={`${config.triggerClass} section-margin`}></div>
+      
+      {/* Auto-configured section with progress bar */}
+      <section className={`section ${config.layout} ${config.cssClasses}`}>
+        <div className={config.progressBar.wrapperClass}>
+          <div className={`progress-bar ${config.progressBar.colorClass}`}></div>
         </div>
-        <div className="section-number blue-text">
-          {sectionsData.projects.number}
-        </div>
-      </div>
-
-      <div className="section-detail-wrapper">
-        <h3 className="section-heading">
-          Featured Projects
-        </h3>
-        <p className="section-text">
-          Here are some of my recent projects that showcase my skills in web development, blockchain, and mobile applications.
-        </p>
         
-        {featuredProjects.map((project, index) => (
-          <div key={index} className="project-item">
-            <h4 className="project-title">{project.title}</h4>
-            <p className="project-description">{project.description}</p>
-            <div className="project-tech">
-              {project.technologies.map((tech, idx) => (
-                <span key={idx} className="tech-tag">{tech}</span>
-              ))}
-            </div>
-            <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
-              Check Out →
-            </a>
+        <div className="section-intro-wrapper blue-text blue-border">
+          <div className="section-title blue-text">
+            <span className="section-title-text blue-text">
+              {config.title}
+            </span>
+            <span className="styleOne blue-border"></span>
+            <span className="styleTwo blue-border"></span>
+            <span className="styleThree blue-background"></span>
           </div>
-        ))}
+          <div className="section-number blue-text">
+            {config.number}
+          </div>
+        </div>
 
-        {otherProjects.length > 0 && (
-          <>
-            <h3 className="section-heading">
-              Other Projects
-            </h3>
-            {otherProjects.map((project, index) => (
-              <div key={index} className="project-item">
-                <h4 className="project-title">{project.title}</h4>
-                <p className="project-description">{project.description}</p>
-                <div className="project-tech">
-                  {project.technologies.map((tech, idx) => (
-                    <span key={idx} className="tech-tag">{tech}</span>
-                  ))}
-                </div>
-                <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
-                  Check Out →
-                </a>
+        <div className="section-detail-wrapper">
+          <h3 className="section-heading">
+            Featured Projects
+          </h3>
+          <p className="section-text">
+            Here are some of my recent projects that showcase my skills in web development, blockchain, and mobile applications.
+          </p>
+          
+          {featuredProjects.map((project, index) => (
+            <div key={index} className="project-item">
+              <h4 className="project-title">{project.title}</h4>
+              <p className="project-description">{project.description}</p>
+              <div className="project-tech">
+                {project.technologies.map((tech, idx) => (
+                  <span key={idx} className="tech-tag">{tech}</span>
+                ))}
               </div>
-            ))}
-          </>
-        )}
-      </div>
+              <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                Check Out →
+              </a>
+            </div>
+          ))}
+
+          {otherProjects.length > 0 && (
+            <>
+              <h3 className="section-heading">
+                Other Projects
+              </h3>
+              {otherProjects.map((project, index) => (
+                <div key={index} className="project-item">
+                  <h4 className="project-title">{project.title}</h4>
+                  <p className="project-description">{project.description}</p>
+                  <div className="project-tech">
+                    {project.technologies.map((tech, idx) => (
+                      <span key={idx} className="tech-tag">{tech}</span>
+                    ))}
+                  </div>
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                    Check Out →
+                  </a>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      </section>
     </React.Fragment>
   );
 };
@@ -343,6 +367,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { useThreeContext } from '../../contexts/ThreeContext';
+import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '../../constants/animations';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -387,7 +412,7 @@ const Controls = ({ roomRef, floorRef }) => {
         pageElement.style.overflow = 'visible';
       }
 
-      // Smooth scroll with Lenis (exact original)
+      // Smooth scroll with Lenis
       if (!lenisRef.current) {
         const lenis = new Lenis({
           lerp: 0.1,
@@ -425,7 +450,73 @@ const Controls = ({ roomRef, floorRef }) => {
         lenis.on('scroll', ScrollTrigger.update);
       }
 
-      // Responsive animations (exact original)
+      // Helper function to evaluate dynamic expressions
+      const evaluateExpression = (expr) => {
+        if (typeof expr === 'string') {
+          return eval(expr.replace('size.width', size.width).replace('size.height', size.height));
+        }
+        return expr;
+      };
+
+      // Create animations from configuration
+      const createSectionAnimations = (animationConfig, device) => {
+        Object.values(animationConfig[device] || {}).forEach((config) => {
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: config.trigger,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: 0.6,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          // Room animations
+          if (config.roomAnimation) {
+            const { position, scale, rotation } = config.roomAnimation;
+            
+            if (position) {
+              const targetPosition = {};
+              Object.entries(position).forEach(([axis, value]) => {
+                targetPosition[axis] = evaluateExpression(value);
+              });
+              timeline.to(roomRef.current.position, targetPosition, 'same');
+            }
+
+            if (scale) {
+              timeline.to(roomRef.current.scale, scale, 'same');
+            }
+
+            if (rotation) {
+              timeline.to(roomRef.current.rotation, rotation, 'same');
+            }
+          }
+
+          // Camera animations
+          if (config.cameraAnimation) {
+            const { position, rotation } = config.cameraAnimation;
+            
+            if (position) {
+              timeline.to(camera.position, position, 'same');
+            }
+
+            if (rotation) {
+              timeline.to(camera.rotation, rotation, 'same');
+            }
+          }
+
+          // Rect light animations
+          if (config.rectLightAnimation && rectLightRef?.current) {
+            const lightAnimation = {};
+            Object.entries(config.rectLightAnimation).forEach(([prop, value]) => {
+              lightAnimation[prop] = evaluateExpression(value);
+            });
+            timeline.to(rectLightRef.current, lightAnimation, 'same');
+          }
+        });
+      };
+
+      // Responsive animations
       ScrollTrigger.matchMedia({
         // Desktop
         '(min-width: 969px)': () => {
@@ -437,72 +528,7 @@ const Controls = ({ roomRef, floorRef }) => {
           camera.position.set(0, 6.5, 10);
           roomRef.current.position.set(0, 0, 0);
 
-          // First section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.first-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          }).fromTo(
-            roomRef.current.position,
-            { x: 0, y: 0, z: 0 },
-            {
-              x: () => size.width * 0.0014,
-            }
-          );
-
-          // Second section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.second-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          })
-          .to(
-            roomRef.current.position,
-            {
-              x: () => 1,
-              z: () => size.height * 0.0032,
-            },
-            'same'
-          )
-          .to(
-            roomRef.current.scale,
-            {
-              x: 0.4,
-              y: 0.4,
-              z: 0.4,
-            },
-            'same'
-          )
-          .to(
-            rectLightRef?.current || {},
-            {
-              width: 0.5 * 4,
-              height: 0.7 * 4,
-            },
-            'same'
-          );
-
-          // Third section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.third-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          }).to(camera.position, {
-            y: 1.5,
-            x: -4.1,
-          });
+          createSectionAnimations(sectionAnimations, 'desktop');
         },
 
         // Mobile
@@ -515,67 +541,7 @@ const Controls = ({ roomRef, floorRef }) => {
           }
           camera.position.set(0, 6.5, 10);
 
-          // First section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.first-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-            },
-          }).to(roomRef.current.scale, {
-            x: 0.1,
-            y: 0.1,
-            z: 0.1,
-          });
-
-          // Second section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.second-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          })
-          .to(
-            roomRef.current.scale,
-            {
-              x: 0.25,
-              y: 0.25,
-              z: 0.25,
-            },
-            'same'
-          )
-          .to(
-            rectLightRef?.current || {},
-            {
-              width: 0.3 * 3.4,
-              height: 0.4 * 3.4,
-            },
-            'same'
-          )
-          .to(
-            roomRef.current.position,
-            {
-              x: 1.5,
-            },
-            'same'
-          );
-
-          // Third section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.third-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          }).to(roomRef.current.position, {
-            z: -4.5,
-          });
+          createSectionAnimations(sectionAnimations, 'mobile');
         },
 
         // All devices
@@ -588,7 +554,7 @@ const Controls = ({ roomRef, floorRef }) => {
 
             if (section.classList.contains('right')) {
               gsap.to(section, {
-                borderTopLeftRadius: 10,
+                borderTopLeftRadius: sectionBorderConfig.rightSections.borderTopLeftRadius,
                 scrollTrigger: {
                   trigger: section,
                   start: 'top bottom',
@@ -597,7 +563,7 @@ const Controls = ({ roomRef, floorRef }) => {
                 },
               });
               gsap.to(section, {
-                borderBottomLeftRadius: 700,
+                borderBottomLeftRadius: sectionBorderConfig.rightSections.borderBottomLeftRadius,
                 scrollTrigger: {
                   trigger: section,
                   start: 'bottom bottom',
@@ -607,7 +573,7 @@ const Controls = ({ roomRef, floorRef }) => {
               });
             } else {
               gsap.to(section, {
-                borderTopRightRadius: 10,
+                borderTopRightRadius: sectionBorderConfig.leftSections.borderTopRightRadius,
                 scrollTrigger: {
                   trigger: section,
                   start: 'top bottom',
@@ -616,7 +582,7 @@ const Controls = ({ roomRef, floorRef }) => {
                 },
               });
               gsap.to(section, {
-                borderBottomRightRadius: 700,
+                borderBottomRightRadius: sectionBorderConfig.leftSections.borderBottomRightRadius,
                 scrollTrigger: {
                   trigger: section,
                   start: 'bottom bottom',
@@ -636,9 +602,9 @@ const Controls = ({ roomRef, floorRef }) => {
                     trigger: section,
                     start: 'top top',
                     end: 'bottom bottom',
-                    scrub: 0.4,
+                    scrub: progressBarConfig.scrub,
                     pin: progressWrapper,
-                    pinSpacing: false,
+                    pinSpacing: progressBarConfig.pinSpacing,
                   },
                 }
               );
@@ -654,55 +620,24 @@ const Controls = ({ roomRef, floorRef }) => {
               }
             });
 
-            if (circles.length >= 3) {
-              const [first, second, third] = circles;
-              
-              // First circle
-              gsap.timeline({
-                scrollTrigger: {
-                  trigger: '.first-move',
-                  start: 'top top',
-                  end: 'bottom bottom',
-                  scrub: 0.6,
-                },
-              }).to(first.scale, {
-                x: 3,
-                y: 3,
-                z: 3,
-              });
+            floorCircleAnimations.forEach((config) => {
+              if (circles[config.circleIndex]) {
+                const timeline = gsap.timeline({
+                  scrollTrigger: {
+                    trigger: config.trigger,
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 0.6,
+                  },
+                });
 
-              // Second circle
-              gsap.timeline({
-                scrollTrigger: {
-                  trigger: '.second-move',
-                  start: 'top top',
-                  end: 'bottom bottom',
-                  scrub: 0.6,
-                },
-              })
-              .to(second.scale, {
-                x: 3,
-                y: 3,
-                z: 3,
-              }, 'same')
-              .to(roomRef.current.position, {
-                y: 0.7,
-              }, 'same');
-
-              // Third circle
-              gsap.timeline({
-                scrollTrigger: {
-                  trigger: '.third-move',
-                  start: 'top top',
-                  end: 'bottom bottom',
-                  scrub: 0.6,
-                },
-              }).to(third.scale, {
-                x: 3,
-                y: 3,
-                z: 3,
-              });
-            }
+                timeline.to(circles[config.circleIndex].scale, config.scale, 'same');
+                
+                if (config.roomPosition) {
+                  timeline.to(roomRef.current.position, config.roomPosition, 'same');
+                }
+              }
+            });
           }
 
           // Mini platform animations (exact original)
@@ -782,7 +717,6 @@ const Controls = ({ roomRef, floorRef }) => {
 };
 
 export default Controls;
-
 import { Environment, OrthographicCamera } from '@react-three/drei';
 import { useRef, useEffect } from 'react';
 import Room from './Room';
@@ -838,7 +772,7 @@ const Experience = () => {
 };
 
 export default Experience;
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import * as THREE from 'three';
 
 const Floor = forwardRef((props, ref) => {
@@ -850,20 +784,22 @@ const Floor = forwardRef((props, ref) => {
         <meshStandardMaterial color="#ffe6a2" side={THREE.FrontSide} />
       </mesh>
       
-      {/* Colored Circles - with shadows */}
+      {/* Colored Circles */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.29, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#e5a1aa" />
       </mesh>
-      
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2, -0.28, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#8395cd" />
       </mesh>
-      
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.27, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#7ad0ac" />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-2, -0.26, 0]} scale={[0,0,0]} receiveShadow>
+        <circleGeometry args={[5, 64]} />
+        <meshStandardMaterial color="#d0a17a" />
       </mesh>
     </group>
   );
@@ -1641,6 +1577,120 @@ const ThemeToggle = () => {
 };
 
 export default ThemeToggle;
+// Animation configurations for all sections
+export const sectionAnimations = {
+  desktop: {
+    'first-move': {
+      trigger: '.first-move',
+      roomAnimation: {
+        scale: { x: 0.11, y: 0.11, z: 0.11 },
+        position: { x: 'size.width * 0.0014' }
+      }
+    },
+    'second-move': {
+      trigger: '.second-move',
+      roomAnimation: {
+        position: { x: 1, z: 'size.height * 0.0032' },
+        scale: { x: 0.4, y: 0.4, z: 0.4 }
+      },
+      rectLightAnimation: {
+        width: '0.5 * 4',
+        height: '0.7 * 4'
+      }
+    },
+    'third-move': {
+      trigger: '.third-move',
+      cameraAnimation: {
+        position: { y: 1.5, x: -4.1 }
+      }
+    },
+    'fourth-move': {
+      trigger: '.fourth-move',
+      roomAnimation: {
+        scale: { x: 0.11, y: 0.11, z: 0.11 },
+        position: { x: 'size.width * -0.0014' }
+      },
+      cameraAnimation: {
+        position: { y: -0.3, x: -0.8, z: 1 }
+      }
+    }
+  },
+  mobile: {
+    'first-move': {
+      trigger: '.first-move',
+      roomAnimation: {
+        scale: { x: 0.1, y: 0.1, z: 0.1 }
+      }
+    },
+    'second-move': {
+      trigger: '.second-move',
+      roomAnimation: {
+        scale: { x: 0.25, y: 0.25, z: 0.25 },
+        position: { x: 1.5 }
+      },
+      rectLightAnimation: {
+        width: '0.3 * 3.4',
+        height: '0.4 * 3.4'
+      }
+    },
+    'third-move': {
+      trigger: '.third-move',
+      roomAnimation: {
+        position: { z: -4.5 }
+      }
+    },
+    'fourth-move': {
+      trigger: '.fourth-move',
+      roomAnimation: {
+        scale: { x: 0.1, y: 0.1, z: 0.1 },
+        position: { x: 0, y: -0.1, z: -2 }
+      }
+    }
+  }
+};
+
+// Floor circle animations configuration
+export const floorCircleAnimations = [
+  {
+    trigger: '.first-move',
+    circleIndex: 0,
+    scale: { x: 3, y: 3, z: 3 }
+  },
+  {
+    trigger: '.second-move',
+    circleIndex: 1,
+    scale: { x: 3, y: 3, z: 3 },
+    roomPosition: { y: 0.7 }
+  },
+  {
+    trigger: '.third-move',
+    circleIndex: 2,
+    scale: { x: 3, y: 3, z: 3 }
+  },
+  {
+    trigger: '.fourth-move',
+    circleIndex: 3,
+    scale: { x: 3, y: 3, z: 3 }
+  }
+];
+
+// Section border animation configuration
+export const sectionBorderConfig = {
+  leftSections: {
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 700
+  },
+  rightSections: {
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 700
+  }
+};
+
+// Progress bar configuration
+export const progressBarConfig = {
+  scrub: 0.4,
+  pinSpacing: false
+};
 export const assetsData = [
   {
     name: "room",
@@ -1679,7 +1729,6 @@ export const experienceData = [
 export const personalInfo = {
   name: "Safwan Sayeed",
   title: "Undergraduate Student",
-  subtitle: "Building dreams with code.",
   description: "I am an Undergraduate Student pursuing a B.E in Computer Science and Engineering. I am passionate about Coding, specializing in Web, Blockchain development, Game and Android applications. I enjoy exploring innovative solutions and creating engaging experiences through technology.",
   location: "India, Bangalore",
   email: "isafwansayeed@gmail.com",
@@ -1822,6 +1871,15 @@ export const sectionsData = {
     id: "about", 
     title: "About Me",
     number: "01",
+    layout: "left",
+    triggerClass: "first-move",
+    progressBar: {
+      position: "left",
+      color: "pink",
+      wrapperClass: "progress-wrapper progress-bar-wrapper-left",
+      colorClass: ""
+    },
+    cssClasses: "first-section",
     content: {
       main: "I am an Undergraduate Student pursuing a B.E in Computer Science and Engineering. I am passionate about Coding, specializing in Web, Blockchain development, Game and Android applications. I enjoy exploring innovative solutions and creating engaging experiences through technology.",
       techStack: "I specialize in a diverse range of languages, frameworks, and tools to build robust and scalable applications. My focus is on creating dynamic user experiences, beautiful front-end applications, powerful backend logic, and efficient data management while utilizing modern development tools like cloud services for seamless deployment.",
@@ -1832,17 +1890,44 @@ export const sectionsData = {
   projects: {
     id: "projects",
     title: "My Projects", 
-    number: "02"
+    number: "02",
+    layout: "right",
+    triggerClass: "second-move",
+    progressBar: {
+      position: "right",
+      color: "blue",
+      wrapperClass: "progress-wrapper progress-bar-wrapper-right",
+      colorClass: "blue-background"
+    },
+    cssClasses: "second-section blue-text blue-border"
   },
   experience: {
     id: "experience",
     title: "Work Experience",
-    number: "03"
+    number: "03",
+    layout: "left",
+    triggerClass: "third-move",
+    progressBar: {
+      position: "left",
+      color: "green",
+      wrapperClass: "progress-wrapper progress-bar-wrapper-left",
+      colorClass: "green-background"
+    },
+    cssClasses: "third-section green-text green-border"
   },
   contact: {
     id: "contact",
     title: "CONTACT",
     number: "04",
+    layout: "right",
+    triggerClass: "fourth-move",
+    progressBar: {
+      position: "right",
+      color: "pink",
+      wrapperClass: "progress-wrapper progress-bar-wrapper-right",
+      colorClass: "pink-background"
+    },
+    cssClasses: "fourth-section",
     subtitle: "Let's talk",
     description: "Looking to create a dynamic web platform 🌐, build immersive games 🎮, or launch a cutting-edge Android app 📱? I'm here to bring your ideas to life!"
   }
@@ -1957,67 +2042,19 @@ function App() {
         <div className="App relative min-h-screen">
           <Preloader />
           <PreloaderAnimations />
-          
-          {/* Fixed Three.js Experience */}
           <div className="experience fixed w-full h-full">
             <ThreeJSExperience />
           </div>
-          
-          {/* Theme Toggle */}
           <ThemeToggle />
-          
-          {/* Page Content */}
           <div className="page">
             <div className="page-wrapper">
-              
-              {/* Hero Section */}
               <section className="hero">
                 <Hero />
               </section>
-              
-              {/* First Move Section Margin */}
-              <div className="first-move section-margin"></div>
-              
-              {/* About Section */}
-              <section className="section first-section left">
-                <div className="progress-wrapper progress-bar-wrapper-left">
-                  <div className="progress-bar"></div>
-                </div>
-                <About />
-              </section>
-              
-              {/* Second Move Section Margin */}
-              <div className="second-move section-margin"></div>
-              
-              {/* Projects Section */}
-              <section className="section second-section right">
-                <div className="progress-wrapper progress-bar-wrapper-right">
-                  <div className="progress-bar blue-background"></div>
-                </div>
-                <Projects />
-              </section>
-              
-              {/* Third Move Section Margin */}
-              <div className="third-move section-margin"></div>
-              
-              {/* Experience Section */}
-              <section className="section third-section left">
-                <div className="progress-wrapper progress-bar-wrapper-left">
-                  <div className="progress-bar green-background"></div>
-                </div>
-                <Experience />
-              </section>
-              
-              {/* Fourth Move Section Margin */}
-              <div className="fourth-move section-margin"></div>
-              
-              {/* Contact Section */}
-              <section className="section fourth-section right">
-                <div className="progress-wrapper progress-bar-wrapper-right">
-                  <div className="progress-bar blue-background"></div>
-                </div>
-                <Contact />
-              </section>
+              <About />
+              <Projects />
+              <Experience />
+              <Contact />
               
               {/* Footer */}
               <footer className="footer">
@@ -2609,6 +2646,7 @@ src/
 │     ├─ PreloaderAnimations.jsx
 │     └─ ThemeToggle.jsx
 ├─ constants/
+│  ├─ animations.js
 │  ├─ assets.js
 │  ├─ experience.js
 │  ├─ personal.js
