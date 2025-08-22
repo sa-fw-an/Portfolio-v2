@@ -17,67 +17,19 @@ function App() {
         <div className="App relative min-h-screen">
           <Preloader />
           <PreloaderAnimations />
-          
-          {/* Fixed Three.js Experience */}
           <div className="experience fixed w-full h-full">
             <ThreeJSExperience />
           </div>
-          
-          {/* Theme Toggle */}
           <ThemeToggle />
-          
-          {/* Page Content */}
           <div className="page">
             <div className="page-wrapper">
-              
-              {/* Hero Section */}
               <section className="hero">
                 <Hero />
               </section>
-              
-              {/* First Move Section Margin */}
-              <div className="first-move section-margin"></div>
-              
-              {/* About Section */}
-              <section className="section first-section left">
-                <div className="progress-wrapper progress-bar-wrapper-left">
-                  <div className="progress-bar"></div>
-                </div>
-                <About />
-              </section>
-              
-              {/* Second Move Section Margin */}
-              <div className="second-move section-margin"></div>
-              
-              {/* Projects Section */}
-              <section className="section second-section right">
-                <div className="progress-wrapper progress-bar-wrapper-right">
-                  <div className="progress-bar blue-background"></div>
-                </div>
-                <Projects />
-              </section>
-              
-              {/* Third Move Section Margin */}
-              <div className="third-move section-margin"></div>
-              
-              {/* Experience Section */}
-              <section className="section third-section left">
-                <div className="progress-wrapper progress-bar-wrapper-left">
-                  <div className="progress-bar green-background"></div>
-                </div>
-                <Experience />
-              </section>
-              
-              {/* Fourth Move Section Margin */}
-              <div className="fourth-move section-margin"></div>
-              
-              {/* Contact Section */}
-              <section className="section fourth-section right">
-                <div className="progress-wrapper progress-bar-wrapper-right">
-                  <div className="progress-bar blue-background"></div>
-                </div>
-                <Contact />
-              </section>
+              <About />
+              <Projects />
+              <Experience />
+              <Contact />
               
               {/* Footer */}
               <footer className="footer">

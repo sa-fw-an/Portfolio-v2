@@ -1,7 +1,6 @@
 export const personalInfo = {
   name: "Safwan Sayeed",
   title: "Undergraduate Student",
-  subtitle: "Building dreams with code.",
   description: "I am an Undergraduate Student pursuing a B.E in Computer Science and Engineering. I am passionate about Coding, specializing in Web, Blockchain development, Game and Android applications. I enjoy exploring innovative solutions and creating engaging experiences through technology.",
   location: "India, Bangalore",
   email: "isafwansayeed@gmail.com",

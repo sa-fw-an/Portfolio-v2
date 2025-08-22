@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { useThreeContext } from '../../contexts/ThreeContext';
+import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '../../constants/animations';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,7 +50,7 @@ const Controls = ({ roomRef, floorRef }) => {
         pageElement.style.overflow = 'visible';
       }
 
-      // Smooth scroll with Lenis (exact original)
+      // Smooth scroll with Lenis
       if (!lenisRef.current) {
         const lenis = new Lenis({
           lerp: 0.1,
@@ -87,7 +88,73 @@ const Controls = ({ roomRef, floorRef }) => {
         lenis.on('scroll', ScrollTrigger.update);
       }
 
-      // Responsive animations (exact original)
+      // Helper function to evaluate dynamic expressions
+      const evaluateExpression = (expr) => {
+        if (typeof expr === 'string') {
+          return eval(expr.replace('size.width', size.width).replace('size.height', size.height));
+        }
+        return expr;
+      };
+
+      // Create animations from configuration
+      const createSectionAnimations = (animationConfig, device) => {
+        Object.values(animationConfig[device] || {}).forEach((config) => {
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: config.trigger,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: 0.6,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          // Room animations
+          if (config.roomAnimation) {
+            const { position, scale, rotation } = config.roomAnimation;
+            
+            if (position) {
+              const targetPosition = {};
+              Object.entries(position).forEach(([axis, value]) => {
+                targetPosition[axis] = evaluateExpression(value);
+              });
+              timeline.to(roomRef.current.position, targetPosition, 'same');
+            }
+
+            if (scale) {
+              timeline.to(roomRef.current.scale, scale, 'same');
+            }
+
+            if (rotation) {
+              timeline.to(roomRef.current.rotation, rotation, 'same');
+            }
+          }
+
+          // Camera animations
+          if (config.cameraAnimation) {
+            const { position, rotation } = config.cameraAnimation;
+            
+            if (position) {
+              timeline.to(camera.position, position, 'same');
+            }
+
+            if (rotation) {
+              timeline.to(camera.rotation, rotation, 'same');
+            }
+          }
+
+          // Rect light animations
+          if (config.rectLightAnimation && rectLightRef?.current) {
+            const lightAnimation = {};
+            Object.entries(config.rectLightAnimation).forEach(([prop, value]) => {
+              lightAnimation[prop] = evaluateExpression(value);
+            });
+            timeline.to(rectLightRef.current, lightAnimation, 'same');
+          }
+        });
+      };
+
+      // Responsive animations
       ScrollTrigger.matchMedia({
         // Desktop
         '(min-width: 969px)': () => {
@@ -99,72 +166,7 @@ const Controls = ({ roomRef, floorRef }) => {
           camera.position.set(0, 6.5, 10);
           roomRef.current.position.set(0, 0, 0);
 
-          // First section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.first-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          }).fromTo(
-            roomRef.current.position,
-            { x: 0, y: 0, z: 0 },
-            {
-              x: () => size.width * 0.0014,
-            }
-          );
-
-          // Second section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.second-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          })
-          .to(
-            roomRef.current.position,
-            {
-              x: () => 1,
-              z: () => size.height * 0.0032,
-            },
-            'same'
-          )
-          .to(
-            roomRef.current.scale,
-            {
-              x: 0.4,
-              y: 0.4,
-              z: 0.4,
-            },
-            'same'
-          )
-          .to(
-            rectLightRef?.current || {},
-            {
-              width: 0.5 * 4,
-              height: 0.7 * 4,
-            },
-            'same'
-          );
-
-          // Third section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.third-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          }).to(camera.position, {
-            y: 1.5,
-            x: -4.1,
-          });
+          createSectionAnimations(sectionAnimations, 'desktop');
         },
 
         // Mobile
@@ -177,67 +179,7 @@ const Controls = ({ roomRef, floorRef }) => {
           }
           camera.position.set(0, 6.5, 10);
 
-          // First section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.first-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-            },
-          }).to(roomRef.current.scale, {
-            x: 0.1,
-            y: 0.1,
-            z: 0.1,
-          });
-
-          // Second section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.second-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          })
-          .to(
-            roomRef.current.scale,
-            {
-              x: 0.25,
-              y: 0.25,
-              z: 0.25,
-            },
-            'same'
-          )
-          .to(
-            rectLightRef?.current || {},
-            {
-              width: 0.3 * 3.4,
-              height: 0.4 * 3.4,
-            },
-            'same'
-          )
-          .to(
-            roomRef.current.position,
-            {
-              x: 1.5,
-            },
-            'same'
-          );
-
-          // Third section
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: '.third-move',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          }).to(roomRef.current.position, {
-            z: -4.5,
-          });
+          createSectionAnimations(sectionAnimations, 'mobile');
         },
 
         // All devices
@@ -250,7 +192,7 @@ const Controls = ({ roomRef, floorRef }) => {
 
             if (section.classList.contains('right')) {
               gsap.to(section, {
-                borderTopLeftRadius: 10,
+                borderTopLeftRadius: sectionBorderConfig.rightSections.borderTopLeftRadius,
                 scrollTrigger: {
                   trigger: section,
                   start: 'top bottom',
@@ -259,7 +201,7 @@ const Controls = ({ roomRef, floorRef }) => {
                 },
               });
               gsap.to(section, {
-                borderBottomLeftRadius: 700,
+                borderBottomLeftRadius: sectionBorderConfig.rightSections.borderBottomLeftRadius,
                 scrollTrigger: {
                   trigger: section,
                   start: 'bottom bottom',
@@ -269,7 +211,7 @@ const Controls = ({ roomRef, floorRef }) => {
               });
             } else {
               gsap.to(section, {
-                borderTopRightRadius: 10,
+                borderTopRightRadius: sectionBorderConfig.leftSections.borderTopRightRadius,
                 scrollTrigger: {
                   trigger: section,
                   start: 'top bottom',
@@ -278,7 +220,7 @@ const Controls = ({ roomRef, floorRef }) => {
                 },
               });
               gsap.to(section, {
-                borderBottomRightRadius: 700,
+                borderBottomRightRadius: sectionBorderConfig.leftSections.borderBottomRightRadius,
                 scrollTrigger: {
                   trigger: section,
                   start: 'bottom bottom',
@@ -298,9 +240,9 @@ const Controls = ({ roomRef, floorRef }) => {
                     trigger: section,
                     start: 'top top',
                     end: 'bottom bottom',
-                    scrub: 0.4,
+                    scrub: progressBarConfig.scrub,
                     pin: progressWrapper,
-                    pinSpacing: false,
+                    pinSpacing: progressBarConfig.pinSpacing,
                   },
                 }
               );
@@ -316,55 +258,24 @@ const Controls = ({ roomRef, floorRef }) => {
               }
             });
 
-            if (circles.length >= 3) {
-              const [first, second, third] = circles;
-              
-              // First circle
-              gsap.timeline({
-                scrollTrigger: {
-                  trigger: '.first-move',
-                  start: 'top top',
-                  end: 'bottom bottom',
-                  scrub: 0.6,
-                },
-              }).to(first.scale, {
-                x: 3,
-                y: 3,
-                z: 3,
-              });
+            floorCircleAnimations.forEach((config) => {
+              if (circles[config.circleIndex]) {
+                const timeline = gsap.timeline({
+                  scrollTrigger: {
+                    trigger: config.trigger,
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 0.6,
+                  },
+                });
 
-              // Second circle
-              gsap.timeline({
-                scrollTrigger: {
-                  trigger: '.second-move',
-                  start: 'top top',
-                  end: 'bottom bottom',
-                  scrub: 0.6,
-                },
-              })
-              .to(second.scale, {
-                x: 3,
-                y: 3,
-                z: 3,
-              }, 'same')
-              .to(roomRef.current.position, {
-                y: 0.7,
-              }, 'same');
-
-              // Third circle
-              gsap.timeline({
-                scrollTrigger: {
-                  trigger: '.third-move',
-                  start: 'top top',
-                  end: 'bottom bottom',
-                  scrub: 0.6,
-                },
-              }).to(third.scale, {
-                x: 3,
-                y: 3,
-                z: 3,
-              });
-            }
+                timeline.to(circles[config.circleIndex].scale, config.scale, 'same');
+                
+                if (config.roomPosition) {
+                  timeline.to(roomRef.current.position, config.roomPosition, 'same');
+                }
+              }
+            });
           }
 
           // Mini platform animations (exact original)

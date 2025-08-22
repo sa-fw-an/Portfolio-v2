@@ -55,22 +55,6 @@ const Hero = () => {
             {personalInfo.title}
           </p>
         </div>
-
-        {/* Second content - right side */}
-        <div className="hero-second">
-          <p 
-            ref={firstSubRef}
-            className="hero-second-subheading first-sub"
-          >
-            {personalInfo.name}
-          </p>
-          <p 
-            ref={secondSubRef}
-            className="hero-second-subheading second-sub"
-          >
-            Portfolio
-          </p>
-        </div>
       </div>
     </div>
   );

@@ -8,6 +8,15 @@ export const sectionsData = {
     id: "about", 
     title: "About Me",
     number: "01",
+    layout: "left",
+    triggerClass: "first-move",
+    progressBar: {
+      position: "left",
+      color: "pink",
+      wrapperClass: "progress-wrapper progress-bar-wrapper-left",
+      colorClass: ""
+    },
+    cssClasses: "first-section",
     content: {
       main: "I am an Undergraduate Student pursuing a B.E in Computer Science and Engineering. I am passionate about Coding, specializing in Web, Blockchain development, Game and Android applications. I enjoy exploring innovative solutions and creating engaging experiences through technology.",
       techStack: "I specialize in a diverse range of languages, frameworks, and tools to build robust and scalable applications. My focus is on creating dynamic user experiences, beautiful front-end applications, powerful backend logic, and efficient data management while utilizing modern development tools like cloud services for seamless deployment.",
@@ -18,17 +27,44 @@ export const sectionsData = {
   projects: {
     id: "projects",
     title: "My Projects", 
-    number: "02"
+    number: "02",
+    layout: "right",
+    triggerClass: "second-move",
+    progressBar: {
+      position: "right",
+      color: "blue",
+      wrapperClass: "progress-wrapper progress-bar-wrapper-right",
+      colorClass: "blue-background"
+    },
+    cssClasses: "second-section blue-text blue-border"
   },
   experience: {
     id: "experience",
     title: "Work Experience",
-    number: "03"
+    number: "03",
+    layout: "left",
+    triggerClass: "third-move",
+    progressBar: {
+      position: "left",
+      color: "green",
+      wrapperClass: "progress-wrapper progress-bar-wrapper-left",
+      colorClass: "green-background"
+    },
+    cssClasses: "third-section green-text green-border"
   },
   contact: {
     id: "contact",
     title: "CONTACT",
     number: "04",
+    layout: "right",
+    triggerClass: "fourth-move",
+    progressBar: {
+      position: "right",
+      color: "pink",
+      wrapperClass: "progress-wrapper progress-bar-wrapper-right",
+      colorClass: "pink-background"
+    },
+    cssClasses: "fourth-section",
     subtitle: "Let's talk",
     description: "Looking to create a dynamic web platform 🌐, build immersive games 🎮, or launch a cutting-edge Android app 📱? I'm here to bring your ideas to life!"
   }
