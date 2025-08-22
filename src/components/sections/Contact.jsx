@@ -12,16 +12,16 @@ const Contact = () => {
           <div className={`progress-bar ${config.progressBar.colorClass}`}></div>
         </div>
         
-        <div className="section-intro-wrapper">
-          <div className="section-title">
-            <span className="section-title-text">
+        <div className="section-intro-wrapper tan-text tan-border">
+          <div className="section-title tan-text">
+            <span className="section-title-text tan-text">
               {config.title}
             </span>
-            <span className="styleOne"></span>
-            <span className="styleTwo"></span>
-            <span className="styleThree"></span>
+            <span className="styleOne tan-border"></span>
+            <span className="styleTwo tan-border"></span>
+            <span className="styleThree tan-background"></span>
           </div>
-          <div className="section-number">
+          <div className="section-number tan-text">
             {config.number}
           </div>
         </div>

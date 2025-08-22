@@ -14,6 +14,7 @@
   --color-pink-light: #e5a1aa;
   --color-green-light: #7AD0AC;
   --color-blue-light: #8395CD;
+  --color-tan-light: #d0a17a;
 
   /* Dark Theme */
   --color-text-dark: #FAF4E5;
@@ -26,6 +27,7 @@
   --color-pink: var(--color-pink-light);
   --color-green: var(--color-green-light);
   --color-blue: var(--color-blue-light);
+  --color-tan: var(--color-tan-light);
 }
 
 .dark-theme {
@@ -34,6 +36,7 @@
   --color-pink: var(--color-text-dark);
   --color-green: var(--color-text-dark);
   --color-blue: var(--color-text-dark);
+  --color-tan: var(--color-text-dark);
 }
 
 /* Base Styles - Force Montserrat */
@@ -418,6 +421,10 @@ h1, section, p, span, svg {
 .green-text { color: var(--color-green); }
 .green-border { border-color: var(--color-green); }
 .green-background { background-color: var(--color-green); }
+/* Fourth / tan color to match floor circle */
+.tan-text { color: var(--color-tan); }
+.tan-border { border-color: var(--color-tan); }
+.tan-background { background-color: var(--color-tan); }
 
 /* Project & Experience Items */
 .project-item, .experience-item {

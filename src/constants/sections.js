@@ -60,11 +60,11 @@ export const sectionsData = {
     triggerClass: "fourth-move",
     progressBar: {
       position: "right",
-      color: "pink",
+      color: "tan",
       wrapperClass: "progress-wrapper progress-bar-wrapper-right",
-      colorClass: "pink-background"
+      colorClass: "tan-background"
     },
-    cssClasses: "fourth-section",
+    cssClasses: "fourth-section tan-text tan-border",
     subtitle: "Let's talk",
     description: "Looking to create a dynamic web platform 🌐, build immersive games 🎮, or launch a cutting-edge Android app 📱? I'm here to bring your ideas to life!"
   }
