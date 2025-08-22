@@ -6,7 +6,7 @@ const Lights = ({ theme }) => {
   const lightRef = useRef();
   
 
-  const lightColor = useMemo(() => new THREE.Color(theme === 'dark' ? '#2c3baf' : '#ffffff'), [theme]);
+  const lightColor = useMemo(() => new THREE.Color(theme === 'dark' ? '#ebdaef' : '#ffffff'), [theme]);
   const lightIntensity = theme === 'dark' ? 0.5 : 3;
   const ambientIntensity = theme === 'dark' ? 0.5 : 1;
 

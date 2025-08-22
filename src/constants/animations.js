@@ -29,10 +29,10 @@ export const sectionAnimations = {
       trigger: '.fourth-move',
       roomAnimation: {
         scale: { x: 0.11, y: 0.11, z: 0.11 },
-        position: { x: 'size.width * -0.0014' }
+        position: { x: 'size.width * -0.0014', y: -0.1 }
       },
       cameraAnimation: {
-        position: { y: -0.3, x: -0.8, z: 1 }
+        position: { x: -0.3, y: -0.8, z: 1 }
       }
     }
   },

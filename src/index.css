@@ -10,15 +10,14 @@
 :root {
   /* Light Theme */
   --color-text-light: #333332;
-  --color-background-light: #FAF4E5;
-  --color-pink-light: #e5a1aa;
-  --color-green-light: #7AD0AC;
-  --color-blue-light: #8395CD;
-  --color-tan-light: #d0a17a;
-
+  --color-background-light: #faf2dd;
+  --color-pink-light: #db8a95;
+  --color-green-light: #5fd8a6;
+  --color-blue-light: #718ad4;
+  --color-tan-light: #c8976f;
   /* Dark Theme */
-  --color-text-dark: #FAF4E5;
-  --color-background-dark: #8395CD;
+  --color-text-dark: #f7f3e8;
+  --color-background-dark: #6e83c1;
 }
 
 .light-theme {

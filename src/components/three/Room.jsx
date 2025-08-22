@@ -95,7 +95,7 @@ const Room = forwardRef((props, ref) => {
 
       if (found.computer || found.screen) {
         const video = document.createElement('video');
-        video.src = '/textures/coding.mp4';
+        video.src = '/textures/gitreadme.mp4';
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
