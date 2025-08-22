@@ -178,7 +178,6 @@ const PreloaderAnimations = () => {
               z: 1.3243,
             }, 'same');
 
-          // Set body visible and hide cube
           if (parts.body) {
             secondTimeline.set(parts.body.scale, {
               x: 1,
@@ -218,7 +217,6 @@ const PreloaderAnimations = () => {
             ease: 'back.out(1.7)',
           }, 'introtext');
 
-        // Sequential room object reveals (exact original sequence)
         const showObject = (obj, delay = '>-0.5') => {
           if (obj?.scale) {
             secondTimeline.to(obj.scale, {
@@ -283,24 +281,35 @@ const PreloaderAnimations = () => {
         }
       };
 
+      let activeTouchMove = null;
       const handleTouch = (e) => {
-        const initialY = e.touches[0].clientY;
-        
-        const handleTouchMove = (moveEvent) => {
-          const currentY = moveEvent.touches.clientY;
+        const initialY = e.touches && e.touches[0] ? e.touches[0].clientY : 0;
+
+        activeTouchMove = (moveEvent) => {
+          const currentY =
+            moveEvent.touches && moveEvent.touches[0]
+              ? moveEvent.touches[0].clientY
+              : 0;
           const difference = initialY - currentY;
           if (difference > 0) {
             playSecondIntro();
             removeEventListeners();
           }
         };
-
-        window.addEventListener('touchmove', handleTouchMove, { once: true });
+        window.addEventListener('touchmove', activeTouchMove, { once: true, passive: true });
       };
 
       const removeEventListeners = () => {
         window.removeEventListener('wheel', handleScroll);
         window.removeEventListener('touchstart', handleTouch);
+        if (activeTouchMove) {
+          try {
+            window.removeEventListener('touchmove', activeTouchMove);
+          } catch {
+            // ignore if already removed
+          }
+          activeTouchMove = null;
+        }
       };
 
       const playSecondIntro = async () => {
