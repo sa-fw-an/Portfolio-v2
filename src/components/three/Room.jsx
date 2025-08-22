@@ -7,8 +7,6 @@ import { useThreeContext } from '../../contexts/ThreeContext';
 const Room = forwardRef((props, ref) => {
   const internalRef = useRef();
   const mixerRef = useRef(null);
-  
-  // Enable DRACO decoding if model is compressed
   useGLTF.setDecoderPath('/draco/');
   
   let scene, animations;
@@ -30,16 +28,12 @@ const Room = forwardRef((props, ref) => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Create fallback objects if model doesn't exist
   useEffect(() => {
     let roomGroup;
     let found = {};
 
     if (scene) {
-      // Use loaded model
       roomGroup = scene;
-      
-      // Build children map with exact original naming
       const roomPartMap = {
         cube: ['Cube', 'cube'],
         aquarium: ['Aquarium', 'aquarium', 'FishTank', 'fish_tank'],
@@ -81,7 +75,6 @@ const Room = forwardRef((props, ref) => {
         });
       });
 
-      // Aquarium glass material (exact original)
       if (found.aquarium) {
         const glassMaterial = new THREE.MeshPhysicalMaterial({
           color: 0x549dd2,
@@ -100,7 +93,6 @@ const Room = forwardRef((props, ref) => {
         }
       }
 
-      // Computer screen video texture (exact original)
       if (found.computer || found.screen) {
         const video = document.createElement('video');
         video.src = '/textures/coding.mp4';
@@ -124,33 +116,19 @@ const Room = forwardRef((props, ref) => {
           target.material = screenMaterial;
         }
       }
-
-      // Mini floor positioning (exact original)
       if (found.mini_floor) {
         found.mini_floor.position.x = -0.289521;
         found.mini_floor.position.z = 8.83572;
       }
 
-    } else {
-      // Create fallback cube if no model exists
-      roomGroup = new THREE.Group();
-      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-      const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x606060 });
-      const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-      cube.name = 'Cube';
-      roomGroup.add(cube);
-      found.cube = cube;
     }
 
-    // FIXED: Proper cube positioning and scaling
     if (found.cube) {
-      // Position the cube properly in the scene
-      found.cube.position.set(0, -1, 0); // Moved down from 2 to -1 to match original
+      found.cube.position.set(0, -1, 0);
       found.cube.rotation.y = Math.PI / 4;
-      found.cube.scale.set(0, 0, 0); // Start hidden for animation
+      found.cube.scale.set(0, 0, 0);
     }
 
-    // Hide all objects initially for staged reveal (exact original behavior)
     const hideObjects = [
       'aquarium', 'clock', 'shelves', 'floor_items', 'desks', 'table_stuff', 
       'computer', 'mini_floor', 'chair', 'fish',
@@ -165,14 +143,12 @@ const Room = forwardRef((props, ref) => {
       }
     });
 
-    // Animation mixer setup (exact original)
     if (animations.length && roomGroup) {
       mixerRef.current = new THREE.AnimationMixer(roomGroup);
       const action = mixerRef.current.clipAction(animations[0]);
       action.play();
     }
 
-    // Add RectAreaLight (exact original setup)
     const rectLight = new THREE.RectAreaLight(0xffffff, 1, 0.5, 0.7);
     rectLight.position.set(7.68244, 7, 0.5);
     rectLight.rotation.x = -Math.PI / 2;
@@ -180,22 +156,18 @@ const Room = forwardRef((props, ref) => {
     roomGroup.add(rectLight);
     found.rectLight = rectLight;
 
-    // Store rectLight ref for external access
     if (rectLightRef) {
       rectLightRef.current = rectLight;
     }
 
-    // Share the children map
     setChildrenMap(found);
 
   }, [scene, animations, setChildrenMap, rectLightRef]);
 
-  // Animation loop (exact original)
   useFrame((state) => {
     const roomRef = ref?.current || internalRef.current;
     
     if (roomRef) {
-      // Mouse lerp rotation (exact original)
       lerp.current.current = THREE.MathUtils.lerp(
         lerp.current.current,
         lerp.current.target,
@@ -204,7 +176,6 @@ const Room = forwardRef((props, ref) => {
       roomRef.rotation.y = lerp.current.current;
     }
 
-    // Animation mixer update (exact original)
     if (mixerRef.current) {
       mixerRef.current.update(state.clock.getDelta() * 0.9);
     }
@@ -221,7 +192,7 @@ const Room = forwardRef((props, ref) => {
         sharedRoomRef.current = node;
       }}
       scale={[0.11, 0.11, 0.11]}
-      position={[0, 1, 0]}
+      position={[0, 0.7, 0]}
       {...props}
     >
       {scene && <primitive object={scene} />}
@@ -231,7 +202,6 @@ const Room = forwardRef((props, ref) => {
 
 Room.displayName = 'Room';
 
-// Preload model to avoid jank on first reveal
 useGLTF.preload('/models/room.glb');
 
 export default Room;
