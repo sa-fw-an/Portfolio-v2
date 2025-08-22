@@ -23,7 +23,7 @@ const Lights = ({ theme }) => {
         ref={lightRef}
         color={lightColor}
         intensity={lightIntensity}
-        position={[-1.5, 7, 3]}
+        position={[-4, 9, 5]}
         castShadow
         shadow-camera-far={50}
         shadow-camera-left={-10}
@@ -35,12 +35,14 @@ const Lights = ({ theme }) => {
         shadow-normalBias={0.05}
       />
   <ambientLight key={theme} color={lightColor} intensity={ambientIntensity} />
+      <hemisphereLight skyColor={0xffffff} groundColor={0x444444} intensity={0} />
+      <spotLight position={[9, -1, -5]} angle={12} penumbra={5} intensity={1} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
       <rectAreaLight
         color="#ffffff"
         intensity={1}
         width={0.5}
         height={0.7}
-        position={[7.68244, 7, 0.5]}
+        position={[8, 3, 1]}
       />
     </>
   );

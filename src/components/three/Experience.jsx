@@ -1,4 +1,4 @@
-import { Environment, OrthographicCamera } from '@react-three/drei';
+import { Environment, OrthographicCamera, ContactShadows } from '@react-three/drei';
 import { useRef, useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import Room from './Room';
@@ -53,6 +53,7 @@ const Experience = () => {
       <Environment preset="night" />
       <Floor ref={floorRef} />
       <Room ref={roomRef} />
+      <ContactShadows position={[0, 1, 0]} opacity={0} width={4} height={4} blur={0} far={0} />
       <Controls roomRef={roomRef} floorRef={floorRef} />
     </>
   );

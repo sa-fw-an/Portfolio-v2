@@ -11,15 +11,15 @@ const SceneInner = () => {
     typeof window !== 'undefined' &&
     (window.innerWidth < 968 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
-  const preferredDPR = isMobile ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2);
+  const preferredDPR = isMobile ? Math.min(window.devicePixelRatio || 0.3, 0.8) : Math.min(window.devicePixelRatio || 1, 2);
 
   const onCreated = useCallback((state) => {
     const { gl, camera, size } = state;
 
     gl.useLegacyLights = false;
     gl.outputColorSpace = THREE.SRGBColorSpace;
-    gl.toneMapping = THREE.CineonToneMapping;
-    gl.toneMappingExposure = 1.75;
+    gl.toneMapping = THREE.ACESFilmicToneMapping;
+    gl.toneMappingExposure = 0.9;
     gl.shadowMap.enabled = !isMobile;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
     gl.setPixelRatio(preferredDPR);
@@ -76,7 +76,7 @@ const SceneInner = () => {
       dpr={preferredDPR}
       onCreated={onCreated}
       onResize={handleResize}
-      shadows={!isMobile}
+      shadows={1}
     >
       <Suspense fallback={null}>
         <Experience />
