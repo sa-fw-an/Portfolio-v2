@@ -27,6 +27,8 @@
   --color-green: var(--color-green-light);
   --color-blue: var(--color-blue-light);
   --color-tan: var(--color-tan-light);
+  /* Section/content color override for light theme */
+  --section-text: #000000;
 }
 
 .dark-theme {
@@ -36,6 +38,8 @@
   --color-green: var(--color-text-dark);
   --color-blue: var(--color-text-dark);
   --color-tan: var(--color-text-dark);
+  /* Section/content color override for dark theme */
+  --section-text: #ffffff;
 }
 
 /* Base Styles - Force Montserrat */
@@ -306,14 +310,14 @@ h1, section, p, span, svg {
   font-weight: 700;
   line-height: 1.8;
   margin-top: 64px;
-  color: var(--color-text);
+  color: var(--section-text);
 }
 
 .section-text {
   line-height: 2;
   margin-top: 18px;
   font-size: 16px;
-  color: var(--color-text);
+  color: var(--section-text);
 }
 
 /* Section Title Decoration */
@@ -432,6 +436,7 @@ h1, section, p, span, svg {
   border-bottom: 1px solid var(--color-text);
   opacity: 0.85;
   position: relative;
+  color: var(--section-text);
 }
 .project-title, .experience-title {
   font-size: 20px;
@@ -441,6 +446,7 @@ h1, section, p, span, svg {
 .project-description, .experience-description {
   font-size: 16px;
   line-height: 1.6;
+  color: var(--section-text);
 }
 .project-tech {
   display: flex;
