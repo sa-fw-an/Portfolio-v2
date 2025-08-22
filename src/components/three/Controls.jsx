@@ -3,7 +3,6 @@ import { useThree } from '@react-three/fiber';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
 import { useThreeContext } from '@/contexts/ThreeContext';
 import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '@/constants/animations';
 
@@ -50,48 +49,82 @@ const Controls = ({ roomRef, floorRef }) => {
         pageElement.style.overflow = 'visible';
       }
 
-      // Smooth scroll with Lenis
+      // Smooth scroll with Lenis (dynamically imported to reduce initial bundle size)
       if (!lenisRef.current) {
-        const lenis = new Lenis({
-          lerp: 0.1,
-          smoothWheel: true,
-          wheelMultiplier: 1,
-          touchMultiplier: 2,
-        });
-        
-        lenisRef.current = lenis;
-        
-        function raf(time) {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
+        (async () => {
+          const { default: Lenis } = await import('lenis');
+          const lenis = new Lenis({
+            lerp: 0.1,
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 2,
+          });
 
-        // ScrollTrigger proxy
-        ScrollTrigger.scrollerProxy(document.body, {
-          scrollTop(value) {
-            if (arguments.length) {
-              lenis.scrollTo(value, { immediate: true });
-            }
-            return lenis.scroll || document.documentElement.scrollTop || document.body.scrollTop || 0;
-          },
-          getBoundingClientRect() {
-            return { 
-              top: 0, 
-              left: 0, 
-              width: window.innerWidth, 
-              height: window.innerHeight 
-            };
-          },
-        });
-        
-        lenis.on('scroll', ScrollTrigger.update);
+          lenisRef.current = lenis;
+
+          function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+          }
+          requestAnimationFrame(raf);
+
+          // ScrollTrigger proxy
+          ScrollTrigger.scrollerProxy(document.body, {
+            scrollTop(value) {
+              if (arguments.length) {
+                lenis.scrollTo(value, { immediate: true });
+              }
+              return lenis.scroll || document.documentElement.scrollTop || document.body.scrollTop || 0;
+            },
+            getBoundingClientRect() {
+              return { 
+                top: 0, 
+                left: 0, 
+                width: window.innerWidth, 
+                height: window.innerHeight 
+              };
+            },
+          });
+
+          lenis.on('scroll', ScrollTrigger.update);
+        })();
       }
 
-      // Helper function to evaluate dynamic expressions
+      // Helper function to evaluate simple arithmetic expressions safely (no eval)
       const evaluateExpression = (expr) => {
         if (typeof expr === 'string') {
-          return eval(expr.replace('size.width', size.width).replace('size.height', size.height));
+          // Substitute tokens
+          let s = expr.replace(/size\.width/g, String(size.width)).replace(/size\.height/g, String(size.height));
+          // Allow only numbers, operators and whitespace
+          if (!/^[0-9\s.+\-*/]+$/.test(s)) return Number(s) || 0;
+
+          const tokens = s.match(/-?\d+(?:\.\d+)?|[+\-*/]/g);
+          if (!tokens) return Number(s) || 0;
+
+          // Handle * and / first
+          let values = [];
+          let ops = [];
+          let current = parseFloat(tokens[0]);
+          for (let i = 1; i < tokens.length; i += 2) {
+            const op = tokens[i];
+            const next = parseFloat(tokens[i + 1]);
+            if (op === '*' || op === '/') {
+              current = op === '*' ? current * next : current / next;
+            } else {
+              values.push(current);
+              ops.push(op);
+              current = next;
+            }
+          }
+          values.push(current);
+
+          // Then + and -
+          let result = values[0];
+          for (let i = 0; i < ops.length; i++) {
+            if (ops[i] === '+') result += values[i + 1];
+            else result -= values[i + 1];
+          }
+          return result;
         }
         return expr;
       };

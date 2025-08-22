@@ -13,4 +13,20 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
+  ,
+  build: {
+    chunkSizeWarningLimit: 1000, // raise limit to 1000kb
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('three') || id.includes('@react-three')) return 'three-vendor';
+            if (id.includes('gsap')) return 'gsap-vendor';
+            if (id.includes('lenis')) return 'lenis-vendor';
+            return 'vendor';
+          }
+        }
+      }
+    }
+  }
 })
