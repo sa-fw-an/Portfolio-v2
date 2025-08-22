@@ -6,22 +6,31 @@ import { useThreeContext } from '@/contexts/ThreeContext';
 
 const SceneInner = () => {
   const { setCamera } = useThreeContext();
-  
+
+  // detect mobile to tune renderer for performance
+  const isMobile =
+    typeof window !== 'undefined' &&
+    (window.innerWidth < 968 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+
+  const preferredDPR = isMobile ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2);
+
   const onCreated = useCallback((state) => {
     const { gl, camera, size } = state;
-    
+
+    // Renderer settings
     gl.useLegacyLights = false;
     gl.outputColorSpace = THREE.SRGBColorSpace;
     gl.toneMapping = THREE.CineonToneMapping;
     gl.toneMappingExposure = 1.75;
-    gl.shadowMap.enabled = true;
+    // disable shadows on mobile for performance
+    gl.shadowMap.enabled = !isMobile;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    
+    gl.setPixelRatio(preferredDPR);
+
     if (camera.isOrthographicCamera) {
       const aspect = size.width / size.height;
       const frustum = 5;
-      
+
       camera.left = (-aspect * frustum) / 2;
       camera.right = (aspect * frustum) / 2;
       camera.top = frustum / 2;
@@ -32,9 +41,9 @@ const SceneInner = () => {
       camera.rotation.x = -Math.PI / 6;
       camera.updateProjectionMatrix();
     }
-    
+
     setCamera(camera);
-  }, [setCamera]);
+  }, [setCamera, isMobile, preferredDPR]);
   const handleResize = useCallback(() => {
     const camera = setCamera && setCamera.current;
     if (camera && camera.isOrthographicCamera) {
@@ -63,14 +72,14 @@ const SceneInner = () => {
         bottom: -5
       }}
       gl={{ 
-        antialias: true, 
+        antialias: !isMobile, 
         alpha: true, 
-        powerPreference: 'high-performance'
+        powerPreference: isMobile ? 'low-power' : 'high-performance'
       }}
-      dpr={Math.min(window.devicePixelRatio, 2)}
+      dpr={preferredDPR}
       onCreated={onCreated}
       onResize={handleResize}
-      shadows
+      shadows={!isMobile}
     >
       <Suspense fallback={null}>
         <Experience />

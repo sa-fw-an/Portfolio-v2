@@ -13,6 +13,14 @@ const Controls = ({ roomRef, floorRef }) => {
   const { controlsEnabled, childrenMap, rectLightRef } = useThreeContext();
   const lenisRef = useRef(null);
 
+  const isMobile =
+    typeof window !== 'undefined' &&
+    (window.innerWidth < 968 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+
+  // Reduce scrub and heavy pinning on mobile for smoother animations
+  const scrubVal = isMobile ? 0.2 : 0.6;
+  const progressScrub = isMobile ? Math.min(progressBarConfig.scrub || 0.6, 0.2) : progressBarConfig.scrub || 0.6;
+
   useGSAP(() => {
     if (!controlsEnabled) {
       ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -49,8 +57,8 @@ const Controls = ({ roomRef, floorRef }) => {
         pageElement.style.overflow = 'visible';
       }
 
-      // Smooth scroll with Lenis (dynamically imported to reduce initial bundle size)
-      if (!lenisRef.current) {
+      // Smooth scroll with Lenis on desktop only (can be expensive on mobile)
+      if (!isMobile && !lenisRef.current) {
         (async () => {
           const { default: Lenis } = await import('lenis');
           const lenis = new Lenis({
@@ -131,13 +139,13 @@ const Controls = ({ roomRef, floorRef }) => {
 
       // Create animations from configuration
       const createSectionAnimations = (animationConfig, device) => {
-        Object.values(animationConfig[device] || {}).forEach((config) => {
+          Object.values(animationConfig[device] || {}).forEach((config) => {
           const timeline = gsap.timeline({
             scrollTrigger: {
               trigger: config.trigger,
               start: 'top top',
               end: 'bottom bottom',
-              scrub: 0.6,
+              scrub: scrubVal,
               invalidateOnRefresh: true,
             },
           });
@@ -227,20 +235,20 @@ const Controls = ({ roomRef, floorRef }) => {
               gsap.to(section, {
                 borderTopLeftRadius: sectionBorderConfig.rightSections.borderTopLeftRadius,
                 scrollTrigger: {
-                  trigger: section,
-                  start: 'top bottom',
-                  end: 'top top',
-                  scrub: 0.6,
-                },
+                    trigger: section,
+                    start: 'top bottom',
+                    end: 'top top',
+                    scrub: scrubVal,
+                  },
               });
               gsap.to(section, {
                 borderBottomLeftRadius: sectionBorderConfig.rightSections.borderBottomLeftRadius,
                 scrollTrigger: {
-                  trigger: section,
-                  start: 'bottom bottom',
-                  end: 'bottom top',
-                  scrub: 0.6,
-                },
+                    trigger: section,
+                    start: 'bottom bottom',
+                    end: 'bottom top',
+                    scrub: scrubVal,
+                  },
               });
             } else {
               gsap.to(section, {
@@ -270,13 +278,13 @@ const Controls = ({ roomRef, floorRef }) => {
                 {
                   scaleY: 1,
                   scrollTrigger: {
-                    trigger: section,
-                    start: 'top top',
-                    end: 'bottom bottom',
-                    scrub: progressBarConfig.scrub,
-                    pin: progressWrapper,
-                    pinSpacing: progressBarConfig.pinSpacing,
-                  },
+                      trigger: section,
+                      start: 'top top',
+                      end: 'bottom bottom',
+                      scrub: progressScrub,
+                      pin: isMobile ? false : progressWrapper,
+                      pinSpacing: isMobile ? false : progressBarConfig.pinSpacing,
+                    },
                 }
               );
             }
@@ -295,11 +303,11 @@ const Controls = ({ roomRef, floorRef }) => {
               if (circles[config.circleIndex]) {
                 const timeline = gsap.timeline({
                   scrollTrigger: {
-                    trigger: config.trigger,
-                    start: 'top top',
-                    end: 'bottom bottom',
-                    scrub: 0.6,
-                  },
+                      trigger: config.trigger,
+                      start: 'top top',
+                      end: 'bottom bottom',
+                      scrub: scrubVal,
+                    },
                 });
 
                 timeline.to(circles[config.circleIndex].scale, config.scale, 'same');
