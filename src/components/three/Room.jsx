@@ -131,13 +131,23 @@ const Room = forwardRef((props, ref) => {
         found.mini_floor.position.z = 8.83572;
       }
 
+    } else {
+      // Create fallback cube if no model exists
+      roomGroup = new THREE.Group();
+      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+      const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x606060 });
+      const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      cube.name = 'Cube';
+      roomGroup.add(cube);
+      found.cube = cube;
     }
 
-    // Cube positioning (exact original)
+    // FIXED: Proper cube positioning and scaling
     if (found.cube) {
-      found.cube.position.set(0, 2, 0);
+      // Position the cube properly in the scene
+      found.cube.position.set(0, -1, 0); // Moved down from 2 to -1 to match original
       found.cube.rotation.y = Math.PI / 4;
-      found.cube.scale.set(0, 0, 0); // Start hidden
+      found.cube.scale.set(0, 0, 0); // Start hidden for animation
     }
 
     // Hide all objects initially for staged reveal (exact original behavior)
@@ -156,7 +166,7 @@ const Room = forwardRef((props, ref) => {
     });
 
     // Animation mixer setup (exact original)
-    if (animations.length) {
+    if (animations.length && roomGroup) {
       mixerRef.current = new THREE.AnimationMixer(roomGroup);
       const action = mixerRef.current.clipAction(animations[0]);
       action.play();
@@ -211,7 +221,7 @@ const Room = forwardRef((props, ref) => {
         sharedRoomRef.current = node;
       }}
       scale={[0.11, 0.11, 0.11]}
-      position={[0, 0, 0]}
+      position={[0, 1, 0]}
       {...props}
     >
       {scene && <primitive object={scene} />}

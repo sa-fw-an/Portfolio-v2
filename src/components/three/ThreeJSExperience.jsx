@@ -8,9 +8,8 @@ const SceneInner = () => {
   const { setCamera } = useThreeContext();
   
   const onCreated = useCallback((state) => {
-    const { gl, camera } = state;
+    const { gl, camera, size } = state;
     
-    // Configure renderer (exact original settings)
     gl.useLegacyLights = false;
     gl.outputColorSpace = THREE.SRGBColorSpace;
     gl.toneMapping = THREE.CineonToneMapping;
@@ -19,10 +18,10 @@ const SceneInner = () => {
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
     gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     
-    // Configure camera (exact original)
     if (camera.isOrthographicCamera) {
-      const aspect = window.innerWidth / window.innerHeight;
+      const aspect = size.width / size.height;
       const frustum = 5;
+      
       camera.left = (-aspect * frustum) / 2;
       camera.right = (aspect * frustum) / 2;
       camera.top = frustum / 2;
@@ -35,6 +34,19 @@ const SceneInner = () => {
     }
     
     setCamera(camera);
+  }, [setCamera]);
+  const handleResize = useCallback(() => {
+    const camera = setCamera && setCamera.current;
+    if (camera && camera.isOrthographicCamera) {
+      const aspect = window.innerWidth / window.innerHeight;
+      const frustum = 5;
+      
+      camera.left = (-aspect * frustum) / 2;
+      camera.right = (aspect * frustum) / 2;
+      camera.top = frustum / 2;
+      camera.bottom = -frustum / 2;
+      camera.updateProjectionMatrix();
+    }
   }, [setCamera]);
 
   return (
@@ -57,6 +69,7 @@ const SceneInner = () => {
       }}
       dpr={Math.min(window.devicePixelRatio, 2)}
       onCreated={onCreated}
+      onResize={handleResize}
       shadows
     >
       <Suspense fallback={null}>

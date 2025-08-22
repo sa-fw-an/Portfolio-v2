@@ -1,5 +1,6 @@
 import { Environment, OrthographicCamera } from '@react-three/drei';
 import { useRef, useEffect } from 'react';
+import { useThree } from '@react-three/fiber';
 import Room from './Room';
 import Floor from './Floor';
 import Lights from './Lights';
@@ -11,6 +12,7 @@ const Experience = () => {
   const { theme } = useTheme();
   const roomRef = useRef();
   const floorRef = useRef();
+  const { size } = useThree();
   const { roomRef: sharedRoomRef, floorRef: sharedFloorRef, setCamera } = useThreeContext();
 
   useEffect(() => {
@@ -18,22 +20,33 @@ const Experience = () => {
     sharedFloorRef.current = floorRef.current;
   }, [sharedRoomRef, sharedFloorRef]);
 
+  const handleCameraUpdate = (camera) => {
+    if (camera && camera.isOrthographicCamera) {
+      const aspect = size.width / size.height;
+      const frustum = 5;
+      camera.left = (-aspect * frustum) / 2;
+      camera.right = (aspect * frustum) / 2;
+      camera.top = frustum / 2;
+      camera.bottom = -frustum / 2;
+      camera.updateProjectionMatrix();
+    }
+    setCamera?.(camera);
+  };
+
   return (
     <>
-      {/* Orthographic camera matching original setup */}
       <OrthographicCamera
         makeDefault
         position={[0, 6.5, 10]}
         rotation={[-Math.PI / 6, 0, 0]}
         near={-50}
         far={50}
-        // Adjusted frustum for better proportions
-        left={-6}
-        right={6}
-        top={6}
-        bottom={-6}
+        left={(-size.width / size.height * 5) / 2}
+        right={(size.width / size.height * 5) / 2}
+        top={5 / 2}
+        bottom={-5 / 2}
         zoom={1}
-        onUpdate={(camera) => setCamera?.(camera)}
+        onUpdate={handleCameraUpdate}
       />
 
       {/* Lighting */}
