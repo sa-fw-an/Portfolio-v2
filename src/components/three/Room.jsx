@@ -126,7 +126,12 @@ const Room = forwardRef((props, ref) => {
     if (found.cube) {
       found.cube.position.set(0, -1, 0);
       found.cube.rotation.y = Math.PI / 4;
-      found.cube.scale.set(0, 0, 0);
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 968;
+      if (isMobile) {
+        found.cube.scale.set(0, 0, 0);
+      } else {
+        found.cube.scale.set(0.001, 0.001, 0.001);
+      }
     }
 
     const hideObjects = [

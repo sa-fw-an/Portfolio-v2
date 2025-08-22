@@ -49,17 +49,10 @@ const Experience = () => {
         onUpdate={handleCameraUpdate}
       />
 
-      {/* Lighting */}
       <Lights theme={theme} />
-      
-      {/* Environment preset maintained as requested */}
       <Environment preset="night" />
-
-      {/* 3D Objects */}
       <Floor ref={floorRef} />
       <Room ref={roomRef} />
-      
-      {/* Controls for scroll animations */}
       <Controls roomRef={roomRef} floorRef={floorRef} />
     </>
   );

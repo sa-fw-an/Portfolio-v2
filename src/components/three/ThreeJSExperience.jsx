@@ -7,7 +7,6 @@ import { useThreeContext } from '@/contexts/ThreeContext';
 const SceneInner = () => {
   const { setCamera } = useThreeContext();
 
-  // detect mobile to tune renderer for performance
   const isMobile =
     typeof window !== 'undefined' &&
     (window.innerWidth < 968 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
@@ -17,12 +16,10 @@ const SceneInner = () => {
   const onCreated = useCallback((state) => {
     const { gl, camera, size } = state;
 
-    // Renderer settings
     gl.useLegacyLights = false;
     gl.outputColorSpace = THREE.SRGBColorSpace;
     gl.toneMapping = THREE.CineonToneMapping;
     gl.toneMappingExposure = 1.75;
-    // disable shadows on mobile for performance
     gl.shadowMap.enabled = !isMobile;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
     gl.setPixelRatio(preferredDPR);
