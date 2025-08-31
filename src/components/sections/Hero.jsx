@@ -1,5 +1,4 @@
 import { useRef, useEffect } from 'react';
-import { personalInfo } from '@/constants/personal';
 
 const Hero = () => {
   const containerRef = useRef();
@@ -46,13 +45,13 @@ const Hero = () => {
             ref={mainTitleRef}
             className="hero-main-title"
           >
-            {personalInfo.name}
+            Safwan Sayeed
           </h1>
           <p 
             ref={mainDescRef}
             className="hero-main-description"
           >
-            {personalInfo.title}
+            Software Developer
           </p>
         </div>
       </div>

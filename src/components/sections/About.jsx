@@ -1,6 +1,5 @@
 import React from 'react';
 import { sectionsData } from '@/constants/sections';
-import { personalInfo } from '@/constants/personal';
 
 const About = () => {
   const config = sectionsData.about;
@@ -61,14 +60,6 @@ const About = () => {
             ⦿ Competitive coding to sharpen my problem-solving abilities<br />
             ⦿ Ethical hacking to understand security challenges better<br />
             Coding is more than just a job for me - it's a way to learn, grow, and make a difference!
-          </p>
-
-          <h3 className="section-heading">
-            Contact me
-          </h3>
-          <p className="section-text">
-            📞 {personalInfo.phone}<br />
-            📧 {personalInfo.email}
           </p>
         </div>
       </section>

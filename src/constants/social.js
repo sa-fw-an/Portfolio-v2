@@ -24,4 +24,9 @@ export const socialLinks = [
     src: "./assets/social/reddit.svg",
     alt: "Reddit",
   },
+  {
+    href: "mailto:isafwansayeed@gmail.com",
+    src: "./assets/social/gmail.svg",
+    alt: "Gmail",
+  },
 ];
