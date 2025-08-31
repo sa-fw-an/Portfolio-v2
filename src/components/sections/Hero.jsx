@@ -1,11 +1,8 @@
 import { useRef, useEffect } from 'react';
 
 const Hero = () => {
-  const containerRef = useRef();
   const mainTitleRef = useRef();
   const mainDescRef = useRef();
-  const firstSubRef = useRef();
-  const secondSubRef = useRef();
 
   // Convert text to animated spans
   const convertToSpans = (element) => {
@@ -23,12 +20,10 @@ const Hero = () => {
   useEffect(() => {
     convertToSpans(mainTitleRef.current);
     convertToSpans(mainDescRef.current);
-    convertToSpans(firstSubRef.current);
-    convertToSpans(secondSubRef.current);
   }, []);
 
   return (
-    <div ref={containerRef} className="hero">
+    <div className="hero">
       <div className="hero-wrapper">
         <div className="intro-text">
           Please Scroll Down

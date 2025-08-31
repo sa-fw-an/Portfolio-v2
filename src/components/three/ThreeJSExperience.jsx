@@ -5,7 +5,7 @@ import Experience from './Experience.jsx';
 import { useThreeContext } from '@/contexts/ThreeContext';
 import { isMobileDevice, getOptimizedDPR } from '@/utils/deviceUtils';
 import { setupOrthographicCamera, getCameraConfig } from '@/utils/cameraUtils';
-import { WEBGL_CONSTANTS } from '@/constants/appConstants';
+import { WEBGL_CONSTANTS } from '@/constants/globalConstants';
 
 const SceneInner = () => {
   const { setCamera } = useThreeContext();
@@ -27,12 +27,6 @@ const SceneInner = () => {
     setupOrthographicCamera(camera, size.width, size.height);
     setCamera(camera);
   }, [setCamera, isMobile, preferredDPR]);
-  const handleResize = useCallback(() => {
-    const camera = setCamera && setCamera.current;
-    if (camera && camera.isOrthographicCamera) {
-      setupOrthographicCamera(camera, window.innerWidth, window.innerHeight);
-    }
-  }, [setCamera]);
 
   const cameraConfig = getCameraConfig();
 
@@ -47,7 +41,6 @@ const SceneInner = () => {
       }}
       dpr={preferredDPR}
       onCreated={onCreated}
-      onResize={handleResize}
       shadows={1}
     >
       <Suspense fallback={null}>

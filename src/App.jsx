@@ -8,6 +8,7 @@ import ThemeToggle from './components/ui/ThemeToggle';
 import Preloader from './components/ui/Preloader';
 import PreloaderAnimations from './components/ui/PreloaderAnimations';
 import Footer from './components/ui/Footer';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThreeProvider } from './contexts/ThreeContext';
 
@@ -22,9 +23,11 @@ function App() {
           <Preloader />
           <PreloaderAnimations />
           <div className="experience fixed w-full h-full">
-            <Suspense fallback={<div className="text-gray-400">Loading 3D Scene...</div>}>
-              <LazyThreeJSExperience />
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense fallback={<div className="text-gray-400">Loading 3D Scene...</div>}>
+                <LazyThreeJSExperience />
+              </Suspense>
+            </ErrorBoundary>
           </div>
           <ThemeToggle />
           <div className="page">

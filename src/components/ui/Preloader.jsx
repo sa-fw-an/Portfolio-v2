@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 
 const Preloader = () => {
   const [loading, setLoading] = useState(true);
-  const container = useRef(null);
 
   useGSAP(() => {
     if (!loading) {
@@ -33,7 +32,7 @@ const Preloader = () => {
   if (!loading) return null;
 
   return (
-    <div ref={container} className="preloader">
+    <div className="preloader">
       <div className="preloader-wrapper">
         <div className="loading">
           <div className="circle"></div>

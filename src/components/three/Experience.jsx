@@ -7,7 +7,8 @@ import Lights from './Lights';
 import Controls from './Controls';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useThreeContext } from '@/contexts/ThreeContext';
-import { setupOrthographicCamera, CAMERA_CONSTANTS } from '@/utils/cameraUtils';
+import { setupOrthographicCamera } from '@/utils/cameraUtils';
+import { CAMERA_CONSTANTS } from '@/constants/globalConstants';
 
 const Experience = () => {
   const { theme } = useTheme();

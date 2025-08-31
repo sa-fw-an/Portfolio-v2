@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { useThreeContext } from '@/contexts/ThreeContext';
-import { ASSET_PATHS, SCENE_CONSTANTS } from '@/constants/appConstants';
+import { ASSET_PATHS } from '@/constants/globalConstants';
 import { isMobileDevice } from '@/utils/deviceUtils';
 
 const Room = forwardRef((props, ref) => {

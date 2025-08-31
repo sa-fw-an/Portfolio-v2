@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { sectionsData } from '@/constants/sections';
 import { projectsData } from '@/constants/projects';
 
-const Projects = () => {
-  const config = sectionsData.projects;
+const Projects = React.memo(() => {
+  const config = useMemo(() => sectionsData.projects, []);
+
+  const memoizedProjects = useMemo(() => 
+    projectsData.map((project, index) => (
+      <div key={index} className="project-item">
+        <h4 className="project-title">{project.title}</h4>
+        <p className="project-description">{project.description}</p>
+        <div className="project-tech">
+          {project.technologies.map((tech, idx) => (
+            <span key={idx} className="tech-tag">{tech}</span>
+          ))}
+        </div>
+        <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+          Check Out →
+        </a>
+      </div>
+    )), []);
 
   return (
     <React.Fragment>
@@ -38,24 +54,13 @@ const Projects = () => {
             Here's a collection of my projects that showcase my skills in web development, blockchain, mobile applications, and more. Each project demonstrates different aspects of my technical expertise and problem-solving abilities.
           </p>
           
-          {projectsData.map((project, index) => (
-            <div key={index} className="project-item">
-              <h4 className="project-title">{project.title}</h4>
-              <p className="project-description">{project.description}</p>
-              <div className="project-tech">
-                {project.technologies.map((tech, idx) => (
-                  <span key={idx} className="tech-tag">{tech}</span>
-                ))}
-              </div>
-              <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
-                Check Out →
-              </a>
-            </div>
-          ))}
+          {memoizedProjects}
         </div>
       </section>
     </React.Fragment>
   );
-};
+});
+
+Projects.displayName = 'Projects';
 
 export default Projects;

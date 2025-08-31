@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { sectionsData } from '@/constants/sections';
 
-const About = () => {
-  const config = sectionsData.about;
+const About = React.memo(() => {
+  const config = useMemo(() => sectionsData.about, []);
 
   return (
     <React.Fragment>
@@ -65,6 +65,8 @@ const About = () => {
       </section>
     </React.Fragment>
   );
-};
+});
+
+About.displayName = 'About';
 
 export default About;

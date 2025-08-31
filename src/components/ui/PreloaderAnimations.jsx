@@ -273,8 +273,11 @@ const PreloaderAnimations = () => {
       await waitForAssets();
       convertTextElements();
       await firstIntro();
+      
+      let isCleanedUp = false;
+      
       const handleScroll = (e) => {
-        if (e.deltaY > 0) {
+        if (e.deltaY > 0 && !isCleanedUp) {
           playSecondIntro();
           removeEventListeners();
         }
@@ -282,9 +285,13 @@ const PreloaderAnimations = () => {
 
       let activeTouchMove = null;
       const handleTouch = (e) => {
+        if (isCleanedUp) return;
+        
         const initialY = e.touches && e.touches[0] ? e.touches[0].clientY : 0;
 
         activeTouchMove = (moveEvent) => {
+          if (isCleanedUp) return;
+          
           const currentY =
             moveEvent.touches && moveEvent.touches[0]
               ? moveEvent.touches[0].clientY
@@ -299,6 +306,9 @@ const PreloaderAnimations = () => {
       };
 
       const removeEventListeners = () => {
+        if (isCleanedUp) return;
+        isCleanedUp = true;
+        
         window.removeEventListener('wheel', handleScroll);
         window.removeEventListener('touchstart', handleTouch);
         if (activeTouchMove) {
@@ -312,18 +322,21 @@ const PreloaderAnimations = () => {
       };
 
       const playSecondIntro = async () => {
+        if (isCleanedUp) return;
         await secondIntro();
         setControlsEnabled(true);
       };
 
-      window.addEventListener('wheel', handleScroll);
-      window.addEventListener('touchstart', handleTouch);
+      window.addEventListener('wheel', handleScroll, { passive: true });
+      window.addEventListener('touchstart', handleTouch, { passive: true });
 
       return removeEventListeners;
     };
 
     const timer = setTimeout(() => {
-      playIntro();
+      const cleanup = playIntro();
+      // Store cleanup function for useEffect cleanup
+      return cleanup;
     }, 100);
 
     return () => {
@@ -331,6 +344,10 @@ const PreloaderAnimations = () => {
       if (timelineRef.current) {
         timelineRef.current.kill();
       }
+      // Clean up any remaining event listeners
+      window.removeEventListener('wheel', () => {});
+      window.removeEventListener('touchstart', () => {});
+      window.removeEventListener('touchmove', () => {});
     };
   }, [roomRef, childrenMap, setControlsEnabled, device]);
 

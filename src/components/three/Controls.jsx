@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useThreeContext } from '@/contexts/ThreeContext';
 import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '@/constants/animations';
 import { isMobileDevice } from '@/utils/deviceUtils';
-import { ANIMATION_CONSTANTS } from '@/constants/appConstants';
+import { ANIMATION_CONSTANTS } from '@/constants/globalConstants';
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -1,5 +1,5 @@
 /**
- * Application constants and magic numbers
+ * Global application constants - Single source of truth
  */
 
 // Device and responsive breakpoints
@@ -85,10 +85,14 @@ export const SCENE_CONSTANTS = {
   }
 };
 
-// UI and Layout constants
-export const UI_CONSTANTS = {
-  // Component spacing
-  BORDER_RADIUS: 700
+// Camera constants
+export const CAMERA_CONSTANTS = {
+  FRUSTUM: 5,
+  NEAR: -50,
+  FAR: 50,
+  DEFAULT_POSITION: [0, 6.5, 10],
+  DEFAULT_ROTATION_X: -Math.PI / 6,
+  ZOOM: 1
 };
 
 // Asset paths
@@ -99,5 +103,27 @@ export const ASSET_PATHS = {
   TEXTURES: {
     VIDEO: '/textures/gitreadme.mp4'
   },
-  DRACO: '/assets/draco/'
+  DRACO: '/assets/draco/',
+  FONTS: {
+    ASIMOVIAN: '/fonts/Asimovian-Regular.ttf',
+    UBUNTU: '/fonts/Ubuntu-Regular.ttf'
+  },
+  SOCIAL: {
+    GITHUB: './assets/social/github.svg',
+    LINKEDIN: './assets/social/linkedin.svg',
+    X: './assets/social/x.svg',
+    INSTAGRAM: './assets/social/instagram.svg',
+    REDDIT: './assets/social/reddit.svg',
+    GMAIL: './assets/social/gmail.svg'
+  }
+};
+
+// Export everything as default for easier importing
+export default {
+  BREAKPOINTS,
+  WEBGL_CONSTANTS,
+  ANIMATION_CONSTANTS,
+  SCENE_CONSTANTS,
+  CAMERA_CONSTANTS,
+  ASSET_PATHS
 };

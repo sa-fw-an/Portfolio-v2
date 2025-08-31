@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { SCENE_CONSTANTS, ANIMATION_CONSTANTS } from '@/constants/appConstants';
+import { SCENE_CONSTANTS, ANIMATION_CONSTANTS } from '@/constants/globalConstants';
 
 const Lights = ({ theme }) => {
   const lightRef = useRef();

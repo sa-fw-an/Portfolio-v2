@@ -29,19 +29,3 @@ export const getOptimizedDPR = () => {
     ? Math.min(devicePixelRatio, 0.8) 
     : Math.min(devicePixelRatio, 2);
 };
-
-/**
- * Check if device supports WebGL with high performance
- * @returns {boolean} True if high-performance WebGL is available
- */
-export const supportsHighPerformanceWebGL = () => {
-  if (isMobileDevice()) return false;
-  
-  try {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    return !!gl;
-  } catch {
-    return false;
-  }
-};

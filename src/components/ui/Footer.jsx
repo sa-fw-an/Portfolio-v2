@@ -11,7 +11,7 @@ const Footer = () => {
           <span className="text-sm font-medium">🤵 Views</span>
           <img
             src="https://hits.sh/safwansayeed.live.svg?style=round&label= &color=black"
-            alt="visitor count"
+            alt="Website visitor count"
             className="h-6 w-12"
           />
         </div>

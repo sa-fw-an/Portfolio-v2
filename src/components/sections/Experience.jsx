@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { sectionsData } from '@/constants/sections';
 import { experienceData } from '@/constants/experience';
 
-const Experience = () => {
-  const config = sectionsData.experience;
+const Experience = React.memo(() => {
+  const config = useMemo(() => sectionsData.experience, []);
+
+  const memoizedExperience = useMemo(() => 
+    experienceData.map((exp, index) => (
+      <div key={index} className="experience-item">
+        <h4 className="experience-title">{exp.position}</h4>
+        <h5 className="experience-company">{exp.company}</h5>
+        <p className="experience-duration">{exp.duration}</p>
+        <p className="experience-description">{exp.description}</p>
+        {exp.current && <span className="current-badge">Current</span>}
+      </div>
+    )), []);
 
   return (
     <React.Fragment>
@@ -37,19 +48,13 @@ const Experience = () => {
             My professional journey includes various projects and collaborations that have shaped my expertise in modern web technologies.
           </p>
 
-          {experienceData.map((exp, index) => (
-            <div key={index} className="experience-item">
-              <h4 className="experience-title">{exp.position}</h4>
-              <h5 className="experience-company">{exp.company}</h5>
-              <p className="experience-duration">{exp.duration}</p>
-              <p className="experience-description">{exp.description}</p>
-              {exp.current && <span className="current-badge">Current</span>}
-            </div>
-          ))}
+          {memoizedExperience}
         </div>
       </section>
     </React.Fragment>
   );
-};
+});
+
+Experience.displayName = 'Experience';
 
 export default Experience;

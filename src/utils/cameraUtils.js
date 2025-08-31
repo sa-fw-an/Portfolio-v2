@@ -3,34 +3,7 @@
  */
 
 import { isMobileDevice } from './deviceUtils.js';
-
-// Camera constants
-export const CAMERA_CONSTANTS = {
-  FRUSTUM: 5,
-  NEAR: -50,
-  FAR: 50,
-  DEFAULT_POSITION: [0, 6.5, 10],
-  DEFAULT_ROTATION_X: -Math.PI / 6,
-  ZOOM: 1
-};
-
-/**
- * Calculate orthographic camera bounds based on aspect ratio
- * @param {number} width - Viewport width
- * @param {number} height - Viewport height
- * @param {number} frustum - Camera frustum size
- * @returns {Object} Camera bounds object
- */
-export const calculateCameraBounds = (width, height, frustum = CAMERA_CONSTANTS.FRUSTUM) => {
-  const aspect = width / height;
-  
-  return {
-    left: (-aspect * frustum) / 2,
-    right: (aspect * frustum) / 2,
-    top: frustum / 2,
-    bottom: -frustum / 2
-  };
-};
+import { CAMERA_CONSTANTS } from '@/constants/globalConstants';
 
 /**
  * Setup orthographic camera with responsive bounds
@@ -41,10 +14,14 @@ export const calculateCameraBounds = (width, height, frustum = CAMERA_CONSTANTS.
 export const setupOrthographicCamera = (camera, width, height) => {
   if (!camera?.isOrthographicCamera) return;
   
-  const bounds = calculateCameraBounds(width, height);
+  const aspect = width / height;
+  const frustum = CAMERA_CONSTANTS.FRUSTUM;
   
   Object.assign(camera, {
-    ...bounds,
+    left: (-aspect * frustum) / 2,
+    right: (aspect * frustum) / 2,
+    top: frustum / 2,
+    bottom: -frustum / 2,
     near: CAMERA_CONSTANTS.NEAR,
     far: CAMERA_CONSTANTS.FAR
   });
@@ -63,13 +40,19 @@ export const setupOrthographicCamera = (camera, width, height) => {
 export const getCameraConfig = () => {
   const isMobile = isMobileDevice();
   
+  const aspect = window.innerWidth / window.innerHeight;
+  const frustum = CAMERA_CONSTANTS.FRUSTUM;
+  
   return {
     orthographic: true,
     zoom: CAMERA_CONSTANTS.ZOOM,
     position: CAMERA_CONSTANTS.DEFAULT_POSITION,
     near: CAMERA_CONSTANTS.NEAR,
     far: CAMERA_CONSTANTS.FAR,
-    ...calculateCameraBounds(window.innerWidth, window.innerHeight),
+    left: (-aspect * frustum) / 2,
+    right: (aspect * frustum) / 2,
+    top: frustum / 2,
+    bottom: -frustum / 2,
     // Mobile optimizations
     ...(isMobile && {
       // Reduced complexity for mobile
