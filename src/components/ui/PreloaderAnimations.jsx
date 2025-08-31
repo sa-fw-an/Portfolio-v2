@@ -84,7 +84,6 @@ const PreloaderAnimations = () => {
         const cube = childrenMap?.cube;
         
         if (!room || !cube) {
-          console.warn('Room or cube not found');
           resolve();
           return;
         }

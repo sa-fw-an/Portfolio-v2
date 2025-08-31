@@ -44,9 +44,7 @@ const Contact = () => {
         hideAlert(false);
         setForm({ name: "", email: "", message: "" });
       }, 3000);
-    } catch (error) {
-      console.error(error);
-
+    } catch {
       showAlert({
         show: true,
         text: "I didn't receive your message 😢",

@@ -101,7 +101,7 @@ const Room = forwardRef((props, ref) => {
         video.playsInline = true;
         video.autoplay = true;
         
-        video.play().catch(console.warn);
+        video.play();
         
         const videoTexture = new THREE.VideoTexture(video);
         videoTexture.minFilter = THREE.NearestFilter;
