@@ -1,5 +1,0 @@
-dist
-node_modules
-public/assets/draco
-*.min.js
-*.bundle.js
