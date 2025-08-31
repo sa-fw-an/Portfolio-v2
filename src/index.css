@@ -287,10 +287,41 @@ h1, section, p, span, svg {
   background-color: var(--color-background);
 }
 
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
 .footer__copyright {
   color: var(--color-text);
   font-size: 16px;
   font-family: 'Ubuntu', 'Arial', sans-serif !important;
+}
+
+.visit-counter-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(31, 41, 55, 0.8);
+  color: #d1d5db;
+  padding: 6px 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+}
+
+.visit-counter-box span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.visit-counter-box img {
+  height: 24px;
+  width: 48px;
+  border-radius: 4px;
 }
 
 /* Progress bars */
@@ -795,5 +826,28 @@ h1, section, p, span, svg {
   .social-icon {
     width: 22px;
     height: 22px;
+  }
+  
+  /* Footer Mobile Styles */
+  .footer {
+    padding: 24px 16px;
+  }
+  
+  .footer-content {
+    gap: 12px;
+  }
+  
+  .visit-counter-box {
+    padding: 5px 10px;
+    gap: 6px;
+  }
+  
+  .visit-counter-box span {
+    font-size: 13px;
+  }
+  
+  .visit-counter-box img {
+    height: 20px;
+    width: 40px;
   }
 }
