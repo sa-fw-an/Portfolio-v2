@@ -78,17 +78,3 @@ export const createConditionalLazyComponent = (importFunc, fallbackProps = {}) =
     fallback: <div {...fallbackProps} />
   });
 };
-
-/**
- * Preload component for better UX
- * @param {Function} importFunc - Component import function
- */
-export const preloadComponent = (importFunc) => {
-  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-    requestIdleCallback(() => {
-      importFunc().catch(() => {
-        // Ignore preload errors
-      });
-    });
-  }
-};

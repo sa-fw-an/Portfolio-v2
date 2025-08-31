@@ -4,16 +4,17 @@ import gsap from 'gsap';
 
 const Preloader = () => {
   const [loading, setLoading] = useState(true);
-  const container = useRef();
+  const container = useRef(null);
 
   useGSAP(() => {
     if (!loading) {
-      gsap.to(container.current, { 
+      gsap.to('.preloader', { 
         opacity: 0, 
         duration: 0.5, 
         onComplete: () => {
-          if (container.current) {
-            container.current.classList.add('hidden');
+          const preloader = document.querySelector('.preloader');
+          if (preloader) {
+            preloader.classList.add('hidden');
           }
         }
       });

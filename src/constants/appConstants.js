@@ -14,8 +14,7 @@ export const WEBGL_CONSTANTS = {
   // Performance settings
   DPR: {
     MOBILE_MAX: 0.8,
-    DESKTOP_MAX: 2,
-    FALLBACK: 1
+    DESKTOP_MAX: 2
   },
   
   // Shadow settings
@@ -88,35 +87,8 @@ export const SCENE_CONSTANTS = {
 
 // UI and Layout constants
 export const UI_CONSTANTS = {
-  // Z-index layers
-  Z_INDEX: {
-    BACKGROUND: 1,
-    CONTENT: 10,
-    OVERLAY: 100,
-    MODAL: 1000,
-    PRELOADER: 99999,
-    THEME_TOGGLE: 99999999
-  },
-  
   // Component spacing
-  SPACING: {
-    SECTION_MARGIN_HEIGHT: 2800,
-    SECTION_PADDING: 300,
-    BORDER_RADIUS: 700
-  }
-};
-
-// Color constants
-export const COLOR_CONSTANTS = {
-  // Theme colors
-  COLORS: {
-    PINK: '#db8a95',
-    GREEN: '#5fd8a6', 
-    BLUE: '#718ad4',
-    TAN: '#c8976f',
-    LIGHT_BG: '#faf2dd',
-    DARK_BG: '#6e83c1'
-  }
+  BORDER_RADIUS: 700
 };
 
 // Asset paths
@@ -127,9 +99,5 @@ export const ASSET_PATHS = {
   TEXTURES: {
     VIDEO: '/textures/gitreadme.mp4'
   },
-  DRACO: '/assets/draco/',
-  FONTS: {
-    ASIMOVIAN: '/fonts/Asimovian-Regular.ttf',
-    UBUNTU: '/fonts/Ubuntu-Regular.ttf'
-  }
+  DRACO: '/assets/draco/'
 };

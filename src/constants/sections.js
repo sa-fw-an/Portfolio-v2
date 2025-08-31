@@ -2,7 +2,6 @@ export const sectionsData = {
   hero: {
     id: "hero",
     title: "Welcome to my portfolio!",
-    subtitle: "Building dreams with code."
   },
   about: {
     id: "about", 

@@ -29,11 +29,5 @@ export {
 // Lazy loading utilities
 export {
   createLazyComponent,
-  createConditionalLazyComponent,
-  preloadComponent
+  createConditionalLazyComponent
 } from './lazyUtils';
-
-// Preload utilities
-export {
-  preloadThreeComponents
-} from './preloadUtils';
