@@ -7,6 +7,7 @@ import Lights from './Lights';
 import Controls from './Controls';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useThreeContext } from '@/contexts/ThreeContext';
+import { setupOrthographicCamera, CAMERA_CONSTANTS } from '@/utils/cameraUtils';
 
 const Experience = () => {
   const { theme } = useTheme();
@@ -21,15 +22,7 @@ const Experience = () => {
   }, [sharedRoomRef, sharedFloorRef]);
 
   const handleCameraUpdate = (camera) => {
-    if (camera && camera.isOrthographicCamera) {
-      const aspect = size.width / size.height;
-      const frustum = 5;
-      camera.left = (-aspect * frustum) / 2;
-      camera.right = (aspect * frustum) / 2;
-      camera.top = frustum / 2;
-      camera.bottom = -frustum / 2;
-      camera.updateProjectionMatrix();
-    }
+    setupOrthographicCamera(camera, size.width, size.height);
     setCamera?.(camera);
   };
 
@@ -37,15 +30,15 @@ const Experience = () => {
     <>
       <OrthographicCamera
         makeDefault
-        position={[0, 6.5, 10]}
-        rotation={[-Math.PI / 6, 0, 0]}
-        near={-50}
-        far={50}
-        left={(-size.width / size.height * 5) / 2}
-        right={(size.width / size.height * 5) / 2}
-        top={5 / 2}
-        bottom={-5 / 2}
-        zoom={1}
+        position={CAMERA_CONSTANTS.DEFAULT_POSITION}
+        rotation={[CAMERA_CONSTANTS.DEFAULT_ROTATION_X, 0, 0]}
+        near={CAMERA_CONSTANTS.NEAR}
+        far={CAMERA_CONSTANTS.FAR}
+        left={(-size.width / size.height * CAMERA_CONSTANTS.FRUSTUM) / 2}
+        right={(size.width / size.height * CAMERA_CONSTANTS.FRUSTUM) / 2}
+        top={CAMERA_CONSTANTS.FRUSTUM / 2}
+        bottom={-CAMERA_CONSTANTS.FRUSTUM / 2}
+        zoom={CAMERA_CONSTANTS.ZOOM}
         onUpdate={handleCameraUpdate}
       />
 

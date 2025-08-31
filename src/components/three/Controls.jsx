@@ -5,6 +5,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useThreeContext } from '@/contexts/ThreeContext';
 import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '@/constants/animations';
+import { isMobileDevice } from '@/utils/deviceUtils';
+import { ANIMATION_CONSTANTS } from '@/constants/appConstants';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,13 +15,11 @@ const Controls = ({ roomRef, floorRef }) => {
   const { controlsEnabled, childrenMap, rectLightRef } = useThreeContext();
   const lenisRef = useRef(null);
 
-  const isMobile =
-    typeof window !== 'undefined' &&
-    (window.innerWidth < 968 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  const isMobile = isMobileDevice();
 
   // Reduce scrub and heavy pinning on mobile for smoother animations
-  const scrubVal = isMobile ? 0.2 : 0.6;
-  const progressScrub = isMobile ? Math.min(progressBarConfig.scrub || 0.6, 0.2) : progressBarConfig.scrub || 0.6;
+  const scrubVal = isMobile ? ANIMATION_CONSTANTS.SCRUB.MOBILE : ANIMATION_CONSTANTS.SCRUB.DESKTOP;
+  const progressScrub = isMobile ? Math.min(progressBarConfig.scrub || ANIMATION_CONSTANTS.SCRUB.DESKTOP, ANIMATION_CONSTANTS.SCRUB.MOBILE) : progressBarConfig.scrub || ANIMATION_CONSTANTS.SCRUB.DESKTOP;
 
   useGSAP(() => {
     if (!controlsEnabled) {

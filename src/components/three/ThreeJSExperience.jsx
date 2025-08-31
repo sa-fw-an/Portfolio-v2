@@ -3,15 +3,16 @@ import { Suspense, useCallback } from 'react';
 import * as THREE from 'three';
 import Experience from './Experience.jsx';
 import { useThreeContext } from '@/contexts/ThreeContext';
+import { isMobileDevice, getOptimizedDPR, supportsHighPerformanceWebGL } from '@/utils/deviceUtils';
+import { setupOrthographicCamera, getCameraConfig } from '@/utils/cameraUtils';
+import { WEBGL_CONSTANTS } from '@/constants/appConstants';
 
 const SceneInner = () => {
   const { setCamera } = useThreeContext();
 
-  const isMobile =
-    typeof window !== 'undefined' &&
-    (window.innerWidth < 968 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-
-  const preferredDPR = isMobile ? Math.min(window.devicePixelRatio || 0.3, 0.8) : Math.min(window.devicePixelRatio || 1, 2);
+  const isMobile = isMobileDevice();
+  const preferredDPR = getOptimizedDPR();
+  const supportsHighPerf = supportsHighPerformanceWebGL();
 
   const onCreated = useCallback((state) => {
     const { gl, camera, size } = state;
@@ -19,55 +20,27 @@ const SceneInner = () => {
     gl.useLegacyLights = false;
     gl.outputColorSpace = THREE.SRGBColorSpace;
     gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = 0.9;
+    gl.toneMappingExposure = WEBGL_CONSTANTS.TONE_MAPPING_EXPOSURE;
     gl.shadowMap.enabled = !isMobile;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
     gl.setPixelRatio(preferredDPR);
 
-    if (camera.isOrthographicCamera) {
-      const aspect = size.width / size.height;
-      const frustum = 5;
-
-      camera.left = (-aspect * frustum) / 2;
-      camera.right = (aspect * frustum) / 2;
-      camera.top = frustum / 2;
-      camera.bottom = -frustum / 2;
-      camera.near = -50;
-      camera.far = 50;
-      camera.position.set(0, 6.5, 10);
-      camera.rotation.x = -Math.PI / 6;
-      camera.updateProjectionMatrix();
-    }
-
+    setupOrthographicCamera(camera, size.width, size.height);
     setCamera(camera);
   }, [setCamera, isMobile, preferredDPR]);
   const handleResize = useCallback(() => {
     const camera = setCamera && setCamera.current;
     if (camera && camera.isOrthographicCamera) {
-      const aspect = window.innerWidth / window.innerHeight;
-      const frustum = 5;
-      
-      camera.left = (-aspect * frustum) / 2;
-      camera.right = (aspect * frustum) / 2;
-      camera.top = frustum / 2;
-      camera.bottom = -frustum / 2;
-      camera.updateProjectionMatrix();
+      setupOrthographicCamera(camera, window.innerWidth, window.innerHeight);
     }
   }, [setCamera]);
+
+  const cameraConfig = getCameraConfig();
 
   return (
     <Canvas
       orthographic
-      camera={{ 
-        zoom: 1, 
-        position: [0, 6.5, 10], 
-        near: -50, 
-        far: 50,
-        left: -5,
-        right: 5,
-        top: 5,
-        bottom: -5
-      }}
+      camera={cameraConfig}
       gl={{ 
         antialias: !isMobile, 
         alpha: true, 

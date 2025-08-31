@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import gsap from 'gsap';
+import { SCENE_CONSTANTS, ANIMATION_CONSTANTS } from '@/constants/appConstants';
 
 const Lights = ({ theme }) => {
   const lightRef = useRef();
   
-
   const lightColor = useMemo(() => new THREE.Color(theme === 'dark' ? '#ebdaef' : '#ffffff'), [theme]);
-  const lightIntensity = theme === 'dark' ? 0.5 : 3;
-  const ambientIntensity = theme === 'dark' ? 0.5 : 1;
+  const lightIntensity = theme === 'dark' ? SCENE_CONSTANTS.LIGHTS.DIRECTIONAL.INTENSITY.DARK : SCENE_CONSTANTS.LIGHTS.DIRECTIONAL.INTENSITY.LIGHT;
+  const ambientIntensity = theme === 'dark' ? SCENE_CONSTANTS.LIGHTS.AMBIENT.INTENSITY.DARK : SCENE_CONSTANTS.LIGHTS.AMBIENT.INTENSITY.LIGHT;
 
   useEffect(() => {
     if (!lightRef.current) return;
     const dir = lightRef.current;
-    gsap.to(dir.color, { r: lightColor.r, g: lightColor.g, b: lightColor.b, duration: 0.5 });
-    gsap.to(dir, { intensity: lightIntensity, duration: 0.5 });
+    gsap.to(dir.color, { r: lightColor.r, g: lightColor.g, b: lightColor.b, duration: ANIMATION_CONSTANTS.DURATION.MEDIUM });
+    gsap.to(dir, { intensity: lightIntensity, duration: ANIMATION_CONSTANTS.DURATION.MEDIUM });
   }, [lightColor.r, lightColor.g, lightColor.b, lightIntensity]);
 
   return (
@@ -23,7 +23,7 @@ const Lights = ({ theme }) => {
         ref={lightRef}
         color={lightColor}
         intensity={lightIntensity}
-        position={[-4, 9, 5]}
+        position={SCENE_CONSTANTS.LIGHTS.DIRECTIONAL.POSITION}
         castShadow
         shadow-camera-far={50}
         shadow-camera-left={-10}

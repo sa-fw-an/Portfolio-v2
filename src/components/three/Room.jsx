@@ -3,14 +3,16 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { useThreeContext } from '@/contexts/ThreeContext';
+import { ASSET_PATHS, SCENE_CONSTANTS } from '@/constants/appConstants';
+import { isMobileDevice } from '@/utils/deviceUtils';
 
 const Room = forwardRef((props, ref) => {
   const internalRef = useRef();
   const mixerRef = useRef(null);
-  useGLTF.setDecoderPath('/draco/');
+  useGLTF.setDecoderPath(ASSET_PATHS.DRACO);
   
   let scene, animations;
-  const gltf = useGLTF('/models/room.glb', true);
+  const gltf = useGLTF(ASSET_PATHS.MODELS.ROOM, true);
   scene = gltf.scene;
   animations = gltf.animations || [];
 
@@ -95,7 +97,7 @@ const Room = forwardRef((props, ref) => {
 
       if (found.computer || found.screen) {
         const video = document.createElement('video');
-        video.src = '/textures/gitreadme.mp4';
+        video.src = ASSET_PATHS.TEXTURES.VIDEO;
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
@@ -126,7 +128,7 @@ const Room = forwardRef((props, ref) => {
     if (found.cube) {
       found.cube.position.set(0, -1, 0);
       found.cube.rotation.y = Math.PI / 4;
-      const isMobile = typeof window !== 'undefined' && window.innerWidth < 968;
+      const isMobile = isMobileDevice();
       if (isMobile) {
         found.cube.scale.set(0, 0, 0);
       } else {
@@ -207,6 +209,6 @@ const Room = forwardRef((props, ref) => {
 
 Room.displayName = 'Room';
 
-useGLTF.preload('/models/room.glb');
+useGLTF.preload(ASSET_PATHS.MODELS.ROOM);
 
 export default Room;
