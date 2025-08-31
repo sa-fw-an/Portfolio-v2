@@ -4,8 +4,6 @@ import { projectsData } from '@/constants/projects';
 
 const Projects = () => {
   const config = sectionsData.projects;
-  const featuredProjects = projectsData.filter(p => p.featured);
-  const otherProjects = projectsData.filter(p => !p.featured);
 
   return (
     <React.Fragment>
@@ -34,13 +32,13 @@ const Projects = () => {
 
         <div className="section-detail-wrapper">
           <h3 className="section-heading">
-            Featured Projects
+            My Projects
           </h3>
           <p className="section-text">
-            Here are some of my recent projects that showcase my skills in web development, blockchain, and mobile applications.
+            Here's a collection of my projects that showcase my skills in web development, blockchain, mobile applications, and more. Each project demonstrates different aspects of my technical expertise and problem-solving abilities.
           </p>
           
-          {featuredProjects.map((project, index) => (
+          {projectsData.map((project, index) => (
             <div key={index} className="project-item">
               <h4 className="project-title">{project.title}</h4>
               <p className="project-description">{project.description}</p>
@@ -54,28 +52,6 @@ const Projects = () => {
               </a>
             </div>
           ))}
-
-          {otherProjects.length > 0 && (
-            <>
-              <h3 className="section-heading">
-                Other Projects
-              </h3>
-              {otherProjects.map((project, index) => (
-                <div key={index} className="project-item">
-                  <h4 className="project-title">{project.title}</h4>
-                  <p className="project-description">{project.description}</p>
-                  <div className="project-tech">
-                    {project.technologies.map((tech, idx) => (
-                      <span key={idx} className="tech-tag">{tech}</span>
-                    ))}
-                  </div>
-                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
-                    Check Out →
-                  </a>
-                </div>
-              ))}
-            </>
-          )}
         </div>
       </section>
     </React.Fragment>
