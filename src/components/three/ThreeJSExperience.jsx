@@ -3,7 +3,7 @@ import { Suspense, useCallback } from 'react';
 import * as THREE from 'three';
 import Experience from './Experience.jsx';
 import { useThreeContext } from '@/contexts/ThreeContext';
-import { isMobileDevice, getOptimizedDPR, supportsHighPerformanceWebGL } from '@/utils/deviceUtils';
+import { isMobileDevice, getOptimizedDPR } from '@/utils/deviceUtils';
 import { setupOrthographicCamera, getCameraConfig } from '@/utils/cameraUtils';
 import { WEBGL_CONSTANTS } from '@/constants/appConstants';
 
@@ -12,7 +12,6 @@ const SceneInner = () => {
 
   const isMobile = isMobileDevice();
   const preferredDPR = getOptimizedDPR();
-  const supportsHighPerf = supportsHighPerformanceWebGL();
 
   const onCreated = useCallback((state) => {
     const { gl, camera, size } = state;
