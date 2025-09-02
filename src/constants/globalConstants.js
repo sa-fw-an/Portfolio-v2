@@ -37,9 +37,6 @@ export const ANIMATION_CONSTANTS = {
   
   PROGRESS_BAR_SCRUB: 0.4,
   
-  // Preloader timing
-  PRELOADER_DELAY: 2000,
-  
   // Animation durations
   DURATION: {
     FAST: 0.3,
@@ -56,9 +53,6 @@ export const SCENE_CONSTANTS = {
     DESKTOP: [0.11, 0.11, 0.11],
     MOBILE: [0.07, 0.07, 0.07]
   },
-  
-  // Floor circle scaling
-  FLOOR_CIRCLE_SCALE: [3, 3, 3],
   
   // Light settings
   LIGHTS: {
@@ -104,10 +98,6 @@ export const ASSET_PATHS = {
     VIDEO: '/textures/gitreadme.mp4'
   },
   DRACO: '/assets/draco/',
-  FONTS: {
-    ASIMOVIAN: '/fonts/Asimovian-Regular.ttf',
-    UBUNTU: '/fonts/Ubuntu-Regular.ttf'
-  },
   SOCIAL: {
     GITHUB: './assets/social/github.svg',
     LINKEDIN: './assets/social/linkedin.svg',

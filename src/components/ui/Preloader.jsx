@@ -4,12 +4,14 @@ import gsap from 'gsap';
 
 const Preloader = () => {
   const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
 
   useGSAP(() => {
     if (!loading) {
       gsap.to('.preloader', { 
         opacity: 0, 
-        duration: 0.5, 
+        duration: 0.8, 
+        ease: 'power2.out',
         onComplete: () => {
           const preloader = document.querySelector('.preloader');
           if (preloader) {
@@ -21,12 +23,19 @@ const Preloader = () => {
   }, [loading]);
 
   useEffect(() => {
-    // Simulate loading time
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+    // Simulate loading progress
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => setLoading(false), 500);
+          return 100;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 200);
 
-    return () => clearTimeout(timer);
+    return () => clearInterval(interval);
   }, []);
 
   if (!loading) return null;
@@ -34,10 +43,12 @@ const Preloader = () => {
   return (
     <div className="preloader">
       <div className="preloader-wrapper">
-        <div className="loading">
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
+        <div className="loading-progress">
+          <div 
+            className="loading-bar" 
+            style={{ width: `${Math.min(progress, 100)}%` }}
+          ></div>
+          <span className="loading-text">{Math.round(progress)}%</span>
         </div>
       </div>
     </div>

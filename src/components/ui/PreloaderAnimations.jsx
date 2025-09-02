@@ -1,11 +1,12 @@
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useThreeContext } from '@/contexts/ThreeContext';
 
 const convertToSpans = (element) => {
-  if (!element) return;
+  if (!element || element.dataset.converted) return;
   element.style.overflow = "hidden";
+  element.dataset.converted = 'true';
   element.innerHTML = element.innerText
     .split("")
     .map((char) => {
@@ -24,24 +25,24 @@ const PreloaderAnimations = () => {
   const device = sizes.width < 968 ? 'mobile' : 'desktop';
   const timelineRef = useRef();
 
+  const checkAssetsReady = useCallback(() => {
+    return roomRef.current && childrenMap && Object.keys(childrenMap).length > 0;
+  }, [roomRef, childrenMap]);
+
+  const waitForAssets = useCallback(() => {
+    return new Promise((resolve) => {
+      const check = () => {
+        if (checkAssetsReady()) {
+          resolve();
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
+  }, [checkAssetsReady]);
+
   useGSAP(() => {
-    const checkAssetsReady = () => {
-      return roomRef.current && childrenMap && Object.keys(childrenMap).length > 0;
-    };
-
-    const waitForAssets = () => {
-      return new Promise((resolve) => {
-        const check = () => {
-          if (checkAssetsReady()) {
-            resolve();
-          } else {
-            setTimeout(check, 100);
-          }
-        };
-        check();
-      });
-    };
-
     const convertTextElements = () => {
       const elements = [
         '.intro-text',
@@ -349,7 +350,7 @@ const PreloaderAnimations = () => {
       window.removeEventListener('touchstart', () => {});
       window.removeEventListener('touchmove', () => {});
     };
-  }, [roomRef, childrenMap, setControlsEnabled, device]);
+  }, [roomRef, childrenMap, setControlsEnabled, device, checkAssetsReady, waitForAssets]);
 
   return null;
 };

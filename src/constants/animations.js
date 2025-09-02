@@ -109,6 +109,6 @@ export const sectionBorderConfig = {
 
 // Progress bar configuration
 export const progressBarConfig = {
-  scrub: 0.4,
+  scrub: 0.3,
   pinSpacing: false
 };

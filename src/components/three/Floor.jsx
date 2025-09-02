@@ -13,15 +13,15 @@ const Floor = forwardRef((props, ref) => {
       {/* Colored Circles */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.29, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
-        <meshStandardMaterial color="#eb7f8e" />
+        <meshStandardMaterial color="#e5a1aa" />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2, -0.28, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
-        <meshStandardMaterial color="#6176b7" />
+        <meshStandardMaterial color="#8395cd" />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.27, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />
-        <meshStandardMaterial color="#16ee94" />
+        <meshStandardMaterial color="#7ad0ac" />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-2, -0.26, 0]} scale={[0,0,0]} receiveShadow>
         <circleGeometry args={[5, 64]} />

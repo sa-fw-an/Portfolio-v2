@@ -21,6 +21,12 @@ const Controls = ({ roomRef, floorRef }) => {
   const scrubVal = isMobile ? ANIMATION_CONSTANTS.SCRUB.MOBILE : ANIMATION_CONSTANTS.SCRUB.DESKTOP;
   const progressScrub = isMobile ? Math.min(progressBarConfig.scrub || ANIMATION_CONSTANTS.SCRUB.DESKTOP, ANIMATION_CONSTANTS.SCRUB.MOBILE) : progressBarConfig.scrub || ANIMATION_CONSTANTS.SCRUB.DESKTOP;
 
+  // GSAP optimization settings
+  const gsapConfig = {
+    force3D: true,
+    transformOrigin: '0px 0px 0px'
+  };
+
   useGSAP(() => {
     if (!controlsEnabled) {
       ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -149,6 +155,9 @@ const Controls = ({ roomRef, floorRef }) => {
               invalidateOnRefresh: true,
             },
           });
+
+          // Apply GSAP optimizations
+          gsap.set(timeline, gsapConfig);
 
           // Room animations
           if (config.roomAnimation) {
@@ -310,7 +319,11 @@ const Controls = ({ roomRef, floorRef }) => {
                     },
                 });
 
-                timeline.to(circles[config.circleIndex].scale, config.scale, 'same');
+                timeline.to(circles[config.circleIndex].scale, {
+                  ...config.scale,
+                  ease: 'power2.out',
+                  force3D: true
+                }, 'same');
                 
                 if (config.roomPosition) {
                   timeline.to(roomRef.current.position, config.roomPosition, 'same');
@@ -346,7 +359,8 @@ const Controls = ({ roomRef, floorRef }) => {
                   y: 1,
                   z: 1,
                   duration: 0.3,
-                  ease: 'back.out(2)',
+                  ease: 'back.out(2.2)',
+                  force3D: true
                 }, delay);
               }
             };

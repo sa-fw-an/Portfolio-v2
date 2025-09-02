@@ -22,7 +22,8 @@ const SceneInner = () => {
     gl.toneMappingExposure = WEBGL_CONSTANTS.TONE_MAPPING_EXPOSURE;
     gl.shadowMap.enabled = !isMobile;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.setPixelRatio(preferredDPR);
+    gl.setPixelRatio(Math.min(preferredDPR, WEBGL_CONSTANTS.DPR.DESKTOP_MAX));
+    gl.setClearColor(0x000000, 0);
 
     setupOrthographicCamera(camera, size.width, size.height);
     setCamera(camera);
