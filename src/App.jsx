@@ -1,9 +1,6 @@
 import React, { Suspense } from 'react';
 import Hero from './components/sections/Hero';
 import About from './components/sections/About';
-import Projects from './components/sections/Projects';
-import Experience from './components/sections/Experience';
-import Contact from './components/sections/Contact';
 import ThemeToggle from './components/ui/ThemeToggle';
 import Preloader from './components/ui/Preloader';
 import PreloaderAnimations from './components/ui/PreloaderAnimations';
@@ -11,9 +8,10 @@ import Footer from './components/ui/Footer';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThreeProvider } from './contexts/ThreeContext';
-
-// Lazy load Three.js components for better performance
 const LazyThreeJSExperience = React.lazy(() => import('./components/three/ThreeJSExperience'));
+const LazyProjects = React.lazy(() => import('./components/sections/Projects'));
+const LazyExperience = React.lazy(() => import('./components/sections/Experience'));
+const LazyContact = React.lazy(() => import('./components/sections/Contact'));
 
 function App() {
   return (
@@ -42,9 +40,11 @@ function App() {
                 <Hero />
               </section>
               <About />
-              <Projects />
-              <Experience />
-              <Contact />
+              <Suspense fallback={<div className="loading-placeholder h-screen flex items-center justify-center">Loading...</div>}>
+                <LazyProjects />
+                <LazyExperience />
+                <LazyContact />
+              </Suspense>
               <Footer />
             </div>
           </div>

@@ -5,28 +5,47 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useThreeContext } from '@/contexts/ThreeContext';
 import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '@/constants/animations';
-import { isMobileDevice } from '@/utils/deviceUtils';
+import { isMobileDevice, getPerformanceProfile } from '@/utils/deviceUtils';
 import { ANIMATION_CONSTANTS } from '@/constants/globalConstants';
+import { getAnimationQuality, prefersReducedMotion } from '@/utils/performanceUtils';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Controls = ({ roomRef, floorRef }) => {
   const { camera, size } = useThree();
   const { controlsEnabled, childrenMap, rectLightRef } = useThreeContext();
-  const lenisRef = useRef(null);
-
+  const scrollCleanupRef = useRef(null);
+  
   const isMobile = isMobileDevice();
-
-  // Reduce scrub and heavy pinning on mobile for smoother animations
-  const scrubVal = isMobile ? ANIMATION_CONSTANTS.SCRUB.MOBILE : ANIMATION_CONSTANTS.SCRUB.DESKTOP;
-  const progressScrub = isMobile ? Math.min(progressBarConfig.scrub || ANIMATION_CONSTANTS.SCRUB.DESKTOP, ANIMATION_CONSTANTS.SCRUB.MOBILE) : progressBarConfig.scrub || ANIMATION_CONSTANTS.SCRUB.DESKTOP;
+  const performanceProfile = getPerformanceProfile();
+  const animationQuality = getAnimationQuality();
+  const reduceMotion = prefersReducedMotion();
+  
+  // Performance-aware animation settings
+  const getScrubValue = () => {
+    if (reduceMotion) return 0.1;
+    if (isMobile) return ANIMATION_CONSTANTS.SCRUB.MOBILE;
+    if (performanceProfile === 'medium') return ANIMATION_CONSTANTS.SCRUB.LAPTOP;
+    return ANIMATION_CONSTANTS.SCRUB.DESKTOP;
+  };
+  
+  const getProgressScrub = () => {
+    if (reduceMotion) return 0.1;
+    const profileScrub = ANIMATION_CONSTANTS.PROGRESS_BAR_SCRUB[performanceProfile.toUpperCase()] || 
+                        ANIMATION_CONSTANTS.PROGRESS_BAR_SCRUB.DESKTOP;
+    return Math.min(progressBarConfig.scrub || profileScrub, profileScrub);
+  };
+  
+  const scrubVal = getScrubValue();
+  const progressScrub = getProgressScrub();
+  const shouldSkipComplexAnimations = animationQuality.skipComplexAnimations;
 
   useGSAP(() => {
     if (!controlsEnabled) {
       ScrollTrigger.getAll().forEach((t) => t.kill());
-      if (lenisRef.current) {
-        lenisRef.current.destroy();
-        lenisRef.current = null;
+      if (scrollCleanupRef.current) {
+        scrollCleanupRef.current();
+        scrollCleanupRef.current = null;
       }
       return;
     }
@@ -34,7 +53,6 @@ const Controls = ({ roomRef, floorRef }) => {
     const setupScrollTriggers = () => {
       if (!roomRef.current || !floorRef.current) return;
 
-      // Set initial positions
       if (camera && roomRef.current) {
         camera.position.set(0, 6.5, 10);
         if (camera.isOrthographicCamera) {
@@ -56,79 +74,14 @@ const Controls = ({ roomRef, floorRef }) => {
       if (pageElement) {
         pageElement.style.overflow = 'visible';
       }
-
-      // Optimized smooth scroll with Lenis on desktop only
-      if (!isMobile && !lenisRef.current) {
-        (async () => {
-          const { default: Lenis } = await import('lenis');
-          const lenis = new Lenis({
-            lerp: 0.08, // Slightly more responsive
-            smoothWheel: true,
-            wheelMultiplier: 0.8, // Reduced for better control
-            touchMultiplier: 1.5, // Reduced for better touch control
-            infinite: false,
-            syncTouch: false, // Disable touch sync for better performance
-            syncTouchLerp: 0.1,
-            gestureDirection: 'vertical',
-            normalizeWheel: true,
-            smoothTouch: false // Disable smooth touch for performance
-          });
-
-          lenisRef.current = lenis;
-
-          // Optimized RAF with throttling
-          let rafId;
-          function raf(time) {
-            lenis.raf(time);
-            rafId = requestAnimationFrame(raf);
-          }
-          rafId = requestAnimationFrame(raf);
-
-          // Enhanced ScrollTrigger proxy
-          ScrollTrigger.scrollerProxy(document.body, {
-            scrollTop(value) {
-              if (arguments.length) {
-                lenis.scrollTo(value, { immediate: true });
-              }
-              return lenis.scroll || document.documentElement.scrollTop || document.body.scrollTop || 0;
-            },
-            getBoundingClientRect() {
-              return { 
-                top: 0, 
-                left: 0, 
-                width: window.innerWidth, 
-                height: window.innerHeight 
-              };
-            },
-            pinType: document.querySelector('.page').style.transform ? 'transform' : 'fixed'
-          });
-
-          // Optimized scroll update
-          lenis.on('scroll', () => {
-            ScrollTrigger.update();
-          });
-
-          // Cleanup function for RAF
-          return () => {
-            if (rafId) {
-              cancelAnimationFrame(rafId);
-            }
-          };
-        })();
-      }
-
-      // Helper function to evaluate simple arithmetic expressions safely (no eval)
+      ScrollTrigger.scrollerProxy(null);
       const evaluateExpression = (expr) => {
         if (typeof expr === 'string') {
-          // Substitute tokens
           let s = expr.replace(/size\.width/g, String(size.width)).replace(/size\.height/g, String(size.height));
-          // Allow only numbers, operators and whitespace
           if (!/^[0-9\s.+\-*/]+$/.test(s)) return Number(s) || 0;
 
           const tokens = s.match(/-?\d+(?:\.\d+)?|[+\-*/]/g);
           if (!tokens) return Number(s) || 0;
-
-          // Handle * and / first
           let values = [];
           let ops = [];
           let current = parseFloat(tokens[0]);
@@ -145,7 +98,6 @@ const Controls = ({ roomRef, floorRef }) => {
           }
           values.push(current);
 
-          // Then + and -
           let result = values[0];
           for (let i = 0; i < ops.length; i++) {
             if (ops[i] === '+') result += values[i + 1];
@@ -156,7 +108,6 @@ const Controls = ({ roomRef, floorRef }) => {
         return expr;
       };
 
-      // Create animations from configuration
       const createSectionAnimations = (animationConfig, device) => {
           Object.values(animationConfig[device] || {}).forEach((config) => {
           const timeline = gsap.timeline({
@@ -214,9 +165,43 @@ const Controls = ({ roomRef, floorRef }) => {
         });
       };
 
-      // Responsive animations
+      const createSimplifiedAnimations = (device) => {
+        ScrollTrigger.batch('.section', {
+          onEnter: (elements) => {
+            elements.forEach((element, index) => {
+              gsap.fromTo(element, 
+                { opacity: 0, y: 50 },
+                { 
+                  opacity: 1, 
+                  y: 0, 
+                  duration: 0.6,
+                  delay: index * 0.1,
+                  ease: 'power2.out'
+                }
+              );
+            });
+          },
+          once: true
+        });
+
+        if (device === 'desktop') {
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: 'body',
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: scrubVal * 1.5,
+              onUpdate: (self) => {
+                const progress = self.progress;
+                roomRef.current.position.x = progress * 1;
+                roomRef.current.scale.setScalar(0.11 + progress * 0.29);
+              }
+            }
+          });
+        }
+      };
+
       ScrollTrigger.matchMedia({
-        // Desktop
         '(min-width: 969px)': () => {
           roomRef.current.scale.set(0.11, 0.11, 0.11);
           if (rectLightRef?.current) {
@@ -225,11 +210,13 @@ const Controls = ({ roomRef, floorRef }) => {
           }
           camera.position.set(0, 6.5, 10);
           roomRef.current.position.set(0, 0, 0);
-
-          createSectionAnimations(sectionAnimations, 'desktop');
+          if (!shouldSkipComplexAnimations) {
+            createSectionAnimations(sectionAnimations, 'desktop');
+          } else {
+            createSimplifiedAnimations('desktop');
+          }
         },
 
-        // Mobile
         '(max-width: 968px)': () => {
           roomRef.current.scale.set(0.07, 0.07, 0.07);
           roomRef.current.position.set(0, 0, 0);
@@ -242,9 +229,7 @@ const Controls = ({ roomRef, floorRef }) => {
           createSectionAnimations(sectionAnimations, 'mobile');
         },
 
-        // All devices
         all: () => {
-          // Section borders and progress bars
           const sections = document.querySelectorAll('.section');
           sections.forEach((section) => {
             const progressWrapper = section.querySelector('.progress-wrapper');
@@ -324,7 +309,6 @@ const Controls = ({ roomRef, floorRef }) => {
             }
           });
 
-          // Floor circles animation
           if (floorRef.current) {
             const circles = [];
             floorRef.current.traverse((child) => {
@@ -359,8 +343,6 @@ const Controls = ({ roomRef, floorRef }) => {
               }
             });
           }
-
-          // Mini platform animations (exact original)
           if (childrenMap && Object.keys(childrenMap).length) {
             const secondPartTimeline = gsap.timeline({
               scrollTrigger: {
@@ -371,7 +353,6 @@ const Controls = ({ roomRef, floorRef }) => {
 
             const parts = childrenMap;
             
-            // Sequential reveals
             if (parts.mini_floor) {
               secondPartTimeline.to(parts.mini_floor.position, {
                 x: -5.44055,
@@ -425,18 +406,14 @@ const Controls = ({ roomRef, floorRef }) => {
 
     return () => {
       window.removeEventListener('resize', onResize);
-      // Kill all ScrollTrigger instances
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
       
-      // Enhanced Lenis cleanup
-      if (lenisRef.current) {
-        lenisRef.current.destroy();
-        lenisRef.current = null;
+      if (scrollCleanupRef.current) {
+        scrollCleanupRef.current();
+        scrollCleanupRef.current = null;
       }
       
-      // Clear any remaining timeouts or intervals
       if (typeof window !== 'undefined') {
-        // Reset page overflow
         const pageElement = document.querySelector('.page');
         if (pageElement) {
           pageElement.style.overflow = 'hidden';

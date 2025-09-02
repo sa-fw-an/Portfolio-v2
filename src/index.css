@@ -68,6 +68,11 @@
   font-family: 'Ubuntu', 'Arial', sans-serif !important;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+}
+
 html, body {
   background-color: var(--color-background);
   color: var(--color-text);

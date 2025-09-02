@@ -1,7 +1,3 @@
-/**
- * Global application constants - Single source of truth
- */
-
 // Device and responsive breakpoints
 export const BREAKPOINTS = {
   MOBILE: 968,
@@ -11,46 +7,71 @@ export const BREAKPOINTS = {
 
 // Three.js and WebGL constants
 export const WEBGL_CONSTANTS = {
-  // Performance settings
   DPR: {
     MOBILE_MAX: 0.8,
-    DESKTOP_MAX: 2
+    LAPTOP_MAX: 1.0,
+    DESKTOP_MAX: 1.5
   },
   
-  // Shadow settings
+  // Shadow settings - Optimized for performance with mobile shadows
   SHADOW_MAP_SIZE: {
-    MOBILE: 1024,
-    DESKTOP: 2048
+    MOBILE: 512,
+    LAPTOP: 1024,
+    DESKTOP: 1024
   },
   
   // Tone mapping
   TONE_MAPPING_EXPOSURE: 0.9
 };
 
-// Animation and timing constants
+// Animation and timing constants 
 export const ANIMATION_CONSTANTS = {
-  // GSAP animation settings - Optimized for performance
+  // GSAP animation settings - Optimized for performance by device type
   SCRUB: {
-    MOBILE: 0.3, // Slightly more responsive on mobile
+    MOBILE: 0.2,
+    LAPTOP: 0.4,
     DESKTOP: 0.6
   },
   
-  PROGRESS_BAR_SCRUB: 0.4,
+  PROGRESS_BAR_SCRUB: {
+    MOBILE: 0.2,
+    LAPTOP: 0.3,
+    DESKTOP: 0.4
+  },
   
   // Preloader timing
-  PRELOADER_DELAY: 1800, // Reduced for faster loading
+  PRELOADER_DELAY: 1800,
   
   // Animation durations
   DURATION: {
-    FAST: 0.2, // Faster animations for better performance
+    FAST: 0.2,
     MEDIUM: 0.4,
     SLOW: 0.6,
     THEME_TRANSITION: 0.4
   },
   
   // Performance settings
-  WILL_CHANGE: true, // Enable will-change CSS for better performance
-  FORCE_3D: true    // Force hardware acceleration
+  WILL_CHANGE: true,
+  FORCE_3D: true,
+
+  // Device-specific animation quality
+  ANIMATION_QUALITY: {
+    LOW: {
+      reduceMotion: true,
+      skipComplexAnimations: true,
+      limitParticles: true
+    },
+    MEDIUM: { 
+      reduceMotion: false,
+      skipComplexAnimations: false,
+      limitParticles: true
+    },
+    HIGH: {
+      reduceMotion: false,
+      skipComplexAnimations: false,
+      limitParticles: false
+    }
+  }
 };
 
 // 3D Scene constants

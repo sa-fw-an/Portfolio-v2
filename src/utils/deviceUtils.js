@@ -1,13 +1,5 @@
-/**
- * Device detection utilities
- */
-
 export const MOBILE_BREAKPOINT = 968;
 
-/**
- * Detect if the current device is mobile based on screen width and user agent
- * @returns {boolean} True if mobile device
- */
 export const isMobileDevice = () => {
   if (typeof window === 'undefined') return false;
   
@@ -17,15 +9,44 @@ export const isMobileDevice = () => {
   return isMobileScreen || isMobileUserAgent;
 };
 
-/**
- * Get optimized device pixel ratio for performance
- * @returns {number} Optimized DPR value
- */
+export const isLaptopDevice = () => {
+  if (typeof window === 'undefined') return false;
+  
+  const screenWidth = window.innerWidth;
+  const dpr = window.devicePixelRatio || 1;
+  const cores = navigator.hardwareConcurrency || 4;
+  
+  // Heuristics for laptop detection
+  const isLaptopScreen = screenWidth >= 1024 && screenWidth <= 1920;
+  const isLowDPR = dpr <= 1.5;
+  const isLimitedCores = cores <= 8;
+  
+  return isLaptopScreen && (isLowDPR || isLimitedCores);
+};
+
+export const getPerformanceProfile = () => {
+  if (isMobileDevice()) {
+    return 'medium';
+  }
+  if (isLaptopDevice()) return 'medium';
+  return 'high';
+};
+
+
 export const getOptimizedDPR = () => {
-  const isMobile = isMobileDevice();
+  const profile = getPerformanceProfile();
   const devicePixelRatio = window.devicePixelRatio || 1;
   
-  return isMobile 
-    ? Math.min(devicePixelRatio, 0.8) 
-    : Math.min(devicePixelRatio, 2);
+  switch (profile) {
+    case 'medium':
+      if (isMobileDevice()) {
+        return Math.min(devicePixelRatio, 0.8);
+      } else {
+        return Math.min(devicePixelRatio, 1.0);
+      }
+    case 'high':
+      return Math.min(devicePixelRatio, 1.5);
+    default:
+      return Math.min(devicePixelRatio, 1.0);
+  }
 };

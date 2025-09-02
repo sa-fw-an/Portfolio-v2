@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, memo } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 
-const ThemeToggle = () => {
+const ThemeToggle = memo(() => {
   const { theme, toggleTheme } = useTheme();
   const container = useRef();
 
@@ -30,6 +30,8 @@ const ThemeToggle = () => {
       </div>
     </div>
   );
-};
+});
+
+ThemeToggle.displayName = 'ThemeToggle';
 
 export default ThemeToggle;

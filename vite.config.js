@@ -22,8 +22,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           three: ['three', '@react-three/fiber', '@react-three/drei'],
-          gsap: ['gsap', '@gsap/react'],
-          lenis: ['lenis']
+          gsap: ['gsap', '@gsap/react']
         }
       }
     },
@@ -31,7 +30,7 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console.logs in production
+        drop_console: true,
         drop_debugger: true
       }
     }

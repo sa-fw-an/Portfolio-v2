@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef } from 'react';
+import { useRef, useEffect, forwardRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -211,4 +211,4 @@ Room.displayName = 'Room';
 
 useGLTF.preload(ASSET_PATHS.MODELS.ROOM);
 
-export default Room;
+export default memo(Room);
