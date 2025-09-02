@@ -5,12 +5,14 @@ import * as THREE from 'three';
 import { useThreeContext } from '@/contexts/ThreeContext';
 import { ASSET_PATHS } from '@/constants/globalConstants';
 import { isMobileDevice } from '@/utils/deviceUtils';
+import { ProgressiveAssetLoader, ASSET_PRIORITIES } from '@/utils/assetUtils';
 
 const Room = forwardRef((props, ref) => {
   const internalRef = useRef();
   const mixerRef = useRef(null);
+
   useGLTF.setDecoderPath(ASSET_PATHS.DRACO);
-  
+
   let scene, animations;
   const gltf = useGLTF(ASSET_PATHS.MODELS.ROOM, true);
   scene = gltf.scene;
@@ -103,13 +105,32 @@ const Room = forwardRef((props, ref) => {
         video.playsInline = true;
         video.autoplay = true;
         
-        video.play();
+        // Optimize video loading for mobile
+        const isMobile = isMobileDevice();
+        if (isMobile) {
+          video.preload = 'metadata'; // Only load metadata on mobile
+          video.setAttribute('playsinline', '');
+          video.setAttribute('webkit-playsinline', '');
+        } else {
+          video.preload = 'auto';
+        }
+        
+        video.play().catch(() => {
+          // Handle autoplay failure gracefully
+          console.log('Video autoplay failed, will play on user interaction');
+        });
         
         const videoTexture = new THREE.VideoTexture(video);
-        videoTexture.minFilter = THREE.NearestFilter;
-        videoTexture.magFilter = THREE.NearestFilter;
+        videoTexture.minFilter = THREE.LinearFilter;
+        videoTexture.magFilter = THREE.LinearFilter;
         videoTexture.generateMipmaps = false;
         videoTexture.colorSpace = THREE.SRGBColorSpace;
+        
+        // Reduce video quality on mobile
+        if (isMobile) {
+          videoTexture.minFilter = THREE.LinearFilter;
+          videoTexture.magFilter = THREE.LinearFilter;
+        }
         
         const screenMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
         
@@ -170,6 +191,43 @@ const Room = forwardRef((props, ref) => {
     setChildrenMap(found);
 
   }, [scene, animations, setChildrenMap, rectLightRef]);
+
+  // Memory management and cleanup
+  useEffect(() => {
+    return () => {
+      // Dispose of video textures and materials
+      if (scene) {
+        scene.traverse((child) => {
+          if (child.isMesh) {
+            if (child.material) {
+              if (Array.isArray(child.material)) {
+                child.material.forEach(material => {
+                  if (material.map && material.map.dispose) {
+                    material.map.dispose();
+                  }
+                  material.dispose();
+                });
+              } else {
+                if (child.material.map && child.material.map.dispose) {
+                  child.material.map.dispose();
+                }
+                child.material.dispose();
+              }
+            }
+            if (child.geometry) {
+              child.geometry.dispose();
+            }
+          }
+        });
+      }
+
+      // Dispose of mixer
+      if (mixerRef.current) {
+        mixerRef.current.stopAllAction();
+        mixerRef.current = null;
+      }
+    };
+  }, [scene]);
 
   useFrame((state) => {
     const roomRef = ref?.current || internalRef.current;
