@@ -4,7 +4,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useThreeContext } from '@/contexts/ThreeContext';
-import { sectionAnimations, floorCircleAnimations, sectionBorderConfig, progressBarConfig } from '@/constants/animations';
+import { sectionAnimations, floorCircleAnimations, sectionBorderConfig } from '@/constants/animations';
 import { isMobileDevice, getPerformanceProfile } from '@/utils/deviceUtils';
 import { ANIMATION_CONSTANTS } from '@/constants/globalConstants';
 import { getAnimationQuality, prefersReducedMotion } from '@/utils/performanceUtils';
@@ -33,7 +33,7 @@ const Controls = ({ roomRef, floorRef }) => {
     if (reduceMotion) return 0.1;
     const profileScrub = ANIMATION_CONSTANTS.PROGRESS_BAR_SCRUB[performanceProfile.toUpperCase()] || 
                         ANIMATION_CONSTANTS.PROGRESS_BAR_SCRUB.DESKTOP;
-    return Math.min(progressBarConfig.scrub || profileScrub, profileScrub);
+    return Math.min(0.4, profileScrub);
   };
   
   const scrubVal = getScrubValue();
@@ -300,7 +300,7 @@ const Controls = ({ roomRef, floorRef }) => {
                       end: 'bottom bottom',
                       scrub: progressScrub,
                       pin: isMobile ? false : progressWrapper,
-                      pinSpacing: isMobile ? false : progressBarConfig.pinSpacing,
+                      pinSpacing: false,
                       invalidateOnRefresh: true,
                       refreshPriority: 1
                     },

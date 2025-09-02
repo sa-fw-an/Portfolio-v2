@@ -25,7 +25,7 @@ export const sectionsData = {
   },
   projects: {
     id: "projects",
-    title: "My Projects", 
+    title: "Projects", 
     number: "02",
     layout: "right",
     triggerClass: "second-move",
@@ -39,7 +39,7 @@ export const sectionsData = {
   },
   experience: {
     id: "experience",
-    title: "Work Experience",
+    title: "Experience",
     number: "03",
     layout: "left",
     triggerClass: "third-move",
@@ -53,7 +53,7 @@ export const sectionsData = {
   },
   contact: {
     id: "contact",
-    title: "CONTACT",
+    title: "Contact",
     number: "04",
     layout: "right",
     triggerClass: "fourth-move",

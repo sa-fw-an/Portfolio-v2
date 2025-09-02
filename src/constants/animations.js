@@ -106,9 +106,3 @@ export const sectionBorderConfig = {
     borderBottomLeftRadius: 700
   }
 };
-
-// Progress bar configuration
-export const progressBarConfig = {
-  scrub: 0.4,
-  pinSpacing: false
-};

@@ -142,13 +142,3 @@ export const ASSET_PATHS = {
     GMAIL: './assets/social/gmail.svg'
   }
 };
-
-// Export everything as default for easier importing
-export default {
-  BREAKPOINTS,
-  WEBGL_CONSTANTS,
-  ANIMATION_CONSTANTS,
-  SCENE_CONSTANTS,
-  CAMERA_CONSTANTS,
-  ASSET_PATHS
-};
