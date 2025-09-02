@@ -21,12 +21,6 @@ const Controls = ({ roomRef, floorRef }) => {
   const scrubVal = isMobile ? ANIMATION_CONSTANTS.SCRUB.MOBILE : ANIMATION_CONSTANTS.SCRUB.DESKTOP;
   const progressScrub = isMobile ? Math.min(progressBarConfig.scrub || ANIMATION_CONSTANTS.SCRUB.DESKTOP, ANIMATION_CONSTANTS.SCRUB.MOBILE) : progressBarConfig.scrub || ANIMATION_CONSTANTS.SCRUB.DESKTOP;
 
-  // GSAP optimization settings
-  const gsapConfig = {
-    force3D: true,
-    transformOrigin: '0px 0px 0px'
-  };
-
   useGSAP(() => {
     if (!controlsEnabled) {
       ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -63,26 +57,34 @@ const Controls = ({ roomRef, floorRef }) => {
         pageElement.style.overflow = 'visible';
       }
 
-      // Smooth scroll with Lenis on desktop only (can be expensive on mobile)
+      // Optimized smooth scroll with Lenis on desktop only
       if (!isMobile && !lenisRef.current) {
         (async () => {
           const { default: Lenis } = await import('lenis');
           const lenis = new Lenis({
-            lerp: 0.1,
+            lerp: 0.08, // Slightly more responsive
             smoothWheel: true,
-            wheelMultiplier: 1,
-            touchMultiplier: 2,
+            wheelMultiplier: 0.8, // Reduced for better control
+            touchMultiplier: 1.5, // Reduced for better touch control
+            infinite: false,
+            syncTouch: false, // Disable touch sync for better performance
+            syncTouchLerp: 0.1,
+            gestureDirection: 'vertical',
+            normalizeWheel: true,
+            smoothTouch: false // Disable smooth touch for performance
           });
 
           lenisRef.current = lenis;
 
+          // Optimized RAF with throttling
+          let rafId;
           function raf(time) {
             lenis.raf(time);
-            requestAnimationFrame(raf);
+            rafId = requestAnimationFrame(raf);
           }
-          requestAnimationFrame(raf);
+          rafId = requestAnimationFrame(raf);
 
-          // ScrollTrigger proxy
+          // Enhanced ScrollTrigger proxy
           ScrollTrigger.scrollerProxy(document.body, {
             scrollTop(value) {
               if (arguments.length) {
@@ -98,9 +100,20 @@ const Controls = ({ roomRef, floorRef }) => {
                 height: window.innerHeight 
               };
             },
+            pinType: document.querySelector('.page').style.transform ? 'transform' : 'fixed'
           });
 
-          lenis.on('scroll', ScrollTrigger.update);
+          // Optimized scroll update
+          lenis.on('scroll', () => {
+            ScrollTrigger.update();
+          });
+
+          // Cleanup function for RAF
+          return () => {
+            if (rafId) {
+              cancelAnimationFrame(rafId);
+            }
+          };
         })();
       }
 
@@ -155,9 +168,6 @@ const Controls = ({ roomRef, floorRef }) => {
               invalidateOnRefresh: true,
             },
           });
-
-          // Apply GSAP optimizations
-          gsap.set(timeline, gsapConfig);
 
           // Room animations
           if (config.roomAnimation) {
@@ -243,39 +253,47 @@ const Controls = ({ roomRef, floorRef }) => {
             if (section.classList.contains('right')) {
               gsap.to(section, {
                 borderTopLeftRadius: sectionBorderConfig.rightSections.borderTopLeftRadius,
+                ease: 'none',
                 scrollTrigger: {
                     trigger: section,
                     start: 'top bottom',
                     end: 'top top',
                     scrub: scrubVal,
+                    invalidateOnRefresh: true
                   },
               });
               gsap.to(section, {
                 borderBottomLeftRadius: sectionBorderConfig.rightSections.borderBottomLeftRadius,
+                ease: 'none',
                 scrollTrigger: {
                     trigger: section,
                     start: 'bottom bottom',
                     end: 'bottom top',
                     scrub: scrubVal,
+                    invalidateOnRefresh: true
                   },
               });
             } else {
               gsap.to(section, {
                 borderTopRightRadius: sectionBorderConfig.leftSections.borderTopRightRadius,
+                ease: 'none',
                 scrollTrigger: {
                   trigger: section,
                   start: 'top bottom',
                   end: 'top top',
-                  scrub: 0.6,
+                  scrub: scrubVal,
+                  invalidateOnRefresh: true
                 },
               });
               gsap.to(section, {
                 borderBottomRightRadius: sectionBorderConfig.leftSections.borderBottomRightRadius,
+                ease: 'none',
                 scrollTrigger: {
                   trigger: section,
                   start: 'bottom bottom',
                   end: 'bottom top',
-                  scrub: 0.6,
+                  scrub: scrubVal,
+                  invalidateOnRefresh: true
                 },
               });
             }
@@ -283,9 +301,14 @@ const Controls = ({ roomRef, floorRef }) => {
             if (progressBar) {
               gsap.fromTo(
                 progressBar,
-                { scaleY: 0 },
+                { 
+                  scaleY: 0,
+                  transformOrigin: 'top center'
+                },
                 {
                   scaleY: 1,
+                  transformOrigin: 'top center',
+                  ease: 'none',
                   scrollTrigger: {
                       trigger: section,
                       start: 'top top',
@@ -293,6 +316,8 @@ const Controls = ({ roomRef, floorRef }) => {
                       scrub: progressScrub,
                       pin: isMobile ? false : progressWrapper,
                       pinSpacing: isMobile ? false : progressBarConfig.pinSpacing,
+                      invalidateOnRefresh: true,
+                      refreshPriority: 1
                     },
                 }
               );
@@ -316,17 +341,20 @@ const Controls = ({ roomRef, floorRef }) => {
                       start: 'top top',
                       end: 'bottom bottom',
                       scrub: scrubVal,
+                      invalidateOnRefresh: true
                     },
                 });
 
                 timeline.to(circles[config.circleIndex].scale, {
                   ...config.scale,
-                  ease: 'power2.out',
-                  force3D: true
+                  ease: 'none'
                 }, 'same');
                 
                 if (config.roomPosition) {
-                  timeline.to(roomRef.current.position, config.roomPosition, 'same');
+                  timeline.to(roomRef.current.position, {
+                    ...config.roomPosition,
+                    ease: 'none'
+                  }, 'same');
                 }
               }
             });
@@ -359,8 +387,7 @@ const Controls = ({ roomRef, floorRef }) => {
                   y: 1,
                   z: 1,
                   duration: 0.3,
-                  ease: 'back.out(2.2)',
-                  force3D: true
+                  ease: 'back.out(2)',
                 }, delay);
               }
             };
@@ -398,10 +425,22 @@ const Controls = ({ roomRef, floorRef }) => {
 
     return () => {
       window.removeEventListener('resize', onResize);
+      // Kill all ScrollTrigger instances
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      
+      // Enhanced Lenis cleanup
       if (lenisRef.current) {
         lenisRef.current.destroy();
         lenisRef.current = null;
+      }
+      
+      // Clear any remaining timeouts or intervals
+      if (typeof window !== 'undefined') {
+        // Reset page overflow
+        const pageElement = document.querySelector('.page');
+        if (pageElement) {
+          pageElement.style.overflow = 'hidden';
+        }
       }
     };
   }, [camera, roomRef, floorRef, size.width, size.height, controlsEnabled, childrenMap, rectLightRef]);

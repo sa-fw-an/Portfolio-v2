@@ -12,7 +12,7 @@ import ErrorBoundary from './components/ui/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThreeProvider } from './contexts/ThreeContext';
 
-// Lazy load heavy Three.js components
+// Lazy load Three.js components for better performance
 const LazyThreeJSExperience = React.lazy(() => import('./components/three/ThreeJSExperience'));
 
 function App() {
@@ -22,21 +22,20 @@ function App() {
         <div className="App relative min-h-screen">
           <Preloader />
           <PreloaderAnimations />
+          
+          {/* Fixed 3D Scene Background */}
           <div className="experience fixed w-full h-full">
             <ErrorBoundary>
-              <Suspense fallback={
-                <div className="flex items-center justify-center w-full h-full bg-gray-900">
-                  <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading 3D Experience...</p>
-                  </div>
-                </div>
-              }>
+              <Suspense fallback={null}>
                 <LazyThreeJSExperience />
               </Suspense>
             </ErrorBoundary>
           </div>
+
+          {/* Theme Toggle */}
           <ThemeToggle />
+
+          {/* Main Content */}
           <div className="page">
             <div className="page-wrapper">
               <section className="hero">

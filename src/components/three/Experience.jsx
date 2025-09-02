@@ -47,7 +47,7 @@ const Experience = () => {
       <Environment preset="night" />
       <Floor ref={floorRef} />
       <Room ref={roomRef} />
-      <ContactShadows position={[0, 1, 0]} opacity={0.4} width={4} height={4} blur={1} far={4.5} />
+      <ContactShadows position={[0, 1, 0]} opacity={0} width={4} height={4} blur={0} far={0} />
       <Controls roomRef={roomRef} floorRef={floorRef} />
     </>
   );

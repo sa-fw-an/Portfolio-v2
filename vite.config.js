@@ -5,7 +5,8 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),
+  plugins: [
+    react(),
     tailwindcss()
   ],
   resolve: {
@@ -17,29 +18,26 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
+        // Optimize chunk splitting for better caching
         manualChunks: {
-          // Separate Three.js and related libraries
-          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
-          // Separate animation libraries
-          'animation-vendor': ['gsap', '@gsap/react', 'lenis'],
-          // Separate email service
-          'email-vendor': ['@emailjs/browser']
+          vendor: ['react', 'react-dom'],
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
+          gsap: ['gsap', '@gsap/react'],
+          lenis: ['lenis']
         }
       }
     },
-    // Enable source maps for better debugging
-    sourcemap: false,
-    // Optimize chunk splitting
+    // Optimize for production
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: true, // Remove console.logs in production
         drop_debugger: true
       }
     }
   },
-  // Optimize dependencies
+  // Performance optimizations
   optimizeDeps: {
-    include: ['three', '@react-three/fiber', '@react-three/drei', 'gsap']
+    include: ['react', 'react-dom', 'three', 'gsap', '@gsap/react']
   }
 })
