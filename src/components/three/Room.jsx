@@ -1,15 +1,19 @@
-import { useRef, useEffect, forwardRef, memo } from 'react';
+import { useRef, useEffect, forwardRef, memo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { useThreeContext } from '@/contexts/ThreeContext';
-import { ASSET_PATHS } from '@/constants/globalConstants';
+import { ASSET_PATHS, SCENE_CONSTANTS } from '@/constants/globalConstants';
 import { isMobileDevice } from '@/utils/deviceUtils';
 
 const Room = forwardRef((props, ref) => {
   const internalRef = useRef();
   const mixerRef = useRef(null);
   useGLTF.setDecoderPath(ASSET_PATHS.DRACO);
+  const [roomScale, setRoomScale] = useState(() => {
+    const isMobile = isMobileDevice();
+    return isMobile ? SCENE_CONSTANTS.ROOM_SCALE.MOBILE : SCENE_CONSTANTS.ROOM_SCALE.DESKTOP;
+  });
   
   let scene, animations;
   const gltf = useGLTF(ASSET_PATHS.MODELS.ROOM, true);
@@ -28,6 +32,18 @@ const Room = forwardRef((props, ref) => {
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Handle device/orientation changes
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = isMobileDevice();
+      const newScale = isMobile ? SCENE_CONSTANTS.ROOM_SCALE.MOBILE : SCENE_CONSTANTS.ROOM_SCALE.DESKTOP;
+      setRoomScale(newScale);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
@@ -198,7 +214,7 @@ const Room = forwardRef((props, ref) => {
         internalRef.current = node;
         sharedRoomRef.current = node;
       }}
-      scale={[0.11, 0.11, 0.11]}
+      scale={roomScale}
       position={[0, 0.7, 0]}
       {...props}
     >
