@@ -142,7 +142,7 @@ const Room = forwardRef((props, ref) => {
     }
 
     if (found.cube) {
-      found.cube.position.set(0, -1, 0);
+      found.cube.position.set(0, 0, 0);
       found.cube.rotation.y = Math.PI / 4;
       const isMobile = isMobileDevice();
       if (isMobile) {
