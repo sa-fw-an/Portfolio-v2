@@ -562,6 +562,29 @@ h1, section, p, span, svg {
   position: relative;
   display: inline-block;
 }
+.tech-icon-wrapper::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  pointer-events: none;
+  z-index: 1000;
+  margin-bottom: 5px;
+}
+.tech-icon-wrapper:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
 .tech-icon {
   width: 25px;
   height: 25px;

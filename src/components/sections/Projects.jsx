@@ -19,7 +19,7 @@ const Projects = React.memo(() => {
         <p className="project-description">{project.description}</p>
         <div className="project-tech">
           {project.tags.map((tag) => (
-            <div key={tag.id} className="tech-icon-wrapper" title={tag.name}>
+            <div key={tag.id} className="tech-icon-wrapper" data-tooltip={tag.name}>
               <img 
                 src={tag.path} 
                 alt={tag.name}
