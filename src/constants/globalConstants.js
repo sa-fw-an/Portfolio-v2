@@ -85,8 +85,8 @@ export const SCENE_CONSTANTS = {
   // Cube scaling for preloader animations
   CUBE_SCALE: {
     PRELOADER: {
-      DESKTOP: [2, 2, 2],
-      MOBILE: [3, 3, 3]
+      DESKTOP: [1.7, 1.7, 1.7],
+      MOBILE: [2.5, 2.5, 2.5]
     },
     FINAL: {
       DESKTOP: [10, 10, 10],
