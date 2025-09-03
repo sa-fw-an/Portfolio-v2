@@ -531,7 +531,6 @@ h1, section, p, span, svg {
 .project-title, .experience-title {
   font-size: 20px;
   font-weight: normal;
-  margin-bottom: 8px;
   font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -547,6 +546,31 @@ h1, section, p, span, svg {
   flex-wrap: wrap;
   gap: 8px;
   margin: 16px 0;
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.project-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+.tech-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.tech-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+.tech-icon:hover {
+  transform: scale(1.1);
 }
 .tech-tag {
   padding: 4px 12px;

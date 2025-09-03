@@ -8,11 +8,24 @@ const Projects = React.memo(() => {
   const memoizedProjects = useMemo(() => 
     projectsData.map((project, index) => (
       <div key={index} className="project-item">
-        <h4 className="project-title">{project.title}</h4>
+        <div className="project-header">
+          <img 
+            src={project.logo} 
+            alt={`${project.title} logo`}
+            className="project-logo"
+          />
+          <h4 className="project-title">{project.title}</h4>
+        </div>
         <p className="project-description">{project.description}</p>
         <div className="project-tech">
-          {project.technologies.map((tech, idx) => (
-            <span key={idx} className="tech-tag">{tech}</span>
+          {project.tags.map((tag) => (
+            <div key={tag.id} className="tech-icon-wrapper" title={tag.name}>
+              <img 
+                src={tag.path} 
+                alt={tag.name}
+                className="tech-icon"
+              />
+            </div>
           ))}
         </div>
         <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
