@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useThreeContext } from '@/contexts/ThreeContext';
-import { ANIMATION_CONSTANTS } from '@/constants/globalConstants';
+import { ANIMATION_CONSTANTS, SCENE_CONSTANTS } from '@/constants/globalConstants';
 
 const convertToSpans = (element) => {
   if (!element) return;
@@ -93,9 +93,9 @@ const PreloaderAnimations = () => {
         if (device === 'desktop') {
           timeline
             .to(cube.scale, {
-              x: 1.4,
-              y: 1.4, 
-              z: 1.4,
+              x: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.DESKTOP[0],
+              y: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.DESKTOP[1], 
+              z: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.DESKTOP[2],
               ease: 'back.out(2.5)',
               duration: 0.7,
             })
@@ -107,9 +107,9 @@ const PreloaderAnimations = () => {
         } else {
           timeline
             .to(cube.scale, {
-              x: 1.4,
-              y: 1.4,
-              z: 1.4,
+              x: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.MOBILE[0],
+              y: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.MOBILE[1],
+              z: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.MOBILE[2],
               ease: 'back.out(2.5)',
               duration: 0.7,
             })
@@ -168,9 +168,9 @@ const PreloaderAnimations = () => {
               y: 2 * Math.PI + Math.PI / 4,
             }, 'same')
             .to(parts.cube.scale, {
-              x: 10,
-              y: 10,
-              z: 10,
+              x: device === 'desktop' ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[0] : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[0],
+              y: device === 'desktop' ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[1] : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[1],
+              z: device === 'desktop' ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[2] : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[2],
             }, 'same')
             .to(parts.cube.position, {
               x: 0.638711,

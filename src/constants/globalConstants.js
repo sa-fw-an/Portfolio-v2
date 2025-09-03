@@ -82,6 +82,18 @@ export const SCENE_CONSTANTS = {
     MOBILE: [0.07, 0.07, 0.07]
   },
   
+  // Cube scaling for preloader animations
+  CUBE_SCALE: {
+    PRELOADER: {
+      DESKTOP: [2, 2, 2],
+      MOBILE: [3, 3, 3]
+    },
+    FINAL: {
+      DESKTOP: [10, 10, 10],
+      MOBILE: [12, 12, 12]
+    }
+  },
+  
   // Floor circle scaling
   FLOOR_CIRCLE_SCALE: [3, 3, 3],
   
