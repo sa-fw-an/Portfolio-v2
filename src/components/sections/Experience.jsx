@@ -9,7 +9,14 @@ const Experience = React.memo(() => {
     experienceData.map((exp, index) => (
       <div key={index} className="experience-item">
         <h4 className="experience-title">{exp.position}</h4>
-        <h5 className="experience-company">{exp.company}</h5>
+        <div className="experience-company-header">
+          <img 
+            src={exp.logo} 
+            alt={`${exp.company} logo`}
+            className="company-logo"
+          />
+          <h5 className="experience-company">{exp.company}</h5>
+        </div>
         <p className="experience-duration">{exp.duration}</p>
         <p className="experience-description">{exp.description}</p>
         {exp.current && <span className="current-badge">Current</span>}

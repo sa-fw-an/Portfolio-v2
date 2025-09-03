@@ -587,13 +587,24 @@ h1, section, p, span, svg {
   font-family: 'Ubuntu', 'Arial', sans-serif !important;
 }
 .experience-company {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: normal;
   color: var(--color-green);
-  margin-bottom: 8px;
   font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+.experience-company-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+.company-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  border-radius: 4px;
 }
 .experience-duration {
   font-size: 14px;
