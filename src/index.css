@@ -223,7 +223,7 @@ h1, section, p, span, svg {
 
 .arrow-svg-wrapper {
   position: absolute;
-  top: 90%;
+  top: 85%;
   left: 50%;
   opacity: 0;
   color: var(--color-text);
