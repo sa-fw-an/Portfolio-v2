@@ -8,7 +8,6 @@ const Experience = React.memo(() => {
   const memoizedExperience = useMemo(() => 
     experienceData.map((exp, index) => (
       <div key={index} className="experience-item">
-        <h4 className="experience-title">{exp.position}</h4>
         <div className="experience-company-header">
           <img 
             src={exp.logo} 
@@ -17,6 +16,7 @@ const Experience = React.memo(() => {
           />
           <h5 className="experience-company">{exp.company}</h5>
         </div>
+        <h4 className="experience-title">{exp.position}</h4>
         <p className="experience-duration">{exp.duration}</p>
         <p className="experience-description">{exp.description}</p>
         {exp.current && <span className="current-badge">Current</span>}

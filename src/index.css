@@ -528,7 +528,7 @@ h1, section, p, span, svg {
   position: relative;
   color: var(--section-text);
 }
-.project-title, .experience-title {
+.project-title {
   font-size: 20px;
   font-weight: normal;
   font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
@@ -622,6 +622,12 @@ h1, section, p, span, svg {
   align-items: center;
   gap: 12px;
   margin-bottom: 5px;
+}
+.experience-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--section-text);
+  font-family: 'Ubuntu', 'Arial', sans-serif !important;
 }
 .company-logo {
   width: 30px;
