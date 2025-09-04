@@ -47,9 +47,7 @@ const PreloaderAnimations = () => {
       const elements = [
         '.intro-text',
         '.hero-main-title', 
-        '.hero-main-description',
-        '.first-sub',
-        '.second-sub'
+        '.hero-main-description'
       ];
       
       elements.forEach(selector => {
@@ -202,16 +200,6 @@ const PreloaderAnimations = () => {
             ease: 'back.out(1.7)',
           }, 'introtext')
           .to('.hero-main-description .animatedis', {
-            yPercent: 0,
-            stagger: 0.07,
-            ease: 'back.out(1.7)',
-          }, 'introtext')
-          .to('.first-sub .animatedis', {
-            yPercent: 0,
-            stagger: 0.07,
-            ease: 'back.out(1.7)',
-          }, 'introtext')
-          .to('.second-sub .animatedis', {
             yPercent: 0,
             stagger: 0.07,
             ease: 'back.out(1.7)',
