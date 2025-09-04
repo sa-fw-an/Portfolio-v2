@@ -1,19 +1,9 @@
-import { useEffect, useState } from 'react';
-import { ANIMATION_CONSTANTS } from '@/constants/globalConstants';
+import { useThreeContext } from '@/contexts/ThreeContext';
 
 const Preloader = () => {
-  const [loading, setLoading] = useState(true);
+  const { preloaderVisible } = useThreeContext();
 
-  useEffect(() => {
-    // Optimized loading time from constants
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, ANIMATION_CONSTANTS.PRELOADER_DELAY);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!loading) return null;
+  if (!preloaderVisible) return null;
 
   return (
     <div className="preloader">

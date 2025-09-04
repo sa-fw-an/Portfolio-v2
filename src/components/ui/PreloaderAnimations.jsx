@@ -20,7 +20,7 @@ const convertToSpans = (element) => {
 };
 
 const PreloaderAnimations = () => {
-  const { roomRef, childrenMap, setControlsEnabled } = useThreeContext();
+  const { roomRef, childrenMap, setControlsEnabled, setPreloaderVisible } = useThreeContext();
   const sizes = { width: window.innerWidth, height: window.innerHeight };
   const device = sizes.width < 968 ? 'mobile' : 'desktop';
   const timelineRef = useRef();
@@ -68,16 +68,20 @@ const PreloaderAnimations = () => {
         timeline.set('.animatedis', { y: 0, yPercent: 100 });
         
         // Hide preloader
-        timeline.to('.preloader', {
-          opacity: 0,
-          delay: 1,
-          onComplete: () => {
-            const preloader = document.querySelector('.preloader');
-            if (preloader) {
-              preloader.classList.add('hidden');
-            }
-          },
-        });
+        const preloaderElement = document.querySelector('.preloader');
+        if (preloaderElement) {
+          timeline.to('.preloader', {
+            opacity: 0,
+            delay: 1,
+            onComplete: () => {
+              setPreloaderVisible(false);
+            },
+          });
+        } else {
+          setTimeout(() => {
+            setPreloaderVisible(false);
+          }, 1000);
+        }
 
         const room = roomRef.current;
         const cube = childrenMap?.cube;
@@ -338,7 +342,7 @@ const PreloaderAnimations = () => {
       window.removeEventListener('touchstart', () => {});
       window.removeEventListener('touchmove', () => {});
     };
-  }, [roomRef, childrenMap, setControlsEnabled, device]);
+  }, [roomRef, childrenMap, setControlsEnabled, setPreloaderVisible, device]);
 
   return null;
 };

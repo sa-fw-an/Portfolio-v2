@@ -17,6 +17,7 @@ export const ThreeProvider = ({ children }) => {
   const [camera, setCamera] = useState(null);
   const [childrenMap, setChildrenMap] = useState({});
   const [controlsEnabled, setControlsEnabled] = useState(false);
+  const [preloaderVisible, setPreloaderVisible] = useState(true);
 
   const value = useMemo(() => ({
     // Three.js refs
@@ -35,7 +36,11 @@ export const ThreeProvider = ({ children }) => {
     // Animation flow control
     controlsEnabled,
     setControlsEnabled,
-  }), [camera, childrenMap, controlsEnabled]);
+    
+    // Preloader control
+    preloaderVisible,
+    setPreloaderVisible,
+  }), [camera, childrenMap, controlsEnabled, preloaderVisible]);
 
   return (
     <ThreeContext.Provider value={value}>
