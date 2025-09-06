@@ -3,11 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://sa-fw-an.github.io/Portfolio-v2",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview --host",
+    "predeploy": "npm run build",
     "deploy": "echo 'me.safwansayeed.in' > dist/CNAME && gh-pages -d dist -r https://x-access-token:${GITHUB_TOKEN}@github.com/sa-fw-an/Portfolio-v2.git",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,md}'",
     "format:file": "prettier --write",
