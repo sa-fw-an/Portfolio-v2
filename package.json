@@ -7,7 +7,11 @@
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview --host"
+    "preview": "vite preview --host",
+    "deploy": "echo 'me.safwansayeed.in' > dist/CNAME && gh-pages -d dist -r https://x-access-token:${GITHUB_TOKEN}@github.com/sa-fw-an/Portfolio-v2.git",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,md}'",
+    "format:file": "prettier --write",
+    "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,json,css,md}'"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -15,7 +19,9 @@
     "@react-three/drei": "^10.7.3",
     "@react-three/fiber": "^9.3.0",
     "@tailwindcss/vite": "^4.1.12",
+    "gh-pages": "^6.3.0",
     "gsap": "^3.13.0",
+    "prettier": "^3.6.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "tailwindcss": "^4.1.12",
