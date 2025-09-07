@@ -1,4 +1,4 @@
-import { useThreeContext } from '@/contexts/ThreeContext';
+import { useThreeContext } from "@/contexts/ThreeContext";
 
 const Preloader = () => {
   const { preloaderVisible } = useThreeContext();

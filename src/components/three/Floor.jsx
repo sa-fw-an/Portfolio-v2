@@ -1,23 +1,43 @@
-import { forwardRef } from 'react';
-import * as THREE from 'three';
+import { forwardRef } from "react";
+import * as THREE from "three";
 
 const Floor = forwardRef((props, ref) => {
   return (
     <group ref={ref} {...props}>
       {/* Colored Circles */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.5, -0.29, 0]} scale={[0,0,0]} receiveShadow>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0.5, -0.29, 0]}
+        scale={[0, 0, 0]}
+        receiveShadow
+      >
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#eb7f8e" />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2.1, -0.28, 0]} scale={[0,0,0]} receiveShadow>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[2.1, -0.28, 0]}
+        scale={[0, 0, 0]}
+        receiveShadow
+      >
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#6176b7" />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[1, -0.27, 4]} scale={[0,0,0]} receiveShadow>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[1, -0.27, 4]}
+        scale={[0, 0, 0]}
+        receiveShadow
+      >
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#16ee94" />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.26, 2]} scale={[0,0,0]} receiveShadow>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.26, 2]}
+        scale={[0, 0, 0]}
+        receiveShadow
+      >
         <circleGeometry args={[5, 64]} />
         <meshStandardMaterial color="#c8976f" />
       </mesh>
@@ -25,6 +45,6 @@ const Floor = forwardRef((props, ref) => {
   );
 });
 
-Floor.displayName = 'Floor';
+Floor.displayName = "Floor";
 
 export default Floor;

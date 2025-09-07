@@ -31,16 +31,16 @@
 
 /* Local Font Declarations */
 @font-face {
-  font-family: 'Asimovian';
-  src: url('/fonts/Asimovian-Regular.ttf') format('truetype');
+  font-family: "Asimovian";
+  src: url("/fonts/Asimovian-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Ubuntu';
-  src: url('/fonts/Ubuntu-Regular.ttf') format('truetype');
+  font-family: "Ubuntu";
+  src: url("/fonts/Ubuntu-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -93,7 +93,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 
 html {
@@ -101,27 +101,46 @@ html {
   scroll-snap-type: y proximity;
 }
 
-html, body {
+html,
+body {
   background-color: var(--color-background);
   color: var(--color-text);
   font-weight: 400;
-  font-family: 'Ubuntu', 'Arial', sans-serif;
+  font-family: "Ubuntu", "Arial", sans-serif;
 }
 
 /* Headings use Asimovian for distinctive look */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
   font-weight: normal;
   letter-spacing: 0.05em;
 }
 
 /* Body text uses Ubuntu */
-p, span, div, a, button, input, textarea, select {
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+p,
+span,
+div,
+a,
+button,
+input,
+textarea,
+select {
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 
-h1, section, p, span, svg {
-  transition: background-color 0.5s, color 0.5s;
+h1,
+section,
+p,
+span,
+svg {
+  transition:
+    background-color 0.5s,
+    color 0.5s;
 }
 
 /* Experience Canvas */
@@ -182,9 +201,15 @@ h1, section, p, span, svg {
 }
 
 @keyframes load {
-  0% { transform: translateY(0); }
-  20% { transform: translateY(-12px); }
-  40% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-12px);
+  }
+  40% {
+    transform: translateY(0);
+  }
 }
 
 /* Page Structure */
@@ -218,7 +243,7 @@ h1, section, p, span, svg {
   transform: translate(-50%, -50%);
   z-index: 10;
   pointer-events: none;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 
 .arrow-svg-wrapper {
@@ -231,8 +256,12 @@ h1, section, p, span, svg {
 }
 
 @keyframes bounce {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(8px); }
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(8px);
+  }
 }
 
 /* Toggle Bar */
@@ -248,7 +277,8 @@ h1, section, p, span, svg {
   z-index: 1000;
 }
 
-.sun-wrapper, .moon-wrapper {
+.sun-wrapper,
+.moon-wrapper {
   display: flex;
   align-items: center;
   color: var(--color-text);
@@ -331,7 +361,7 @@ h1, section, p, span, svg {
 .footer__copyright {
   color: var(--color-text);
   font-size: 16px;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 
 .visit-counter-box {
@@ -343,7 +373,7 @@ h1, section, p, span, svg {
   padding: 6px 12px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 
 .visit-counter-box span {
@@ -403,7 +433,7 @@ h1, section, p, span, svg {
   line-height: 1.8;
   margin-top: 64px;
   color: var(--section-text);
-  font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+  font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -413,7 +443,7 @@ h1, section, p, span, svg {
   margin-top: 18px;
   font-size: 16px;
   color: var(--section-text);
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 
 /* Section Title Decoration */
@@ -431,11 +461,13 @@ h1, section, p, span, svg {
   z-index: 5;
   text-transform: uppercase;
   color: var(--color-pink);
-  font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+  font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
   letter-spacing: 0.1em;
 }
 
-.styleOne, .styleTwo, .styleThree {
+.styleOne,
+.styleTwo,
+.styleThree {
   position: absolute;
   display: block;
   width: 100%;
@@ -446,8 +478,12 @@ h1, section, p, span, svg {
   transform: skewY(-25deg);
 }
 
-.styleOne { top: 0px; }
-.styleTwo { top: 80px; }
+.styleOne {
+  top: 0px;
+}
+.styleTwo {
+  top: 80px;
+}
 .styleThree {
   top: 80px;
   transform: skewY(25deg);
@@ -490,40 +526,59 @@ h1, section, p, span, svg {
 .hero-main-title {
   font-size: 64px;
   color: var(--color-text);
-  font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+  font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
 .hero-main-title .animatedis {
-  font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+  font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
 }
 
 .hero-main-description {
   font-size: 18px;
   color: var(--color-text);
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
   margin-top: 16px;
 }
 
 .hero-main-description .animatedis {
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 
 /* Color Overrides */
-.blue-text { color: var(--color-blue); }
-.blue-border { border-color: var(--color-blue); }
-.blue-background { background-color: var(--color-blue); }
-.green-text { color: var(--color-green); }
-.green-border { border-color: var(--color-green); }
-.green-background { background-color: var(--color-green); }
+.blue-text {
+  color: var(--color-blue);
+}
+.blue-border {
+  border-color: var(--color-blue);
+}
+.blue-background {
+  background-color: var(--color-blue);
+}
+.green-text {
+  color: var(--color-green);
+}
+.green-border {
+  border-color: var(--color-green);
+}
+.green-background {
+  background-color: var(--color-green);
+}
 /* Fourth / tan color to match floor circle */
-.tan-text { color: var(--color-tan); }
-.tan-border { border-color: var(--color-tan); }
-.tan-background { background-color: var(--color-tan); }
+.tan-text {
+  color: var(--color-tan);
+}
+.tan-border {
+  border-color: var(--color-tan);
+}
+.tan-background {
+  background-color: var(--color-tan);
+}
 
 /* Project & Experience Items */
-.project-item, .experience-item {
+.project-item,
+.experience-item {
   margin: 32px 0;
   padding: 24px 0;
   border-bottom: 1px solid var(--color-text);
@@ -534,15 +589,16 @@ h1, section, p, span, svg {
 .project-title {
   font-size: 20px;
   font-weight: normal;
-  font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+  font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.project-description, .experience-description {
+.project-description,
+.experience-description {
   font-size: 16px;
   line-height: 1.6;
   color: var(--section-text);
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 .project-tech {
   display: flex;
@@ -579,7 +635,9 @@ h1, section, p, span, svg {
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s, visibility 0.3s;
+  transition:
+    opacity 0.3s,
+    visibility 0.3s;
   pointer-events: none;
   z-index: 1000;
   margin-bottom: 5px;
@@ -604,19 +662,19 @@ h1, section, p, span, svg {
   color: var(--color-background);
   font-size: 12px;
   border-radius: 16px;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 .project-link {
   color: var(--color-blue);
   text-decoration: none;
   font-weight: 500;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 .experience-company {
   font-size: 20px;
   font-weight: normal;
   color: var(--color-green);
-  font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+  font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -630,7 +688,7 @@ h1, section, p, span, svg {
   font-size: 16px;
   line-height: 1.6;
   color: var(--section-text);
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 .company-logo {
   width: 30px;
@@ -642,7 +700,7 @@ h1, section, p, span, svg {
   font-size: 14px;
   opacity: 0.8;
   margin-bottom: 12px;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
 .current-badge {
   position: absolute;
@@ -654,9 +712,8 @@ h1, section, p, span, svg {
   font-size: 12px;
   border-radius: 16px;
   font-weight: 500;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
 }
-
 
 /* Contact Form Styles */
 .contact-content {
@@ -679,7 +736,7 @@ h1, section, p, span, svg {
 .form-label {
   font-size: 16px;
   font-weight: 500;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
   color: var(--color-tan);
 }
 
@@ -689,9 +746,11 @@ h1, section, p, span, svg {
   border-radius: 8px;
   background-color: transparent;
   color: var(--section-text);
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
   font-size: 16px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .form-input:focus {
@@ -720,7 +779,7 @@ h1, section, p, span, svg {
   color: var(--color-background);
   border: none;
   border-radius: 8px;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -753,7 +812,7 @@ h1, section, p, span, svg {
   padding: 16px 20px;
   border-radius: 8px;
   margin: 16px 0;
-  font-family: 'Ubuntu', 'Arial', sans-serif !important;
+  font-family: "Ubuntu", "Arial", sans-serif !important;
   font-weight: 500;
   animation: slideIn 0.3s ease-out;
 }
@@ -798,7 +857,7 @@ h1, section, p, span, svg {
   font-size: 20px;
   font-weight: normal;
   margin-bottom: 24px;
-  font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+  font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--color-tan);
@@ -836,7 +895,8 @@ h1, section, p, span, svg {
 }
 
 .light-theme .social-icon {
-  filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(7450%) hue-rotate(137deg) brightness(94%) contrast(97%);
+  filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(7450%)
+    hue-rotate(137deg) brightness(94%) contrast(97%);
 }
 
 .dark-theme .social-icon {
@@ -853,74 +913,81 @@ h1, section, p, span, svg {
 
 /* Mobile Responsive */
 @media (max-width: 968px) {
-  .section { width: 100%; }
-  .progress-bar-wrapper-left { right: 0; left: auto; }
-  .hero-main { bottom: 120px; }
-  .hero-wrapper { 
+  .section {
+    width: 100%;
+  }
+  .progress-bar-wrapper-left {
+    right: 0;
+    left: auto;
+  }
+  .hero-main {
+    bottom: 120px;
+  }
+  .hero-wrapper {
     width: calc(100% - 60px);
     align-items: center;
   }
-  .hero-main-title { 
+  .hero-main-title {
     font-size: 32px;
-    font-family: 'Asimovian', 'Impact', 'Arial Black', sans-serif !important;
+    font-family: "Asimovian", "Impact", "Arial Black", sans-serif !important;
   }
-  .hero-main-description { 
+  .hero-main-description {
     font-size: 18px;
-    font-family: 'Ubuntu', 'Arial', sans-serif !important;
+    font-family: "Ubuntu", "Arial", sans-serif !important;
   }
-  
+
   /* Contact Form Mobile Styles */
   .contact-content {
     max-width: 100%;
   }
-  
+
   .contact-form {
     gap: 20px;
   }
-  
+
   .form-input {
     padding: 14px;
     font-size: 16px; /* Prevent zoom on iOS */
   }
-  
+
   .contact-submit-btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .social-links {
     justify-content: center;
     gap: 16px;
   }
-  
+
   .social-link {
     width: 44px;
     height: 44px;
   }
-  
+
   .social-icon {
     width: 22px;
     height: 22px;
   }
-  
+
   /* Footer Mobile Styles */
   .footer {
     padding: 24px 16px;
   }
-  
+
   .footer-content {
     gap: 12px;
   }
-  
+
   .visit-counter-box {
     padding: 5px 10px;
     gap: 6px;
   }
-  
+
   .visit-counter-box span {
     font-size: 13px;
   }
-  
+
   .visit-counter-box img {
     height: 20px;
     width: 40px;

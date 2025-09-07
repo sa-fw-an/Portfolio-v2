@@ -1,8 +1,11 @@
-import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { useThreeContext } from '@/contexts/ThreeContext';
-import { ANIMATION_CONSTANTS, SCENE_CONSTANTS } from '@/constants/globalConstants';
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { useThreeContext } from "@/contexts/ThreeContext";
+import {
+  ANIMATION_CONSTANTS,
+  SCENE_CONSTANTS,
+} from "@/constants/globalConstants";
 
 const convertToSpans = (element) => {
   if (!element) return;
@@ -20,14 +23,17 @@ const convertToSpans = (element) => {
 };
 
 const PreloaderAnimations = () => {
-  const { roomRef, childrenMap, setControlsEnabled, setPreloaderVisible } = useThreeContext();
+  const { roomRef, childrenMap, setControlsEnabled, setPreloaderVisible } =
+    useThreeContext();
   const sizes = { width: window.innerWidth, height: window.innerHeight };
-  const device = sizes.width < 968 ? 'mobile' : 'desktop';
+  const device = sizes.width < 968 ? "mobile" : "desktop";
   const timelineRef = useRef();
 
   useGSAP(() => {
     const checkAssetsReady = () => {
-      return roomRef.current && childrenMap && Object.keys(childrenMap).length > 0;
+      return (
+        roomRef.current && childrenMap && Object.keys(childrenMap).length > 0
+      );
     };
 
     const waitForAssets = () => {
@@ -45,12 +51,12 @@ const PreloaderAnimations = () => {
 
     const convertTextElements = () => {
       const elements = [
-        '.intro-text',
-        '.hero-main-title', 
-        '.hero-main-description'
+        ".intro-text",
+        ".hero-main-title",
+        ".hero-main-description",
       ];
-      
-      elements.forEach(selector => {
+
+      elements.forEach((selector) => {
         const element = document.querySelector(selector);
         if (element) {
           convertToSpans(element);
@@ -63,14 +69,14 @@ const PreloaderAnimations = () => {
       return new Promise((resolve) => {
         const timeline = gsap.timeline();
         timelineRef.current = timeline;
-        
+
         // Set initial states
-        timeline.set('.animatedis', { y: 0, yPercent: 100 });
-        
+        timeline.set(".animatedis", { y: 0, yPercent: 100 });
+
         // Hide preloader
-        const preloaderElement = document.querySelector('.preloader');
+        const preloaderElement = document.querySelector(".preloader");
         if (preloaderElement) {
-          timeline.to('.preloader', {
+          timeline.to(".preloader", {
             opacity: 0,
             delay: 1,
             onComplete: () => {
@@ -85,57 +91,73 @@ const PreloaderAnimations = () => {
 
         const room = roomRef.current;
         const cube = childrenMap?.cube;
-        
+
         if (!room || !cube) {
           resolve();
           return;
         }
 
         // Device-specific animations (exact original)
-        if (device === 'desktop') {
+        if (device === "desktop") {
           timeline
             .to(cube.scale, {
               x: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.DESKTOP[0],
-              y: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.DESKTOP[1], 
+              y: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.DESKTOP[1],
               z: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.DESKTOP[2],
-              ease: 'back.out(2.5)',
+              ease: "back.out(2.5)",
               duration: 0.7,
             })
-            .to(room.position, {
-              x: -1,
-              ease: 'power1.out',
-              duration: 0.7,
-            }, '<');
+            .to(
+              room.position,
+              {
+                x: -1,
+                ease: "power1.out",
+                duration: 0.7,
+              },
+              "<",
+            );
         } else {
           timeline
             .to(cube.scale, {
               x: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.MOBILE[0],
               y: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.MOBILE[1],
               z: SCENE_CONSTANTS.CUBE_SCALE.PRELOADER.MOBILE[2],
-              ease: 'back.out(2.5)',
+              ease: "back.out(2.5)",
               duration: 0.7,
             })
-            .to(room.position, {
-              z: -1,
-              ease: 'power1.out',
-              duration: 0.7,
-            }, '<');
+            .to(
+              room.position,
+              {
+                z: -1,
+                ease: "power1.out",
+                duration: 0.7,
+              },
+              "<",
+            );
         }
 
         // Animate intro text (exact original)
         timeline
-          .to('.intro-text .animatedis', {
+          .to(".intro-text .animatedis", {
             yPercent: 0,
             stagger: 0.05,
-            ease: 'back.out(1.7)',
+            ease: "back.out(1.7)",
           })
-          .to('.arrow-svg-wrapper', {
-            opacity: 1,
-          }, 'same')
-          .to('.toggle-bar', {
-            opacity: 1,
-            onComplete: resolve,
-          }, 'same');
+          .to(
+            ".arrow-svg-wrapper",
+            {
+              opacity: 1,
+            },
+            "same",
+          )
+          .to(
+            ".toggle-bar",
+            {
+              opacity: 1,
+              onComplete: resolve,
+            },
+            "same",
+          );
       });
     };
 
@@ -146,39 +168,72 @@ const PreloaderAnimations = () => {
 
         // Fade out intro elements
         secondTimeline
-          .to('.intro-text .animatedis', {
-            yPercent: 100,
-            stagger: 0.05,
-            ease: 'back.in(1.7)',
-          }, 'fadeout')
-          .to('.arrow-svg-wrapper', {
-            opacity: 0,
-          }, 'fadeout');
+          .to(
+            ".intro-text .animatedis",
+            {
+              yPercent: 100,
+              stagger: 0.05,
+              ease: "back.in(1.7)",
+            },
+            "fadeout",
+          )
+          .to(
+            ".arrow-svg-wrapper",
+            {
+              opacity: 0,
+            },
+            "fadeout",
+          );
 
         const room = roomRef.current;
         const parts = childrenMap || {};
 
         if (room && parts.cube) {
           secondTimeline
-            .to(room.position, {
-              x: 0,
-              y: 0,
-              z: 0,
-              ease: 'power1.out',
-            }, 'same')
-            .to(parts.cube.rotation, {
-              y: 2 * Math.PI + Math.PI / 4,
-            }, 'same')
-            .to(parts.cube.scale, {
-              x: device === 'desktop' ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[0] : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[0],
-              y: device === 'desktop' ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[1] : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[1],
-              z: device === 'desktop' ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[2] : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[2],
-            }, 'same')
-            .to(parts.cube.position, {
-              x: 0.638711,
-              y: 8.5618,
-              z: 1.3243,
-            }, 'same');
+            .to(
+              room.position,
+              {
+                x: 0,
+                y: 0,
+                z: 0,
+                ease: "power1.out",
+              },
+              "same",
+            )
+            .to(
+              parts.cube.rotation,
+              {
+                y: 2 * Math.PI + Math.PI / 4,
+              },
+              "same",
+            )
+            .to(
+              parts.cube.scale,
+              {
+                x:
+                  device === "desktop"
+                    ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[0]
+                    : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[0],
+                y:
+                  device === "desktop"
+                    ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[1]
+                    : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[1],
+                z:
+                  device === "desktop"
+                    ? SCENE_CONSTANTS.CUBE_SCALE.FINAL.DESKTOP[2]
+                    : SCENE_CONSTANTS.CUBE_SCALE.FINAL.MOBILE[2],
+              },
+              "same",
+            )
+            .to(
+              parts.cube.position,
+              {
+                x: 0.638711,
+                y: 8.5618,
+                z: 1.3243,
+              },
+              "same",
+            );
 
           if (parts.body) {
             secondTimeline.set(parts.body.scale, {
@@ -188,45 +243,61 @@ const PreloaderAnimations = () => {
             });
           }
 
-          secondTimeline.to(parts.cube.scale, {
-            x: 0,
-            y: 0,
-            z: 0,
-            duration: 1,
-          }, 'introtext');
+          secondTimeline.to(
+            parts.cube.scale,
+            {
+              x: 0,
+              y: 0,
+              z: 0,
+              duration: 1,
+            },
+            "introtext",
+          );
         }
 
         // Animate hero text
         secondTimeline
-          .to('.hero-main-title .animatedis', {
-            yPercent: 0,
-            stagger: 0.07,
-            ease: 'back.out(1.7)',
-          }, 'introtext')
-          .to('.hero-main-description .animatedis', {
-            yPercent: 0,
-            stagger: 0.07,
-            ease: 'back.out(1.7)',
-          }, 'introtext');
+          .to(
+            ".hero-main-title .animatedis",
+            {
+              yPercent: 0,
+              stagger: 0.07,
+              ease: "back.out(1.7)",
+            },
+            "introtext",
+          )
+          .to(
+            ".hero-main-description .animatedis",
+            {
+              yPercent: 0,
+              stagger: 0.07,
+              ease: "back.out(1.7)",
+            },
+            "introtext",
+          );
 
-        const showObject = (obj, delay = '>-0.5') => {
+        const showObject = (obj, delay = ">-0.5") => {
           if (obj?.scale) {
-            secondTimeline.to(obj.scale, {
-              x: 1,
-              y: 1,
-              z: 1,
-              ease: 'back.out(2.2)',
-              duration: 0.5,
-            }, delay);
+            secondTimeline.to(
+              obj.scale,
+              {
+                x: 1,
+                y: 1,
+                z: 1,
+                ease: "back.out(2.2)",
+                duration: 0.5,
+              },
+              delay,
+            );
           }
         };
 
-        showObject(parts.aquarium, '>-0.5');
-        showObject(parts.clock, '>-0.4');
-        showObject(parts.shelves, '>-0.3');
-        showObject(parts.floor_items, '>-0.2');
-        showObject(parts.desks, '>-0.1');
-        showObject(parts.table_stuff, '>-0.1');
+        showObject(parts.aquarium, ">-0.5");
+        showObject(parts.clock, ">-0.4");
+        showObject(parts.shelves, ">-0.3");
+        showObject(parts.floor_items, ">-0.2");
+        showObject(parts.desks, ">-0.1");
+        showObject(parts.table_stuff, ">-0.1");
         showObject(parts.computer);
 
         if (parts.mini_floor) {
@@ -239,23 +310,31 @@ const PreloaderAnimations = () => {
 
         if (parts.chair) {
           secondTimeline
-            .to(parts.chair.scale, {
-              x: 1,
-              y: 1,
-              z: 1,
-              ease: 'back.out(2.2)',
-              duration: 0.5,
-            }, 'chair')
-            .to(parts.chair.rotation, {
-              y: 4 * Math.PI + Math.PI / 4,
-              ease: 'power2.out',
-              duration: 1,
-            }, 'chair');
+            .to(
+              parts.chair.scale,
+              {
+                x: 1,
+                y: 1,
+                z: 1,
+                ease: "back.out(2.2)",
+                duration: 0.5,
+              },
+              "chair",
+            )
+            .to(
+              parts.chair.rotation,
+              {
+                y: 4 * Math.PI + Math.PI / 4,
+                ease: "power2.out",
+                duration: 1,
+              },
+              "chair",
+            );
         }
 
-        showObject(parts.fish, 'chair');
+        showObject(parts.fish, "chair");
 
-        secondTimeline.to('.arrow-svg-wrapper', {
+        secondTimeline.to(".arrow-svg-wrapper", {
           opacity: 1,
           onComplete: resolve,
         });
@@ -266,9 +345,9 @@ const PreloaderAnimations = () => {
       await waitForAssets();
       convertTextElements();
       await firstIntro();
-      
+
       let isCleanedUp = false;
-      
+
       const handleScroll = (e) => {
         if (e.deltaY > 0 && !isCleanedUp) {
           playSecondIntro();
@@ -279,12 +358,12 @@ const PreloaderAnimations = () => {
       let activeTouchMove = null;
       const handleTouch = (e) => {
         if (isCleanedUp) return;
-        
+
         const initialY = e.touches && e.touches[0] ? e.touches[0].clientY : 0;
 
         activeTouchMove = (moveEvent) => {
           if (isCleanedUp) return;
-          
+
           const currentY =
             moveEvent.touches && moveEvent.touches[0]
               ? moveEvent.touches[0].clientY
@@ -295,18 +374,21 @@ const PreloaderAnimations = () => {
             removeEventListeners();
           }
         };
-        window.addEventListener('touchmove', activeTouchMove, { once: true, passive: true });
+        window.addEventListener("touchmove", activeTouchMove, {
+          once: true,
+          passive: true,
+        });
       };
 
       const removeEventListeners = () => {
         if (isCleanedUp) return;
         isCleanedUp = true;
-        
-        window.removeEventListener('wheel', handleScroll);
-        window.removeEventListener('touchstart', handleTouch);
+
+        window.removeEventListener("wheel", handleScroll);
+        window.removeEventListener("touchstart", handleTouch);
         if (activeTouchMove) {
           try {
-            window.removeEventListener('touchmove', activeTouchMove);
+            window.removeEventListener("touchmove", activeTouchMove);
           } catch {
             // ignore if already removed
           }
@@ -320,8 +402,8 @@ const PreloaderAnimations = () => {
         setControlsEnabled(true);
       };
 
-      window.addEventListener('wheel', handleScroll, { passive: true });
-      window.addEventListener('touchstart', handleTouch, { passive: true });
+      window.addEventListener("wheel", handleScroll, { passive: true });
+      window.addEventListener("touchstart", handleTouch, { passive: true });
 
       return removeEventListeners;
     };
@@ -338,9 +420,9 @@ const PreloaderAnimations = () => {
         timelineRef.current.kill();
       }
       // Clean up any remaining event listeners
-      window.removeEventListener('wheel', () => {});
-      window.removeEventListener('touchstart', () => {});
-      window.removeEventListener('touchmove', () => {});
+      window.removeEventListener("wheel", () => {});
+      window.removeEventListener("touchstart", () => {});
+      window.removeEventListener("touchmove", () => {});
     };
   }, [roomRef, childrenMap, setControlsEnabled, setPreloaderVisible, device]);
 

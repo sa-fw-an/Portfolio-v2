@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -11,7 +11,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error("Error caught by boundary:", error, errorInfo);
   }
 
   render() {
@@ -20,8 +20,8 @@ class ErrorBoundary extends React.Component {
         <div className="error-boundary-fallback">
           <h2>Something went wrong</h2>
           <p>Failed to load 3D experience. Please refresh the page.</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="error-retry-btn"
           >
             Reload Page

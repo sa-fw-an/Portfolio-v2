@@ -2,8 +2,8 @@
  * Camera setup and management utilities
  */
 
-import { isMobileDevice } from './deviceUtils.js';
-import { CAMERA_CONSTANTS } from '@/constants/globalConstants';
+import { isMobileDevice } from "./deviceUtils.js";
+import { CAMERA_CONSTANTS } from "@/constants/globalConstants";
 
 /**
  * Setup orthographic camera with responsive bounds
@@ -13,23 +13,23 @@ import { CAMERA_CONSTANTS } from '@/constants/globalConstants';
  */
 export const setupOrthographicCamera = (camera, width, height) => {
   if (!camera?.isOrthographicCamera) return;
-  
+
   const aspect = width / height;
   const frustum = CAMERA_CONSTANTS.FRUSTUM;
-  
+
   Object.assign(camera, {
     left: (-aspect * frustum) / 2,
     right: (aspect * frustum) / 2,
     top: frustum / 2,
     bottom: -frustum / 2,
     near: CAMERA_CONSTANTS.NEAR,
-    far: CAMERA_CONSTANTS.FAR
+    far: CAMERA_CONSTANTS.FAR,
   });
-  
+
   // Set default position and rotation
   camera.position.set(...CAMERA_CONSTANTS.DEFAULT_POSITION);
   camera.rotation.x = CAMERA_CONSTANTS.DEFAULT_ROTATION_X;
-  
+
   camera.updateProjectionMatrix();
 };
 
@@ -39,10 +39,10 @@ export const setupOrthographicCamera = (camera, width, height) => {
  */
 export const getCameraConfig = () => {
   const isMobile = isMobileDevice();
-  
+
   const aspect = window.innerWidth / window.innerHeight;
   const frustum = CAMERA_CONSTANTS.FRUSTUM;
-  
+
   return {
     orthographic: true,
     zoom: CAMERA_CONSTANTS.ZOOM,
@@ -57,7 +57,7 @@ export const getCameraConfig = () => {
     ...(isMobile && {
       // Reduced complexity for mobile
       antialias: false,
-      powerPreference: 'low-power'
-    })
+      powerPreference: "low-power",
+    }),
   };
 };
