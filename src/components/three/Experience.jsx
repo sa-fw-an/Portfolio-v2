@@ -84,7 +84,6 @@ const Experience = () => {
       />
 
       <Lights theme={theme} />
-      <Environment preset="night" />
       <Floor ref={floorRef} />
       <Room ref={roomRef} />
       {shadowSettings.enableShadows && (
